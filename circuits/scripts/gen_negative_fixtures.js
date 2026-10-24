@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const ROOT = path.join(__dirname, '..');
 const REPO = path.join(ROOT, '..');
-const FIXTURES = path.join(REPO,'fixtures');
+const FIXTURES = path.join(REPO, 'fixtures');
 const NEGATIVE_FIXTURES = path.join(FIXTURES, 'negative');
 
 console.log('Generating comprehensive negative fixtures for all circuits...');

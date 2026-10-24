@@ -36,6 +36,11 @@ describe('verifier', () => {
       expect(result.error).toMatch(/missing proof/i);
     });
 
+    it('accepts a proof payload built with makePayload', () => {
+      const result = verifyProof(makePayload(validProofPayload));
+      expect(result.ok).toBe(true);
+    });
+
     it('rejects a malformed claim payload', () => {
       const result = verifyProof(malformedClaimPayload);
       expect(result.ok).toBe(false);
