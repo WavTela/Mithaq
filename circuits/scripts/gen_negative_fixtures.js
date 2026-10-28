@@ -22,7 +22,7 @@ function helperCopyFixture(circuit, caseName, modifyPublicInputsFn = null) {
   const inputsPath = path.join(srcDir, 'public_inputs');
 
   if (!fs.existsSync(proofPath) || !fs.existsSync(vkPath) || !fs.existsSync(inputsPath)) {
-    console.log(`  [Skipped] Fixture directory for '${circuit}' missing required files.`);
+    console.log(`\n  [Skipped] Fixture directory for '${circuit}' missing required files.`);
     return false;
   }
 
