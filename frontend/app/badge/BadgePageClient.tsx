@@ -53,7 +53,7 @@ function BadgeContent() {
         if (!isMounted) return;
         // `unknown` means the ledger never answered — a failed read is not a
         // negative result and must not render as one.
-        setStatus(result.status === "unknown" ? "unknown" : result.status);
+        setStatus(result.status);
         setIssue(result.status === "unknown" ? result.issue : null);
       } catch (err) {
         if (!isMounted) return;
@@ -90,7 +90,11 @@ function BadgeContent() {
 
   // Amber is reserved for "cannot determine" — never used for a negative.
   const toneColor =
-    status === "verified" ? "#10b981" : status === "unverified" ? "#ef4444" : "#e3b341";
+    status === "verified"
+      ? "#10b981"
+      : status === "unverified"
+        ? "#ef4444"
+        : "#e3b341";
   const toneBg =
     status === "verified"
       ? "rgba(16, 185, 129, 0.15)"
