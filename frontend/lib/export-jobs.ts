@@ -53,7 +53,7 @@ export const EXPORT_SCOPES: ScopeDefinition[] = [
   {
     id: 'full',
     label: 'Complete Archive',
-    description: 'All your StellarCred data: credentials, proofs, timeline events, and settings.',
+    description: 'All your Mithaq data: credentials, proofs, timeline events, and settings.',
     requiresAdmin: false,
   },
   {
@@ -259,7 +259,7 @@ async function processExportJob(id: string): Promise<void> {
       schemaVersion: EXPORT_SCHEMA_VERSION,
       generation: {
         generatedAt,
-        generator: 'stellarcred-dashboard-exporter@0.1.0',
+        generator: 'mithaq-dashboard-exporter@0.1.0',
       },
       count: 2,
       entries: [

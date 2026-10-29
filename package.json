@@ -1,8 +1,8 @@
 {
-  "name": "stellar-kyc-credentials",
+  "name": "mithaq",
   "version": "0.1.0",
   "private": true,
-  "description": "Kill Your Credentials - Stellar Soroban contracts and frontend",
+  "description": "A halal-first Muslim matchmaking platform built on the Stellar network.",
   "scripts": {
     "test": "nyc pnpm run test:unit",
     "test:unit": "node --test test/**/*.test.js",

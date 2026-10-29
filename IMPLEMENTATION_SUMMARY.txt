@@ -2,7 +2,7 @@
 ADMIN ROTATION IMPLEMENTATION - ISSUE #342
 ================================================================================
 
-PROJECT: StellarCred
+PROJECT: Mithaq
 ISSUE: #342 - IssuerRegistry and CredentialVerifier have no admin-rotation function
 STATUS: ✅ COMPLETE AND READY FOR DEPLOYMENT
 

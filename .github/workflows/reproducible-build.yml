@@ -1,6 +1,6 @@
 name: Reproducible Build
 
-# Determinism check for the StellarCred contract WASM artifacts.
+# Determinism check for the Mithaq contract WASM artifacts.
 #
 # Two independent builds run inside the pinned reproducible-build container
 # so the canonical build environment is identical for both comparisons.
@@ -49,7 +49,7 @@ jobs:
           docker build \
             --no-cache \
             -f docker/Dockerfile.reproducible \
-            -t stellarcred-build:ci \
+            -t mithaq-build:ci \
             .
 
       # ── Container build 1 ─────────────────────────────────────────────────
@@ -78,7 +78,7 @@ jobs:
             -v "/tmp/container-build.sh:/container-build.sh:ro" \
             -e SOURCE_DATE_EPOCH=0 \
             -e "RUSTFLAGS=--remap-path-prefix=/workspace=/workspace --remap-path-prefix=/usr/local/cargo=/usr/local/cargo --remap-path-prefix=/usr/local/rustup=/usr/local/rustup" \
-            stellarcred-build:ci \
+            mithaq-build:ci \
             sh /container-build.sh
 
       - name: Hash container run-1 artifacts
@@ -99,7 +99,7 @@ jobs:
             -v "/tmp/container-build.sh:/container-build.sh:ro" \
             -e SOURCE_DATE_EPOCH=0 \
             -e "RUSTFLAGS=--remap-path-prefix=/workspace=/workspace --remap-path-prefix=/usr/local/cargo=/usr/local/cargo --remap-path-prefix=/usr/local/rustup=/usr/local/rustup" \
-            stellarcred-build:ci \
+            mithaq-build:ci \
             sh /container-build.sh
 
       - name: Hash container run-2 artifacts
@@ -138,11 +138,11 @@ jobs:
       - name: Produce canonical hash manifest
         run: |
           {
-            echo "# StellarCred WASM SHA-256 hashes"
+            echo "# Mithaq WASM SHA-256 hashes"
             echo "# Commit:    ${{ github.sha }}"
             echo "# Ref:       ${{ github.ref }}"
             echo "# Workflow:  ${{ github.run_id }}"
-            echo "# Toolchain: $(docker run --rm stellarcred-build:ci rustc --version)"
+            echo "# Toolchain: $(docker run --rm mithaq-build:ci rustc --version)"
             echo "# Verified:  2x independent container builds (byte-identical)"
             echo "#"
             awk '{print $1, $2}' build-1/sha256sums.txt

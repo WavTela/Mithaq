@@ -1,5 +1,5 @@
 -- ============================================================================
--- StellarCred Multi-Tenant Issuance Configuration Migration
+-- Mithaq Multi-Tenant Issuance Configuration Migration
 -- File: db/migrations/tenant_config.sql
 -- ============================================================================
 
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS tenant_issuer_configs (
     -- Stellar address for the tenant's on-chain registered issuer account
     issuer_id VARCHAR(56) NOT NULL,
     issuer_name VARCHAR(255) NOT NULL,
-    -- Reference path in Vault (e.g. "secret/data/stellarcred/tenants/org_acme/signing-key")
+    -- Reference path in Vault (e.g. "secret/data/mithaq/tenants/org_acme/signing-key")
     -- Plaintext private keys must NEVER be stored in the database!
     signing_key_secret_ref VARCHAR(512) NOT NULL,
     -- Array of credential types permitted for issuance (e.g. ['kyc', 'age', 'income'])

@@ -82,7 +82,7 @@ export function summarizeProofs(runs: ProofRun[]): PerfSummary {
 // Opt-in anonymized reporting
 // ---------------------------------------------------------------------------
 
-const OPTIN_KEY = "stellarcred:proof-telemetry-optin";
+const OPTIN_KEY = "mithaq:proof-telemetry-optin";
 
 export function isTelemetryOptIn(): boolean {
   if (typeof localStorage === "undefined") return false;

@@ -16,7 +16,7 @@ import { safeGetItem, safeSetItem } from "./safe-storage";
 // `verifyPreset`) only know how to check the types in `CLAIM_TYPES`
 // (currently missing "employment"), so a preset built from a broader type
 // set could name a claim nothing could ever verify.
-import { CLAIM_TYPES, type ClaimType } from "@stellarcred/sdk";
+import { CLAIM_TYPES, type ClaimType } from "@mithaq/sdk";
 
 export interface PresetClaim {
   type: ClaimType;
@@ -31,7 +31,7 @@ export interface Preset {
   createdAt: number;
 }
 
-export const PRESETS_STORAGE_KEY = "stellarcred:presets";
+export const PRESETS_STORAGE_KEY = "mithaq:presets";
 
 export function loadPresets(): Preset[] {
   try {

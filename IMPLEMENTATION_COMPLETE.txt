@@ -9,8 +9,8 @@
 
 PROJECT INFORMATION
 ═══════════════════════════════════════════════════════════════════════════════
-Project Name:        StellarCred
-Repository:          ToluLabs/StellarCred
+Project Name:        Mithaq
+Repository:          ToluLabs/Mithaq
 Issue Number:        #342
 Issue Title:         IssuerRegistry and CredentialVerifier have no admin-rotation 
                      function — admin is fixed at deploy
@@ -315,7 +315,7 @@ NEXT STEPS:
 
 Certificate Date:    September 25, 2026
 Implementation:      Admin Rotation for IssuerRegistry and CredentialVerifier
-Project:             StellarCred
+Project:             Mithaq
 Issue:               #342
 Status:              ✅ COMPLETE AND READY FOR PRODUCTION
 

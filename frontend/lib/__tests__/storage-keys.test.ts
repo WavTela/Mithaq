@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   getAllStorageKeys,
   getTimelineKeys,
-  isStellarCredKey,
+  isMithaqKey,
   STORAGE_KEYS,
 } from "@/lib/storage-keys";
 
@@ -17,15 +17,15 @@ describe("storage-keys", () => {
 
   describe("STORAGE_KEYS enumeration", () => {
     it("exports all expected storage keys", () => {
-      expect(STORAGE_KEYS.CREDENTIALS).toBe("stellarcred:credentials");
-      expect(STORAGE_KEYS.EXPORT_VISIBILITY).toBe("stellarcred:export-visibility");
-      expect(STORAGE_KEYS.PROOF_CACHE).toBe("stellarcred:proof-cache");
+      expect(STORAGE_KEYS.CREDENTIALS).toBe("mithaq:credentials");
+      expect(STORAGE_KEYS.EXPORT_VISIBILITY).toBe("mithaq:export-visibility");
+      expect(STORAGE_KEYS.PROOF_CACHE).toBe("mithaq:proof-cache");
       expect(STORAGE_KEYS.PROOF_TIMELINE_PREFIX).toBe("proofTimeline:");
-      expect(STORAGE_KEYS.ONBOARDING).toBe("stellarcred:onboarding");
-      expect(STORAGE_KEYS.ONBOARDING_LEGACY).toBe("stellarcred_onboarding_seen");
-      expect(STORAGE_KEYS.WALLET_ID).toBe("stellarcred:wallet-id");
+      expect(STORAGE_KEYS.ONBOARDING).toBe("mithaq:onboarding");
+      expect(STORAGE_KEYS.ONBOARDING_LEGACY).toBe("mithaq_onboarding_seen");
+      expect(STORAGE_KEYS.WALLET_ID).toBe("mithaq:wallet-id");
       expect(STORAGE_KEYS.THEME).toBe("theme");
-      expect(STORAGE_KEYS.ONBOARDING_NUDGE_DISMISSED).toBe("stellarcred:onboarding-nudge-dismissed");
+      expect(STORAGE_KEYS.ONBOARDING_NUDGE_DISMISSED).toBe("mithaq:onboarding-nudge-dismissed");
     });
   });
 
@@ -37,7 +37,7 @@ describe("storage-keys", () => {
     it("finds all timeline keys with the correct prefix", () => {
       localStorage.setItem("proofTimeline:commitment1", "{}");
       localStorage.setItem("proofTimeline:commitment2", "{}");
-      localStorage.setItem("stellarcred:credentials", "{}");
+      localStorage.setItem("mithaq:credentials", "{}");
       localStorage.setItem("other-key", "{}");
 
       const timelineKeys = getTimelineKeys();
@@ -96,26 +96,26 @@ describe("storage-keys", () => {
     });
   });
 
-  describe("isStellarCredKey", () => {
-    it("identifies static StellarCred keys", () => {
-      expect(isStellarCredKey(STORAGE_KEYS.CREDENTIALS)).toBe(true);
-      expect(isStellarCredKey(STORAGE_KEYS.EXPORT_VISIBILITY)).toBe(true);
-      expect(isStellarCredKey(STORAGE_KEYS.PROOF_CACHE)).toBe(true);
-      expect(isStellarCredKey(STORAGE_KEYS.ONBOARDING)).toBe(true);
-      expect(isStellarCredKey(STORAGE_KEYS.WALLET_ID)).toBe(true);
-      expect(isStellarCredKey(STORAGE_KEYS.THEME)).toBe(true);
-      expect(isStellarCredKey(STORAGE_KEYS.ONBOARDING_NUDGE_DISMISSED)).toBe(true);
+  describe("isMithaqKey", () => {
+    it("identifies static Mithaq keys", () => {
+      expect(isMithaqKey(STORAGE_KEYS.CREDENTIALS)).toBe(true);
+      expect(isMithaqKey(STORAGE_KEYS.EXPORT_VISIBILITY)).toBe(true);
+      expect(isMithaqKey(STORAGE_KEYS.PROOF_CACHE)).toBe(true);
+      expect(isMithaqKey(STORAGE_KEYS.ONBOARDING)).toBe(true);
+      expect(isMithaqKey(STORAGE_KEYS.WALLET_ID)).toBe(true);
+      expect(isMithaqKey(STORAGE_KEYS.THEME)).toBe(true);
+      expect(isMithaqKey(STORAGE_KEYS.ONBOARDING_NUDGE_DISMISSED)).toBe(true);
     });
 
     it("identifies timeline keys by prefix", () => {
-      expect(isStellarCredKey("proofTimeline:abc123")).toBe(true);
-      expect(isStellarCredKey("proofTimeline:commitment456")).toBe(true);
+      expect(isMithaqKey("proofTimeline:abc123")).toBe(true);
+      expect(isMithaqKey("proofTimeline:commitment456")).toBe(true);
     });
 
-    it("rejects non-StellarCred keys", () => {
-      expect(isStellarCredKey("random-key")).toBe(false);
-      expect(isStellarCredKey("proof_timeline:abc")).toBe(false);
-      expect(isStellarCredKey("")).toBe(false);
+    it("rejects non-Mithaq keys", () => {
+      expect(isMithaqKey("random-key")).toBe(false);
+      expect(isMithaqKey("proof_timeline:abc")).toBe(false);
+      expect(isMithaqKey("")).toBe(false);
     });
   });
 });

@@ -1,4 +1,4 @@
-// @stellarcred/sdk — typed error taxonomy
+// @mithaq/sdk — typed error taxonomy
 //
 // Structured errors that surface contract panics, RPC failures, and indexer
 // issues as typed, actionable errors (#404). Every error code maps to the
@@ -270,7 +270,7 @@ export type TransactionSubmissionErrorCode =
  *
  * @example
  * ```ts
- * import { submitTransaction, TransactionSubmissionError, ContractErrorCode } from "@stellarcred/sdk";
+ * import { submitTransaction, TransactionSubmissionError, ContractErrorCode } from "@mithaq/sdk";
  *
  * try {
  *   await submitTransaction(myOperation);

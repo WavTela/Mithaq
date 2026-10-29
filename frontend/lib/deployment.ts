@@ -1,6 +1,6 @@
 // Deployment identity for credentials (Issue #545).
 //
-// A credential is only usable inside the StellarCred deployment that issued
+// A credential is only usable inside the Mithaq deployment that issued
 // it: proofs are verified against the issuer's key as registered in that
 // deployment's IssuerRegistry and submitted to its ProofRegistry. Contract IDs
 // differ per deployment, and network passphrase differs per Stellar network —
@@ -107,7 +107,7 @@ export function deploymentMismatchMessage(
 
   if (differing.length > 0) {
     return (
-      `This credential was issued by a different StellarCred deployment on ` +
+      `This credential was issued by a different Mithaq deployment on ` +
       `the same "${current.network}" network (its ${differing.join(", ")} ` +
       `isn't the one this app is configured for). The issuer is not ` +
       `registered here, so the credential could never be proven on-chain — ` +

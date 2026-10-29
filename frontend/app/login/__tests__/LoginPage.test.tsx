@@ -50,7 +50,7 @@ describe("LoginPage Accessibility & Functionality (Issue #756)", () => {
 
   it("renders the main page heading and landmark structure", () => {
     renderWithIntl(<LoginPageClient />);
-    const heading = screen.getByRole("heading", { level: 1, name: /sign in to stellarcred/i });
+    const heading = screen.getByRole("heading", { level: 1, name: /sign in to mithaq/i });
     expect(heading).toBeInTheDocument();
   });
 

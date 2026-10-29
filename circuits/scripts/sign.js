@@ -34,7 +34,7 @@ const { sha256 } = loadModule("@noble/hashes/sha2.js");
 // Use ISSUER_PRIVATE_KEY from env when set; fall back to the dev demo key.
 const DEMO_SK = process.env.ISSUER_PRIVATE_KEY
   ? Buffer.from(process.env.ISSUER_PRIVATE_KEY, "hex")
-  : sha256(new TextEncoder().encode("stellarcred-demo-issuer"));
+  : sha256(new TextEncoder().encode("mithaq-demo-issuer"));
 
 const be32 = (v) => {
   const b = new Uint8Array(32);

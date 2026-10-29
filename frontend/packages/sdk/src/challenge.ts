@@ -40,7 +40,7 @@ export interface WalletChallenge {
 export interface CreateChallengeOptions {
   /**
    * The domain or identifier of the requesting application (e.g. "app.example.com").
-   * Defaults to "stellarcred".
+   * Defaults to "mithaq".
    */
   domain?: string;
   /**
@@ -123,7 +123,7 @@ export function createWalletChallenge(
   options: CreateChallengeOptions = {},
   store: ChallengeStore = defaultChallengeStore,
 ): WalletChallenge {
-  const domain = options.domain ?? "stellarcred";
+  const domain = options.domain ?? "mithaq";
   const statement =
     options.statement ?? "Prove ownership of your Stellar wallet to access gated services.";
   const ttlMs = options.ttlMs ?? 5 * 60 * 1000;

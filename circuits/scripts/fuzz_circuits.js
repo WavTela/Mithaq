@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Property-based fuzzing harness for StellarCred circuits.
+// Property-based fuzzing harness for Mithaq circuits.
 //
 // Generates randomised valid and invalid witnesses for each credential circuit,
 // computes the Poseidon2 commitment locally (using the same constants as

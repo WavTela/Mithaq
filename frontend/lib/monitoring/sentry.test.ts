@@ -18,7 +18,7 @@ describe("Sentry Error Monitoring (#853)", () => {
     client = initSentry({
       environment: "staging",
       commit: "commit_abc123",
-      service: "stellarcred-api",
+      service: "mithaq-api",
       enabled: true,
     });
     expect(getSentryClient()).toBe(client);
@@ -41,7 +41,7 @@ describe("Sentry Error Monitoring (#853)", () => {
     const event = events[0];
     expect(event.tags.env).toBe("staging");
     expect(event.tags.commit).toBe("commit_abc123");
-    expect(event.tags.service).toBe("stellarcred-api");
+    expect(event.tags.service).toBe("mithaq-api");
     expect(event.tags.requestId).toBe("req_xyz999");
     expect(event.tags.path).toBe("/api/issue");
     expect(event.tags.method).toBe("POST");

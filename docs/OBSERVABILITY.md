@@ -1,12 +1,12 @@
-# StellarCred Observability & Error Monitoring Guide
+# Mithaq Observability & Error Monitoring Guide
 
-This document describes how server-side exception monitoring, distributed request tracing, and Sentry integration are structured in StellarCred (#853).
+This document describes how server-side exception monitoring, distributed request tracing, and Sentry integration are structured in Mithaq (#853).
 
 ---
 
 ## 1. Overview
 
-StellarCred monitors server-side exceptions across API routes to accelerate production and staging debugging while preserving strict cryptographic and data privacy guarantees:
+Mithaq monitors server-side exceptions across API routes to accelerate production and staging debugging while preserving strict cryptographic and data privacy guarantees:
 
 - **Exception Tracking**: Server-side runtime errors and unhandled exceptions are captured and forwarded to Sentry.
 - **Contextual Metadata**: Every error event is automatically enriched with operational tags (`env`, `commit`, `service`, `requestId`, `path`, `method`).
@@ -54,7 +54,7 @@ When an unhandled exception occurs:
 3. Attaches operational tags:
    - `env`: `staging` | `production` | `development`
    - `commit`: Git SHA of deployed release
-   - `service`: `stellarcred-api`
+   - `service`: `mithaq-api`
    - `requestId`: Request correlation ID
    - `path`: API route path
 4. Forwards the event to Sentry with stack frames.
@@ -71,7 +71,7 @@ When an unhandled exception occurs:
 
 ## 4. Privacy & Payload Sanitization
 
-StellarCred enforces privacy before any payload leaves the server:
+Mithaq enforces privacy before any payload leaves the server:
 
 1. **Request Body Dropping**: Inbound HTTP request bodies (which may contain secrets, private witness values, or signatures) are **never** attached to Sentry events.
 2. **Header Allowlist**: Only non-sensitive headers (`accept`, `content-type`, `user-agent`, `x-request-id`, `host`) are forwarded. Authorization headers, cookies, and bearer tokens are dropped.
@@ -86,10 +86,10 @@ StellarCred enforces privacy before any payload leaves the server:
 
 ### Accessing Issues in Sentry
 
-1. Open the **Sentry Dashboard** -> Projects -> **stellarcred-api**.
+1. Open the **Sentry Dashboard** -> Projects -> **mithaq-api**.
 2. Filter issues by tags:
    - By Environment: `env:staging` or `env:production`
-   - By Release / Commit: `commit:<git-sha>` or `release:stellarcred-api@0.1.0`
+   - By Release / Commit: `commit:<git-sha>` or `release:mithaq-api@0.1.0`
    - By Request ID: `requestId:<id-from-user-report>`
    - By Endpoint: `path:/api/issue` or `path:/api/webhooks/issuance`
 

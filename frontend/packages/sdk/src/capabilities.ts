@@ -123,8 +123,8 @@ export async function fetchCapabilities(
  * RPC URL / network passphrase when the descriptor provides them.
  *
  * @example
- * await StellarCred.bootstrap({ descriptorUrl: "https://app.example.com/api/capabilities" });
- * await StellarCred.hasClaim(wallet, "kyc");
+ * await Mithaq.bootstrap({ descriptorUrl: "https://app.example.com/api/capabilities" });
+ * await Mithaq.hasClaim(wallet, "kyc");
  */
 export async function bootstrap(opts: BootstrapOptions = {}): Promise<CapabilitiesDescriptor> {
   const descriptor = await fetchCapabilities(opts);

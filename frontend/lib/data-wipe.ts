@@ -1,14 +1,14 @@
 "use client";
 
 /**
- * Full local data wipe for StellarCred (#558).
+ * Full local data wipe for Mithaq (#558).
  * 
  * Removes all credentials, proof cache, timeline, onboarding state, wallet
  * selection, and preferences from this browser. The holder who invokes this
  * loses access to their credentials unless they've backed them up — the
  * function prompts for export before wiping.
  * 
- * This is the single action to completely leave StellarCred without orphaning
+ * This is the single action to completely leave Mithaq without orphaning
  * storage keys. It's more surgical than clearing all site data (which would
  * also remove unrelated browser state) and less error-prone than removing
  * credentials individually (which leaves timeline/cache/key behind).
@@ -56,7 +56,7 @@ async function promptForBackup(): Promise<string | null> {
     const blob = new Blob([credentialsJson], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, -5);
-    const filename = `stellarcred-backup-${timestamp}.json`;
+    const filename = `mithaq-backup-${timestamp}.json`;
 
     // Trigger download
     const a = document.createElement("a");
@@ -76,7 +76,7 @@ async function promptForBackup(): Promise<string | null> {
 }
 
 /**
- * Wipe all StellarCred data from localStorage.
+ * Wipe all Mithaq data from localStorage.
  * 
  * @param options - Configuration options
  * @returns Result indicating success, keys removed, and optional backup

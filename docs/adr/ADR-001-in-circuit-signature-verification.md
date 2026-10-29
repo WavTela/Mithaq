@@ -7,7 +7,7 @@
 
 ## Context
 
-Every credential in StellarCred is backed by an issuer signature over a Poseidon2 commitment. The system must guarantee that a valid on-chain proof is evidence that a specific registered issuer endorsed a specific credential — and nothing weaker than that.
+Every credential in Mithaq is backed by an issuer signature over a Poseidon2 commitment. The system must guarantee that a valid on-chain proof is evidence that a specific registered issuer endorsed a specific credential — and nothing weaker than that.
 
 There are two places a secp256k1 signature could be checked: inside the Noir circuit (as a ZK constraint), or on-chain inside the Soroban contract (as a plain ECDSA verification call). The choice determines both the soundness of the proof and the on-chain privacy properties of the holder.
 
@@ -35,7 +35,7 @@ The signature would be passed as a call argument to `submit_proof`, and the cont
 
 ### 2. Verify the signature on-chain and accept a privacy trade-off
 
-Some deployments prioritize auditability over holder privacy and might prefer an on-chain signature check. This could be a valid design for a different credential system, but it is not compatible with the privacy guarantee that StellarCred explicitly makes (identity data never reaches the chain). Accepting the privacy trade-off would change the threat model documented in `docs/THREAT_MODEL.md`.
+Some deployments prioritize auditability over holder privacy and might prefer an on-chain signature check. This could be a valid design for a different credential system, but it is not compatible with the privacy guarantee that Mithaq explicitly makes (identity data never reaches the chain). Accepting the privacy trade-off would change the threat model documented in `docs/THREAT_MODEL.md`.
 
 ### 3. Use a different signature scheme (e.g. EdDSA / BLS)
 

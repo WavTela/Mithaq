@@ -208,7 +208,7 @@ async function main() {
     const depName = dep.includes(' (version changed:') ? dep.split(' (version changed:')[0] : dep;
     const version = currentDeps[depName];
 
-    // Skip workspace packages (e.g., @stellarcred/issuer@workspace:*)
+    // Skip workspace packages (e.g., @mithaq/issuer@workspace:*)
     if (version && version.startsWith('workspace:')) {
       console.log(`  📍 ${depName}@${version} (workspace package - skipped)\n`);
       continue;

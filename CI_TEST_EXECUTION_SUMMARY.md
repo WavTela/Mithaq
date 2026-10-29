@@ -217,7 +217,7 @@ For CI to pass, ALL of the following must be true:
 
 ### Option 1: Run on Linux/Mac (Recommended)
 ```bash
-cd /path/to/StellarCred
+cd /path/to/Mithaq
 cargo test --locked
 cargo build --release --target wasm32v1-none --locked
 cargo clippy --all-targets -- -D warnings
@@ -226,7 +226,7 @@ cargo clippy --all-targets -- -D warnings
 ### Option 2: Use GitHub Actions (Automatic)
 ```bash
 git push origin main  # Triggers CI pipeline
-# View results at: https://github.com/ToluLabs/StellarCred/actions
+# View results at: https://github.com/ToluLabs/Mithaq/actions
 ```
 
 ### Option 3: Use Docker (If Available)

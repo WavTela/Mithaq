@@ -8,7 +8,7 @@ import {
   parseCredentialJson,
   validateCredential,
 } from "./validateCredential";
-import { StellarCred } from "./index";
+import { Mithaq } from "./index";
 
 const WALLET = "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
 const ISSUER = "GBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBHF2";
@@ -18,7 +18,7 @@ function validCredential(overrides: Record<string, unknown> = {}) {
     type: "age",
     title: "Age Verified",
     claim: "age ≥ 18",
-    issuer: "StellarCred Authority",
+    issuer: "Mithaq Authority",
     issuerId: ISSUER,
     holder: WALLET,
     value: "9300",
@@ -219,10 +219,10 @@ describe("assertValidCredential", () => {
 });
 
 describe("entry-point exports", () => {
-  it("exposes the validator on the StellarCred namespace", () => {
-    expect(StellarCred.validateCredential).toBe(validateCredential);
-    expect(StellarCred.parseCredentialJson).toBe(parseCredentialJson);
-    expect(StellarCred.assertValidCredential).toBe(assertValidCredential);
-    expect(StellarCred.CredentialValidationError).toBe(CredentialValidationError);
+  it("exposes the validator on the Mithaq namespace", () => {
+    expect(Mithaq.validateCredential).toBe(validateCredential);
+    expect(Mithaq.parseCredentialJson).toBe(parseCredentialJson);
+    expect(Mithaq.assertValidCredential).toBe(assertValidCredential);
+    expect(Mithaq.CredentialValidationError).toBe(CredentialValidationError);
   });
 });

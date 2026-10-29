@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import DocsPageClient from "./DocsPageClient";
 
 export const metadata: Metadata = {
-  title: "StellarCred — Docs",
+  title: "Mithaq — Docs",
   description:
     "Learn the architecture, privacy model, and protocol flow behind zero-knowledge credentials on Stellar.",
 };

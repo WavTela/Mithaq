@@ -55,7 +55,7 @@ export interface Credential {
   /** Transaction hash of the last submitted proof. */
   provedTxHash?: string;
   /**
-   * The StellarCred deployment (network + contract IDs) that issued this
+   * The Mithaq deployment (network + contract IDs) that issued this
    * credential, stamped by /api/issue at mint time. Import paths validate it
    * against the current app config so a credential from another deployment
    * fails at import instead of confusingly at proof submission (#545).
@@ -184,7 +184,7 @@ export function randomField(): string {
  * PBKDF2-derived key. The raw credential value and salt are never written
  * to localStorage in plaintext.
  */
-export const CREDENTIALS_STORAGE_KEY = "stellarcred:credentials";
+export const CREDENTIALS_STORAGE_KEY = "mithaq:credentials";
 
 const STORE_KEY = CREDENTIALS_STORAGE_KEY;
 

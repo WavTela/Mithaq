@@ -38,7 +38,7 @@ describe("credential store encryption", () => {
 
     await saveCredential(cred);
 
-    const raw = localStorage.getItem("stellarcred:credentials");
+    const raw = localStorage.getItem("mithaq:credentials");
     expect(raw).toBeTruthy();
     expect(raw).not.toContain("1995-06-15");
     expect(raw).not.toContain("0xabc123");
@@ -130,13 +130,13 @@ describe("at-rest migration to the consolidated scheme (#547)", () => {
   it("unlocks a legacy v1 envelope, migrates storage to the current envelope, keeps data", async () => {
     const cred = fixtureCredential("1995-06-15");
     localStorage.setItem(
-      "stellarcred:credentials",
+      "mithaq:credentials",
       await makeLegacyAtRestEnvelope("migrate-me", [cred]),
     );
 
     await unlockCredentialStore("migrate-me");
 
-    const migrated = JSON.parse(localStorage.getItem("stellarcred:credentials") ?? "{}");
+    const migrated = JSON.parse(localStorage.getItem("mithaq:credentials") ?? "{}");
     expect(migrated.version).toBe(3);
     expect(migrated.kdf).toBe("PBKDF2-SHA256");
     expect(migrated.iterations).toBe(600_000);
@@ -152,7 +152,7 @@ describe("at-rest migration to the consolidated scheme (#547)", () => {
     await unlockCredentialStore("fresh-store-pw");
     await saveCredential(fixtureCredential("1995-06-15"));
 
-    const raw = localStorage.getItem("stellarcred:credentials") ?? "";
+    const raw = localStorage.getItem("mithaq:credentials") ?? "";
     const env = JSON.parse(raw);
     expect(env.version).toBe(3);
     expect(env.kdf).toBe("PBKDF2-SHA256");

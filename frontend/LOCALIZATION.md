@@ -1,6 +1,6 @@
-# Localization Guide for StellarCred
+# Localization Guide for Mithaq
 
-This guide explains how to add new locales (languages) to StellarCred. The current implementation supports English (en) and Spanish (es) as proof-of-concept. Adding new locales is straightforward.
+This guide explains how to add new locales (languages) to Mithaq. The current implementation supports English (en) and Spanish (es) as proof-of-concept. Adding new locales is straightforward.
 
 ## Quick Start: Adding a New Locale
 
@@ -21,7 +21,7 @@ Use `frontend/public/locales/en.json` as your template. Copy all keys and values
     ...
   },
   "nav": {
-    "brand": "StellarCred",
+    "brand": "Mithaq",
     "wallet": "Portefeuille",
     ...
   },
@@ -305,7 +305,7 @@ Add to JSON:
 
 ## Contributing Translations
 
-To contribute a translation to the StellarCred project:
+To contribute a translation to the Mithaq project:
 
 1. Fork the repository
 2. Follow the "Adding a New Locale" steps above

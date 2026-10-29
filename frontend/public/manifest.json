@@ -1,6 +1,6 @@
 {
-  "name": "StellarCred Credential Holder",
-  "short_name": "StellarCred",
+  "name": "Mithaq Credential Holder",
+  "short_name": "Mithaq",
   "description": "Offline-capable zero-knowledge credential holder for Stellar",
   "start_url": "/holder",
   "display": "standalone",

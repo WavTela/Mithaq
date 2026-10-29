@@ -13,7 +13,7 @@ This runbook covers the two paths an operator can take — **planned rotation**
 and **emergency revocation** — and answers, for each: what happens to
 credentials already issued, whether holders must do anything, how long the old
 key keeps working, and how to tell holders. It assumes keys live in a
-KMS/HSM or secrets manager per [#69](https://github.com/ToluLabs/StellarCred/issues/69);
+KMS/HSM or secrets manager per [#69](https://github.com/ToluLabs/Mithaq/issues/69);
 see §3 for how that custody shapes the steps.
 
 Key-management entrypoints on `IssuerRegistry` (all admin-role only):
@@ -92,7 +92,7 @@ requirements. Keep them separate.
 
 | Key | What it does | Where the private half lives |
 |---|---|---|
-| **Issuer signing key** (secp256k1) | Signs credential commitments during issuance; the pubkey is bound into every proof | The issuance environment — a KMS/HSM or secrets manager, per [#69](https://github.com/ToluLabs/StellarCred/issues/69). The private key must never reach a build artefact, a test fixture, a log, or the browser. |
+| **Issuer signing key** (secp256k1) | Signs credential commitments during issuance; the pubkey is bound into every proof | The issuance environment — a KMS/HSM or secrets manager, per [#69](https://github.com/ToluLabs/Mithaq/issues/69). The private key must never reach a build artefact, a test fixture, a log, or the browser. |
 | **Contract admin key** (Stellar account) | Authorizes `rotate_issuer_key` / `revoke_issuer_key` (and all other admin-role calls) | Custody-secured per the pre-mainnet checklist in [SECURITY.md](../SECURITY.md): hardware wallet, HSM, or multisig — never a plaintext hot wallet. |
 
 How the KMS/HSM shapes the procedure:

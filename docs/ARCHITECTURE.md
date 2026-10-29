@@ -1,10 +1,10 @@
-# StellarCred Architecture
+# Mithaq Architecture
 
-This document describes the overall architecture of StellarCred, including trust boundaries and data flows.
+This document describes the overall architecture of Mithaq, including trust boundaries and data flows.
 
 ## Trust Boundaries
 
-StellarCred is designed with strict privacy guarantees:
+Mithaq is designed with strict privacy guarantees:
 - **Identity data never leaves the browser** except for direct interactions with KYC providers (e.g., Persona).
 - No raw identity data is stored on-chain or in backend services.
 - Only cryptographic commitments and zero-knowledge proofs are published on the Stellar blockchain.
@@ -285,7 +285,7 @@ sequenceDiagram
     autonumber
     participant User as User
     participant DApp as Protocol dApp
-    participant SDK as @stellarcred/sdk
+    participant SDK as @mithaq/sdk
     participant ProofRegistry as ProofRegistry
     
     User->>DApp: Attempt to Access Gated Feature
@@ -299,7 +299,7 @@ sequenceDiagram
         DApp->>User: Deny Access (Show Verify Button)
         User->>DApp: Click Verify
         DApp->>SDK: buildVerifyUrl(returnUrl, claim)
-        SDK-->>DApp: StellarCred Verify URL
-        DApp->>User: Redirect to StellarCred
+        SDK-->>DApp: Mithaq Verify URL
+        DApp->>User: Redirect to Mithaq
     end
 ```

@@ -1,7 +1,7 @@
-# StellarCred Support Policy
+# Mithaq Support Policy
 
 This document is the authoritative statement of support windows, deprecation
-procedures, and migration paths for every versioned artifact in StellarCred.
+procedures, and migration paths for every versioned artifact in Mithaq.
 It binds operators, protocol integrators, and SDK consumers alike.
 
 Cross-references:
@@ -31,7 +31,7 @@ Cross-references:
 
 ## Scope
 
-StellarCred contains several independently versioned components. This policy
+Mithaq contains several independently versioned components. This policy
 governs:
 
 | Artifact | Where | Current version |
@@ -40,7 +40,7 @@ governs:
 | Verification key (VK) per credential type | `CredentialVerifier` on-chain | type-specific `u32` counter |
 | Proof record schema | `ProofRegistry` on-chain | `PROOF_RECORD_SCHEMA_VERSION = 1` |
 | Contract ABI | each Soroban contract | `CONTRACT_VERSION = 1_000_000` (1.0.0) |
-| SDK (`@stellarcred/sdk`) | npm / `frontend/packages/sdk` | 0.1.1 |
+| SDK (`@mithaq/sdk`) | npm / `frontend/packages/sdk` | 0.1.1 |
 | Backup envelope | browser `localStorage` / export JSON | 2 (version 1 legacy) |
 
 ---
@@ -98,7 +98,7 @@ All four Soroban contracts expose a `version() → u32` query.
 Encoding: `(major × 1 000 000) + (minor × 1 000) + patch` (e.g. `1_002_003`
 = v1.2.3). The current version for all contracts is `1_000_000` (v1.0.0).
 
-### SDK (`@stellarcred/sdk`)
+### SDK (`@mithaq/sdk`)
 
 The npm package version follows [Semantic Versioning 2.0](https://semver.org).
 The current version is `0.1.1`.
@@ -347,7 +347,7 @@ The relevant sections are:
 
 ## SDK Versions
 
-The `@stellarcred/sdk` npm package version follows Semantic Versioning 2.0.
+The `@mithaq/sdk` npm package version follows Semantic Versioning 2.0.
 
 ### Compatibility promise
 
@@ -367,9 +367,9 @@ The `@stellarcred/sdk` npm package version follows Semantic Versioning 2.0.
 ### Checking your SDK version
 
 ```bash
-npm list @stellarcred/sdk
+npm list @mithaq/sdk
 # or
-node -e "console.log(require('@stellarcred/sdk/package.json').version)"
+node -e "console.log(require('@mithaq/sdk/package.json').version)"
 ```
 
 ### What to do before a MAJOR SDK upgrade
@@ -377,7 +377,7 @@ node -e "console.log(require('@stellarcred/sdk/package.json').version)"
 1. Read the changelog for the new MAJOR release.
 2. Check the [VERSION_COMPATIBILITY.md](VERSION_COMPATIBILITY.md) matrix for
    the minimum contract versions required.
-3. Run `npm install @stellarcred/sdk@latest` in a staging environment.
+3. Run `npm install @mithaq/sdk@latest` in a staging environment.
 4. Fix type errors; new method signatures are documented in the release notes.
 5. Verify with `make test-sdk` (or your own integration suite).
 
@@ -433,7 +433,7 @@ Deprecation and removal notices are communicated through:
    `[REMOVED]` section for every affected artifact.
 2. **On-chain events** — `EventVkSet` / `EventVkPruned` (CredentialVerifier)
    and `EventContractUpgraded` (ProofRegistry, CredentialVerifier) are indexed
-   by the StellarCred indexer service and available for operators to subscribe
+   by the Mithaq indexer service and available for operators to subscribe
    to.
 3. **`/api/ready` endpoint** — the response includes contract versions; a
    version mismatch between the deployed contract and a known-deprecated ABI
@@ -441,6 +441,6 @@ Deprecation and removal notices are communicated through:
 4. **CHANGELOG.md** — every release entry documents the version bump reason
    and any action required by integrators.
 
-Operators are responsible for monitoring these channels. StellarCred does not
+Operators are responsible for monitoring these channels. Mithaq does not
 proactively contact individual integrators; it is the integrator's
 responsibility to track the support windows stated in this document.

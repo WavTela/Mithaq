@@ -1,11 +1,11 @@
 {
-  "name": "@stellarcred/issuer",
+  "name": "@mithaq/issuer",
   "version": "0.1.0",
-  "description": "Server-only issuance client for StellarCred — attribute to value, salt, Poseidon2 commitment, secp256k1 signature. Never import this in a browser bundle.",
+  "description": "Server-only issuance client for Mithaq — attribute to value, salt, Poseidon2 commitment, secp256k1 signature. Never import this in a browser bundle.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Psalmuel01/StellarCred",
+    "url": "https://github.com/Psalmuel01/Mithaq",
     "directory": "frontend/packages/issuer"
   },
   "keywords": [

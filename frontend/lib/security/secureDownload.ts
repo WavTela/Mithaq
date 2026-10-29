@@ -9,7 +9,7 @@ export interface DownloadTokenPayload {
   userAddress?: string;
 }
 
-const SIGNING_SECRET = process.env.DOWNLOAD_SIGNING_SECRET || 'stellarcred-secure-download-secret';
+const SIGNING_SECRET = process.env.DOWNLOAD_SIGNING_SECRET || 'mithaq-secure-download-secret';
 
 /**
  * Generates a signed, expiring secure download token and URL for export artifacts.

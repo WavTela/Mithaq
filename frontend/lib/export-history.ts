@@ -135,11 +135,11 @@ export function downloadFile(
 export function downloadHistoryJson(credentials: Credential[]): void {
   const json = exportHistoryAsJson(credentials);
   const date = new Date().toISOString().slice(0, 10);
-  downloadFile(json, `stellarcred-history-${date}.json`, "application/json");
+  downloadFile(json, `mithaq-history-${date}.json`, "application/json");
 }
 
 export function downloadHistoryCsv(credentials: Credential[]): void {
   const csv = exportHistoryAsCsv(credentials);
   const date = new Date().toISOString().slice(0, 10);
-  downloadFile(csv, `stellarcred-history-${date}.csv`, "text/csv");
+  downloadFile(csv, `mithaq-history-${date}.csv`, "text/csv");
 }

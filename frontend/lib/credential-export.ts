@@ -26,7 +26,7 @@
  *
  * ```json
  * {
- *   "format": "stellarcred-credential-export",
+ *   "format": "mithaq-credential-export",
  *   "version": 1,
  *   "exportedAt": 1700000000,
  *   "deployment": { "network": "testnet", ... },
@@ -42,7 +42,7 @@
  *     {
  *       "type": "kyc",
  *       "title": "KYC Complete",
- *       "issuer": "StellarCred Authority",
+ *       "issuer": "Mithaq Authority",
  *       "issuerId": "G...",
  *       "commitment": "0x...",
  *       "issuedAt": 1690000000,
@@ -123,7 +123,7 @@ export interface RetentionPolicy {
 
 /** The full export document. */
 export interface CredentialExport {
-  format: "stellarcred-credential-export";
+  format: "mithaq-credential-export";
   version: 1;
   exportedAt: number;
   deployment: DeploymentRef;
@@ -224,7 +224,7 @@ export async function buildCredentialExport(): Promise<CredentialExport | null> 
   const submissionHistory = getSubmissions();
 
   return {
-    format: "stellarcred-credential-export",
+    format: "mithaq-credential-export",
     version: 1,
     exportedAt: Math.floor(Date.now() / 1000),
     deployment: currentDeploymentRef(),
@@ -249,7 +249,7 @@ export async function downloadCredentialExport(
   if (!exportDoc) return null;
 
   const date = new Date().toISOString().slice(0, 10);
-  const name = filename ?? `stellarcred-credential-history-${date}.json`;
+  const name = filename ?? `mithaq-credential-history-${date}.json`;
   const blob = new Blob([JSON.stringify(exportDoc, null, 2)], {
     type: "application/json",
   });

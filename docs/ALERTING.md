@@ -1,6 +1,6 @@
 # Observability & Prometheus Alerting Guide
 
-This document details the alerting rules for key failure conditions in StellarCred, how to customize thresholds, and how to wire alert notifications to external channels via Prometheus Alertmanager.
+This document details the alerting rules for key failure conditions in Mithaq, how to customize thresholds, and how to wire alert notifications to external channels via Prometheus Alertmanager.
 
 ---
 
@@ -10,10 +10,10 @@ Prometheus rule definitions are located in `docker/prometheus/alert.rules.yml`.
 
 | Alert Name | Metric / PromQL Expression | Default Threshold | Severity | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| **IndexerLagHigh** | `stellarcred_indexer_ledgers_behind > 10` | > 10 ledgers | `critical` | Indexer falls behind blockchain head. |
-| **HighIssuanceFailureRate** | `(sum(rate(stellarcred_issuance_failures_total[5m])) / sum(rate(stellarcred_issuance_attempts_total[5m]))) > 0.05` | > 5% over 5m | `critical` | Issuance failures spike due to key misconfiguration or third-party outages. |
-| **APIReadyFailing** | `stellarcred_api_ready_status == 0` | Failing > 1m | `critical` | `/api/ready` health probe returns non-200. |
-| **DemoIssuerKeyActiveInProduction** | `stellarcred_demo_issuer_mode{env="production"} == 1` | Immediate (0m) | `critical` | Hardcoded demo issuer key detected in production. |
+| **IndexerLagHigh** | `mithaq_indexer_ledgers_behind > 10` | > 10 ledgers | `critical` | Indexer falls behind blockchain head. |
+| **HighIssuanceFailureRate** | `(sum(rate(mithaq_issuance_failures_total[5m])) / sum(rate(mithaq_issuance_attempts_total[5m]))) > 0.05` | > 5% over 5m | `critical` | Issuance failures spike due to key misconfiguration or third-party outages. |
+| **APIReadyFailing** | `mithaq_api_ready_status == 0` | Failing > 1m | `critical` | `/api/ready` health probe returns non-200. |
+| **DemoIssuerKeyActiveInProduction** | `mithaq_demo_issuer_mode{env="production"} == 1` | Immediate (0m) | `critical` | Hardcoded demo issuer key detected in production. |
 
 ---
 
@@ -49,7 +49,7 @@ receivers:
   - name: 'slack-notifications'
     slack_configs:
       - api_url: '[https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK](https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK)'
-        channel: '#stellarcred-alerts'
+        channel: '#mithaq-alerts'
         send_resolved: true
         title: '[{{ .Status | toUpper }}] {{ .CommonAnnotations.summary }}'
         text: '{{ .CommonAnnotations.description }}'

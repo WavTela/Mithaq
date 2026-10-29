@@ -272,7 +272,7 @@ describe("CSP builder", () => {
 
   describe("report directives", () => {
     it("appear only when reportEndpoint is passed", () => {
-      const endpoint = "https://stellarcred.report-uri.com/r/d/csp/enforce";
+      const endpoint = "https://mithaq.report-uri.com/r/d/csp/enforce";
 
       const withoutReportStrict = buildCsp({ strict: true, nonce: "abc" });
       expect(withoutReportStrict).not.toContain("report-uri");

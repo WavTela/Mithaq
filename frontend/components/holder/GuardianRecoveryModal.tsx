@@ -194,7 +194,7 @@ export function GuardianRecoveryModal({
     if (!recoveredCreds) return;
     if (restoreMode === "replace") {
       try {
-        localStorage.setItem("stellarcred:credentials", JSON.stringify(recoveredCreds));
+        localStorage.setItem("mithaq:credentials", JSON.stringify(recoveredCreds));
       } catch {}
     } else {
       for (const cred of recoveredCreds) {

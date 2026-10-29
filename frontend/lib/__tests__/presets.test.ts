@@ -113,7 +113,7 @@ describe("preset claim encode/decode", () => {
 
 describe("buildPresetShareUrl", () => {
   it("encodes the name and claim list as query params on /verify-preset", () => {
-    const url = buildPresetShareUrl("https://stellarcred.xyz", "Investor onboarding", [
+    const url = buildPresetShareUrl("https://mithaq.xyz", "Investor onboarding", [
       { type: "kyc" },
       { type: "accreditation", minThreshold: 1000000 },
     ]);

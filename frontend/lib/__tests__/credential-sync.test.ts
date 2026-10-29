@@ -9,7 +9,7 @@ vi.mock("../safe-storage", () => ({
 }));
 
 describe("useCredentialSync - Cross-tab storage sync", () => {
-  const KEY = "stellarcred:credentials";
+  const KEY = "mithaq:credentials";
 
   beforeEach(() => {
     // Clear localStorage before each test

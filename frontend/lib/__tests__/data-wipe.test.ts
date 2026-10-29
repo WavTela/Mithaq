@@ -87,8 +87,8 @@ describe("data-wipe", () => {
   });
 
   describe("wipeAllData", () => {
-    it("removes all StellarCred storage keys", async () => {
-      // Populate storage with StellarCred data
+    it("removes all Mithaq storage keys", async () => {
+      // Populate storage with Mithaq data
       localStorage.setItem(STORAGE_KEYS.CREDENTIALS, "encrypted");
       localStorage.setItem(STORAGE_KEYS.PROOF_CACHE, "[]");
       localStorage.setItem("proofTimeline:c1", "{}");
@@ -103,7 +103,7 @@ describe("data-wipe", () => {
       expect(result.success).toBe(true);
       expect(result.keysRemoved).toBeGreaterThan(0);
       
-      // StellarCred keys should be removed
+      // Mithaq keys should be removed
       expect(localStorage.getItem(STORAGE_KEYS.CREDENTIALS)).toBeNull();
       expect(localStorage.getItem(STORAGE_KEYS.PROOF_CACHE)).toBeNull();
       expect(localStorage.getItem("proofTimeline:c1")).toBeNull();
@@ -168,8 +168,8 @@ describe("data-wipe", () => {
       expect(localStorage.getItem(STORAGE_KEYS.CREDENTIALS)).toBeNull();
     });
 
-    it("only removes enumerated StellarCred keys, not all localStorage", async () => {
-      // Add StellarCred keys
+    it("only removes enumerated Mithaq keys, not all localStorage", async () => {
+      // Add Mithaq keys
       localStorage.setItem(STORAGE_KEYS.CREDENTIALS, "data");
       localStorage.setItem(STORAGE_KEYS.THEME, "dark");
       
@@ -179,7 +179,7 @@ describe("data-wipe", () => {
       
       await wipeAllData({ skipBackupPrompt: true });
       
-      // StellarCred keys removed
+      // Mithaq keys removed
       expect(localStorage.getItem(STORAGE_KEYS.CREDENTIALS)).toBeNull();
       expect(localStorage.getItem(STORAGE_KEYS.THEME)).toBeNull();
       

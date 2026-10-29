@@ -6,7 +6,7 @@
  * Stateless across tabs: the token id + its expiry are stored in sessionStorage
  * the first time the link is opened. Any subsequent open of the same `jti` in
  * the same browser session is rejected — mirroring the MemoryChallengeStore
- * pattern in @stellarcred/sdk (challenge.ts), but keyed per-browser-session
+ * pattern in @mithaq/sdk (challenge.ts), but keyed per-browser-session
  * rather than in server memory.
  */
 

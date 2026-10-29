@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build StellarCred circuits with the pinned proving stack and stage artifacts.
+# Build Mithaq circuits with the pinned proving stack and stage artifacts.
 #
 # For each circuit it produces (in circuits/<name>/target/):
 #   <name>.json      compiled ACIR  -> copied to frontend/public/circuits/<type>.json

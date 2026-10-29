@@ -1,6 +1,6 @@
-# StellarCred — Local Environment Setup
+# Mithaq — Local Environment Setup
 
-This document is the install reference for a StellarCred development
+This document is the install reference for a Mithaq development
 environment. It covers all four toolchains in the order you need them, with the
 exact pinned versions that CI uses.
 
@@ -242,7 +242,7 @@ Spin up a local instance with Docker:
 
 ```bash
 docker run -d \
-  --name stellarcred-pg \
+  --name mithaq-pg \
   -e POSTGRES_USER=indexer \
   -e POSTGRES_PASSWORD=indexer \
   -e POSTGRES_DB=indexer \
@@ -305,18 +305,18 @@ the container. It is not a `docker compose` service; build and run it with the
 repo mounted:
 
 ```bash
-docker build -f docker/Dockerfile.dev -t stellarcred-dev .
+docker build -f docker/Dockerfile.dev -t mithaq-dev .
 
 # Contract tests + WASM artifacts
-docker run --rm -v "$PWD":/workspace -w /workspace stellarcred-dev \
+docker run --rm -v "$PWD":/workspace -w /workspace mithaq-dev \
   bash -lc "cargo test --locked && cargo build --release --target wasm32v1-none --locked"
 
 # Compile and stage all Noir circuits
-docker run --rm -v "$PWD":/workspace -w /workspace stellarcred-dev \
+docker run --rm -v "$PWD":/workspace -w /workspace mithaq-dev \
   bash -lc "bash ./circuits/scripts/build.sh"
 
 # Frontend
-docker run --rm -v "$PWD":/workspace -w /workspace stellarcred-dev \
+docker run --rm -v "$PWD":/workspace -w /workspace mithaq-dev \
   bash -lc "cd frontend && pnpm install && pnpm build"
 ```
 

@@ -202,7 +202,7 @@ export function useVerifyFlow({
       // The holder's pick when a registered issuer covers this claim type;
       // otherwise the demo issuer configured for this deployment.
       const issuerId = selectedIssuer?.id ?? DEMO_ISSUER_ID;
-      const issuerName = selectedIssuer?.name ?? "StellarCred Authority";
+      const issuerName = selectedIssuer?.name ?? "Mithaq Authority";
       if (!issuerId) {
         throw new Error(
           "NEXT_PUBLIC_ISSUER_ADDRESS is not set — cannot issue credentials",

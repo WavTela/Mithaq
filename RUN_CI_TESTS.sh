@@ -6,7 +6,7 @@
 set -e  # Exit on error
 
 echo "=========================================================================="
-echo "StellarCred CI Test Suite - Issue #342: Admin Rotation"
+echo "Mithaq CI Test Suite - Issue #342: Admin Rotation"
 echo "=========================================================================="
 echo ""
 

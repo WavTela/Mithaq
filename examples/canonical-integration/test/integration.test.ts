@@ -35,7 +35,7 @@ test("Canonical Integration Example End-to-End Suite", async (t) => {
   });
 
   // ── Step 1: Redirect to Verify (URL Generator) ───────────────────────────
-  await t.test("GET /api/verify-url generates compliant StellarCred redirect URL", async () => {
+  await t.test("GET /api/verify-url generates compliant Mithaq redirect URL", async () => {
     const res = await fetch(`${baseUrl}/api/verify-url?claim=funds&threshold=50000`);
     assert.strictEqual(res.status, 200);
 

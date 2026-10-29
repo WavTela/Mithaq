@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { WalletButton } from "@/components/WalletButton";
 import CopyButton from "@/components/CopyButton";
 import { useCredentialSync, TYPE_META } from "@/lib/credential";
-import { CLAIM_TYPES, type ClaimType } from "@stellarcred/sdk";
+import { CLAIM_TYPES, type ClaimType } from "@mithaq/sdk";
 import {
   loadPresets,
   savePreset,
@@ -63,7 +63,7 @@ export default function PresetsPageClient() {
     const base =
       typeof window !== "undefined"
         ? window.location.origin
-        : "https://stellarcred.xyz";
+        : "https://mithaq.xyz";
     return buildPresetShareUrl(base, preset.name, preset.claims);
   }
 

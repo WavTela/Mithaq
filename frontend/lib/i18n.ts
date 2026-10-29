@@ -1,5 +1,5 @@
 /**
- * i18n utilities for StellarCred
+ * i18n utilities for Mithaq
  */
 
 import { Locale } from '@/i18n.config';

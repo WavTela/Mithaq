@@ -2,7 +2,7 @@
 
 ## Question
 
-Can `@stellarcred/sdk` ship a read-only claim-check entry point that avoids
+Can `@mithaq/sdk` ship a read-only claim-check entry point that avoids
 pulling `@stellar/stellar-sdk` into the browser bundle for integrators whose
 only use is `hasClaim`?
 
@@ -53,7 +53,7 @@ investigation could:
 
 1. Add a `size-limit` entry to the SDK's `package.json` so this is tracked.
 2. Measure the actual gzipped size of a bundle that imports only `hasClaim`
-   from `@stellarcred/sdk` — no other symbol.
+   from `@mithaq/sdk` — no other symbol.
 3. Only pursue approach B if that measurement shows the SDK is a dominant
    contributor to the bundle, and only if the resulting maintenance burden is
    accepted explicitly.

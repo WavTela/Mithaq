@@ -2,7 +2,7 @@
 # scripts/benchmark.sh
 #
 # Measure the instruction budget (CPU instructions, memory, ledger I/O, fee)
-# for every public function across all four StellarCred contracts on testnet.
+# for every public function across all four Mithaq contracts on testnet.
 #
 # Results are printed to stdout and also appended to benchmark_results.txt in
 # the repo root for persistent record-keeping.
@@ -121,7 +121,7 @@ bench() {
 # ─── Build contracts ──────────────────────────────────────────────────────────
 echo ""
 sep
-echo "  StellarCred Instruction Budget Benchmark"
+echo "  Mithaq Instruction Budget Benchmark"
 echo "  Network: $NETWORK | Source: $SOURCE ($ADMIN)"
 echo "  Timestamp: $TIMESTAMP"
 sep

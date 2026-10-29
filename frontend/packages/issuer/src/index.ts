@@ -1,6 +1,6 @@
-// @stellarcred/issuer — server-only credential issuance.
+// @mithaq/issuer — server-only credential issuance.
 //
-// Wraps the full StellarCred issuance pipeline: attribute -> circuit value,
+// Wraps the full Mithaq issuance pipeline: attribute -> circuit value,
 // salt generation, Poseidon2 commitment (matching the Noir circuits and the
 // on-chain verifier), and a secp256k1 signature over the raw commitment
 // (prehash: false — Noir uses the 32-byte digest directly, no SHA-256
@@ -13,7 +13,7 @@
 // ignores exports conditions.
 if (typeof window !== "undefined") {
   throw new Error(
-    "@stellarcred/issuer must only be used server-side. It signs credentials " +
+    "@mithaq/issuer must only be used server-side. It signs credentials " +
       "with a private key and must never run in a browser.",
   );
 }

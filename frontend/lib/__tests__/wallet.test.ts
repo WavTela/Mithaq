@@ -1,7 +1,7 @@
 // Unit coverage for lib/wallet.ts's kit-agnostic behavior. Real wallet
 // extensions/WalletConnect relays aren't available in jsdom (see the note in
 // app/verify/__tests__/verify-flow.test.tsx), so StellarWalletsKit and the
-// WalletConnect module are mocked; what's under test is StellarCred's own
+// WalletConnect module are mocked; what's under test is Mithaq's own
 // logic on top of them — error-kind mapping, per-wallet error context
 // (regression guard for a bug where every "not installed" error hardcoded
 // "Freighter" regardless of which wallet was actually being connected), and
@@ -264,7 +264,7 @@ describe("lib/wallet.ts getWalletErrorInfo() per-kind error mapping", () => {
 
   it("getWalletReportUrl returns a pre-filled GitHub issue link for the repo", () => {
     const url = getWalletReportUrl();
-    expect(url).toMatch(/^https:\/\/github\.com\/ToluLabs\/StellarCred\/issues\/new/);
+    expect(url).toMatch(/^https:\/\/github\.com\/ToluLabs\/Mithaq\/issues\/new/);
     expect(url).toContain("labels=bug");
     expect(new URL(url).searchParams.get("title")).toContain("Wallet connection failed");
   });

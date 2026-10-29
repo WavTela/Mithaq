@@ -6,7 +6,7 @@ import type jsQRType from "jsqr";
 
 export function QrScanner({
   title = "Scan QR code",
-  hint = "Point your camera at a StellarCred QR code.",
+  hint = "Point your camera at a Mithaq QR code.",
   onScan,
   onClose,
 }: {

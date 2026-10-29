@@ -1,6 +1,6 @@
-# @stellarcred/sdk Changelog
+# @mithaq/sdk Changelog
 
-All notable changes to `@stellarcred/sdk` will be documented in this file.
+All notable changes to `@mithaq/sdk` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `getClaims`, `verifyPreset`, and `watchClaim` accept a `source` option of
   `"chain"` (default, unchanged behaviour), `"indexer"`, or `"indexer-verified"`.
 - `indexerUrl`, `indexerApiKey`, and `indexerCacheMs` configuration options, plus
-  the `STELLARCRED_INDEXER_URL` / `NEXT_PUBLIC_INDEXER_URL` and
-  `STELLARCRED_INDEXER_API_KEY` environment variables.
+  the `MITHAQ_INDEXER_URL` / `NEXT_PUBLIC_INDEXER_URL` and
+  `MITHAQ_INDEXER_API_KEY` environment variables.
 - `IndexerError`, thrown for failed indexer reads under `throwOnError: true`.
 - `source: "indexer-verified"` reads the indexer, confirms against ProofRegistry,
   returns the chain result, and warns once per process when the two disagree —
@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.1] - 2026-09-26
 
 ### Added
-- Complete typed error hierarchy (`StellarCredError`, `RpcError`, `ContractError`, `NetworkError`).
+- Complete typed error hierarchy (`MithaqError`, `RpcError`, `ContractError`, `NetworkError`).
 - Bounded RPC call execution via `requestTimeoutMs` config option.
 - Stellar address formatting and validation prior to Soroban contract invocation.
 - Built dual CJS (`dist/index.js`) and ESM (`dist/index.mjs`) builds with TypeScript `.d.ts` declaration maps.
@@ -47,6 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2026-08-15
 
 ### Added
-- Initial implementation of the `@stellarcred/sdk` client library.
+- Initial implementation of the `@mithaq/sdk` client library.
 - Core functions: `hasClaim`, `getClaims`, and `buildVerifyUrl`.
 - Support for default testnet and mainnet presets.

@@ -7,23 +7,23 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const protocol = getProtocol(id);
   if (!protocol) {
     return {
-      title: "StellarCred — Protocol not found",
-      description: "The requested StellarCred protocol could not be found.",
+      title: "Mithaq — Protocol not found",
+      description: "The requested Mithaq protocol could not be found.",
     };
   }
 
   return {
-    title: `StellarCred — ${protocol.name}`,
+    title: `Mithaq — ${protocol.name}`,
     description: protocol.tagline,
     openGraph: {
-      title: `StellarCred — ${protocol.name}`,
+      title: `Mithaq — ${protocol.name}`,
       description: protocol.tagline,
-      siteName: "StellarCred",
+      siteName: "Mithaq",
       type: "website",
     },
     twitter: {
       card: "summary",
-      title: `StellarCred — ${protocol.name}`,
+      title: `Mithaq — ${protocol.name}`,
       description: protocol.tagline,
     },
   };

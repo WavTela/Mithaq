@@ -1,6 +1,6 @@
 # Contributor checklist
 
-The pre-flight list for a StellarCred change: which toolchain you need, which
+The pre-flight list for a Mithaq change: which toolchain you need, which
 command validates each component, what its output looks like when it passes, and
 the failure modes that cost previous contributors the most time.
 
@@ -117,7 +117,7 @@ Frontend (`cd frontend`):
 | [ ] | `pnpm exec tsc --noEmit` | no output, exit 0 |
 | [ ] | `pnpm test` | vitest summary, `0 failed` |
 | [ ] | `pnpm test:theme` | `node --test` summary, `fail 0` |
-| [ ] | `pnpm --filter @stellarcred/issuer test` | package test summary, `0 failed` |
+| [ ] | `pnpm --filter @mithaq/issuer test` | package test summary, `0 failed` |
 | [ ] | `pnpm check:i18n` | `✅ i18n parity check passed across 2 locale files.` |
 | [ ] | `pnpm build` | next build completes, exit 0 |
 
@@ -128,10 +128,10 @@ its scripts from its own directory:
 |---|---|---|
 | [ ] | `pnpm typecheck` | no output, exit 0 |
 | [ ] | `pnpm test` | vitest summary, `0 failed` |
-| [ ] | `pnpm test:integration` | testnet round-trip passes; the suite skips itself when `SC_TEST_WALLET` / `STELLARCRED_REGISTRY_ID` are unset |
+| [ ] | `pnpm test:integration` | testnet round-trip passes; the suite skips itself when `SC_TEST_WALLET` / `MITHAQ_REGISTRY_ID` are unset |
 | [ ] | `pnpm build` | tsup emits `dist/` cjs + esm + `.d.ts` |
 
-Examples (each has its own `npm` install; both resolve `@stellarcred/sdk` from
+Examples (each has its own `npm` install; both resolve `@mithaq/sdk` from
 `frontend/packages/sdk` by `file:` path, so build the SDK first):
 
 | # | Command |
@@ -193,11 +193,11 @@ paths), `e2e.yml` (schedule + manual only, not a PR gate),
 | `make fmt` fails on files you never opened | `cargo fmt --all --check` reports pre-existing unformatted code; no CI job gates it | Run `cargo fmt --all` and keep the reformat inside your own diff (§ 3) |
 | `make: command not found`, or `make` targets error under PowerShell | The Makefile needs GNU Make **and** bash | Use Git Bash / WSL / macOS, install Make, or run the per-component commands in § 3–§ 5 |
 | `make: *** No rule to make target 'check-circuits'` | There is no such target — the circuit checks are § 4's commands | `make compile-circuits`, then `node circuits/scripts/testvectors.js check` |
-| `docker compose run --rm contracts …` → `no such service: contracts` | `docker-compose.yml` defines only the `indexer` and `frontend` **app** containers | Use the toolchain image: `docker build -f docker/Dockerfile.dev -t stellarcred-dev .` then `docker run --rm -v "$PWD":/workspace -w /workspace stellarcred-dev bash -lc "cargo test --locked"` |
+| `docker compose run --rm contracts …` → `no such service: contracts` | `docker-compose.yml` defines only the `indexer` and `frontend` **app** containers | Use the toolchain image: `docker build -f docker/Dockerfile.dev -t mithaq-dev .` then `docker run --rm -v "$PWD":/workspace -w /workspace mithaq-dev bash -lc "cargo test --locked"` |
 | `pnpm install` in `frontend/` uses a different pnpm than `make doctor` checks | `frontend/package.json` declares a `packageManager` version and corepack honours it per-directory | Either is fine for building; if a lockfile version warning appears, use the version in that `packageManager` field |
 | `Cannot find module 'better-sqlite3'` in the indexer | Native module not built for your Node | `cd services/indexer && npm ci` (needs a C toolchain + `pkg-config` on Linux) |
 | Indexer tests pass locally but CI's DB suite fails | The Postgres leg only runs when `TEST_POSTGRES_URL` is set | Start a local Postgres (SETUP.md § 4) and `TEST_POSTGRES_URL=postgres://… npm test` |
-| `pnpm test` in `frontend/packages/sdk` fails on connect/auth | Testnet variables unset | Export `SC_TEST_WALLET`, `STELLARCRED_REGISTRY_ID` (and optionally `STELLARCRED_RPC_URL`), or let the suite skip |
+| `pnpm test` in `frontend/packages/sdk` fails on connect/auth | Testnet variables unset | Export `SC_TEST_WALLET`, `MITHAQ_REGISTRY_ID` (and optionally `MITHAQ_RPC_URL`), or let the suite skip |
 | `::error::frontend/app/holder/HolderPageClient.tsx has N lines, which exceeds the 520-line limit` | Inline feature code added to the route shell | Move logic to `lib/hooks/`, UI to `components/holder/` — [CONTRIBUTING.md § Holder page architecture](../CONTRIBUTING.md#holder-page-architecture) |
 | `pnpm install --frozen-lockfile` fails in CI | Lockfile not committed / edited by hand | Regenerate with `pnpm install` in `frontend/` and commit `pnpm-lock.yaml` |
 | Format/lint problems appear only in CI | `core.hooksPath` is unset, so `.husky/pre-commit` never ran | `cd frontend && pnpm install` (its `prepare` step installs the hooks), or run `pnpm format` and `pnpm lint` before committing |

@@ -19,7 +19,7 @@ describe("GET /api/health", () => {
     expect(body).toMatchObject({
       status: "ok",
       ready: true,
-      service: "stellarcred-frontend",
+      service: "mithaq-frontend",
       version: "1.2.3",
     });
     expect(typeof body.uptimeSeconds).toBe("number");

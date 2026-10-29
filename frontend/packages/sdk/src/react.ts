@@ -2,17 +2,17 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { hasClaims, type ClaimType } from "./claims";
 
 /**
- * Configuration options for the `useStellarCred` React hook.
+ * Configuration options for the `useMithaq` React hook.
  *
  * @example
  * ```tsx
- * const { claims } = useStellarCred(wallet, {
+ * const { claims } = useMithaq(wallet, {
  *   claims: ["kyc", "age"],
  *   minThresholds: { age: 21 },
  * });
  * ```
  */
-export interface UseStellarCredOptions {
+export interface UseMithaqOptions {
   claims?: ClaimType[];
   /**
    * Minimum thresholds for parameterized claims.
@@ -27,14 +27,14 @@ export interface UseStellarCredOptions {
 }
 
 /**
- * Result returned by the `useStellarCred` React hook.
+ * Result returned by the `useMithaq` React hook.
  *
  * @example
  * ```tsx
- * const { claims, loading, error, refetch } = useStellarCred(wallet);
+ * const { claims, loading, error, refetch } = useMithaq(wallet);
  * ```
  */
-export interface UseStellarCredResult {
+export interface UseMithaqResult {
   claims: Partial<Record<ClaimType, boolean>> | null;
   loading: boolean;
   error: Error | null;
@@ -42,7 +42,7 @@ export interface UseStellarCredResult {
 }
 
 /**
- * React hook for checking StellarCred claims for a wallet.
+ * React hook for checking Mithaq claims for a wallet.
  *
  * The hook automatically fetches claim verification status when the wallet
  * changes and exposes loading, error, and refetch state.
@@ -54,15 +54,15 @@ export interface UseStellarCredResult {
  *
  * @example
  * ```tsx
- * const { claims, loading } = useStellarCred(wallet, {
+ * const { claims, loading } = useMithaq(wallet, {
  *   claims: ["kyc", "age"],
  * });
  * ```
  */
-export function useStellarCred(
+export function useMithaq(
   wallet: string | null,
-  options?: UseStellarCredOptions,
-): UseStellarCredResult {
+  options?: UseMithaqOptions,
+): UseMithaqResult {
   const [claims, setClaims] = useState<Partial<Record<ClaimType, boolean>> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);

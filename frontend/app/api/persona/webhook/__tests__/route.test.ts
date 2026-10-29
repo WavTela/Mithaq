@@ -123,7 +123,7 @@ describe("POST /api/persona/webhook", () => {
     registerPendingInquiry(inquiryId, {
       holder,
       issuerId: holder,
-      issuerName: "StellarCred Authority",
+      issuerName: "Mithaq Authority",
       credentialTypes: ["kyc"],
       expiry: "90 days",
     });

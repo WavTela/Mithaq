@@ -30,10 +30,10 @@ describe("lib/secrets-vault", () => {
     });
 
     it("normalizes path to uppercase env variable", async () => {
-      process.env.STELLARCRED_TENANTS_ACME_SIGNING_KEY =
+      process.env.MITHAQ_TENANTS_ACME_SIGNING_KEY =
         "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
       const provider = new EnvSecretsProvider();
-      const val = await provider.getSecret("stellarcred/tenants/acme/signing-key");
+      const val = await provider.getSecret("mithaq/tenants/acme/signing-key");
       expect(val).toBe("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
     });
 
@@ -78,10 +78,10 @@ describe("lib/secrets-vault", () => {
         kvVersion: 2,
       });
 
-      const secret = await provider.getSecret("stellarcred/tenants/bank/signing-key");
+      const secret = await provider.getSecret("mithaq/tenants/bank/signing-key");
       expect(secret).toBe("1122".repeat(16));
       expect(mockFetch).toHaveBeenCalledWith(
-        "http://vault.local:8200/v1/secret/data/stellarcred/tenants/bank/signing-key",
+        "http://vault.local:8200/v1/secret/data/mithaq/tenants/bank/signing-key",
         expect.objectContaining({
           headers: expect.objectContaining({
             "X-Vault-Token": "s.vaulttoken123",
@@ -109,7 +109,7 @@ describe("lib/secrets-vault", () => {
         token: "s.vaulttoken123",
       });
 
-      const val = await provider.getSecret("stellarcred/tenants/bank/config#customField");
+      const val = await provider.getSecret("mithaq/tenants/bank/config#customField");
       expect(val).toBe("custom_secret_value");
     });
 

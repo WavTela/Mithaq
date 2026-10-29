@@ -1,9 +1,9 @@
 /**
- * Integration tests for @stellarcred/sdk.
+ * Integration tests for @mithaq/sdk.
  *
  * Runs against the live Stellar testnet deployment. Requires these env vars:
  *   SC_TEST_WALLET               – funded testnet wallet with at least one KYC proof
- *   STELLARCRED_REGISTRY_ID      – deployed ProofRegistry contract ID
+ *   MITHAQ_REGISTRY_ID      – deployed ProofRegistry contract ID
  *
  * When env vars are absent, all tests skip gracefully — no failing CI on forks.
  *
@@ -31,7 +31,7 @@ import { TEST_WALLET, REGISTRY_ID, RPC_URL } from "./fixtures";
 const hasRegistry = !!REGISTRY_ID;
 
 /**
- * Well-known barren address that has never interacted with StellarCred.
+ * Well-known barren address that has never interacted with Mithaq.
  * All claims should return false for this wallet.
  */
 const BARREN_WALLET =
@@ -43,7 +43,7 @@ const skipMsg = (reason: string) => `SKIP: ${reason}`;
 // Suite
 // ---------------------------------------------------------------------------
 
-describe("StellarCred SDK integration (testnet)", () => {
+describe("Mithaq SDK integration (testnet)", () => {
   beforeAll(() => {
     if (hasRegistry) {
       configure({
@@ -218,7 +218,7 @@ describe("StellarCred SDK integration (testnet)", () => {
       const url = buildVerifyUrl({
         returnUrl: "/deposit",
         claim: "kyc",
-        baseUrl: "https://stellarcred.xyz",
+        baseUrl: "https://mithaq.xyz",
       });
 
       expect(url).toContain("return_url=%2Fdeposit");
@@ -233,10 +233,10 @@ describe("StellarCred SDK integration (testnet)", () => {
         wallet: BARREN_WALLET,
         claim: "kyc",
         theme: "dark",
-        baseUrl: "https://stellarcred.xyz",
+        baseUrl: "https://mithaq.xyz",
       });
 
-      expect(url).toContain("https://stellarcred.xyz/badge");
+      expect(url).toContain("https://mithaq.xyz/badge");
       expect(url).toContain(`wallet=${BARREN_WALLET}`);
       expect(url).toContain("claim=kyc");
       expect(url).toContain("theme=dark");
@@ -247,11 +247,11 @@ describe("StellarCred SDK integration (testnet)", () => {
         wallet: BARREN_WALLET,
         claim: "funds",
         compact: true,
-        baseUrl: "https://stellarcred.xyz",
+        baseUrl: "https://mithaq.xyz",
       });
 
       expect(embed).toContain("<iframe");
-      expect(embed).toContain("src=\"https://stellarcred.xyz/badge?wallet=");
+      expect(embed).toContain("src=\"https://mithaq.xyz/badge?wallet=");
       expect(embed).toContain("compact=1");
       expect(embed).toContain("width=\"180\"");
       expect(embed).toContain("height=\"36\"");

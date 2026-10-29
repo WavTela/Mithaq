@@ -18,7 +18,7 @@ import {
   WalletConnectError,
 } from "./wallet";
 
-const STORAGE_KEY = "stellarcred:wallet-id";
+const STORAGE_KEY = "mithaq:wallet-id";
 const NETWORK_POLL_MS = 4_000;
 
 interface WalletState {

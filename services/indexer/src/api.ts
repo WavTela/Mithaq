@@ -118,7 +118,7 @@ import { buildHealthResponse } from "./health";
 const MAX_LIMIT = 100;
 const DEFAULT_LIMIT = 20;
 
-/** Known StellarCred credential types â€” submissions must reference only these. */
+/** Known Mithaq credential types â€” submissions must reference only these. */
 const VALID_CLAIM_TYPES = new Set([
   "kyc",
   "age",

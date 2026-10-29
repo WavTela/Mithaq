@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { createClaimGate, type ClaimGate } from '@stellarcred/sdk';
+import { createClaimGate, type ClaimGate } from '@mithaq/sdk';
 
 interface Props {
   wallet: string;

@@ -1,4 +1,4 @@
-# TypeScript quickstart (`@stellarcred/sdk`)
+# TypeScript quickstart (`@mithaq/sdk`)
 
 A minimal, compile-checked TypeScript example: typed claim reads, a signed
 Stellar transaction verified through the SDK, and the recommended
@@ -25,7 +25,7 @@ SC_CHECK_WALLET=G... npm start
 
 | Package | Why |
 | --- | --- |
-| `@stellarcred/sdk` | claim reads, signature and challenge verification |
+| `@mithaq/sdk` | claim reads, signature and challenge verification |
 | `@stellar/stellar-sdk` | peer dependency of the SDK; builds and signs the transaction |
 | `typescript`, `tsx`, `@types/node` | typecheck and run the example |
 

@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-StellarCred is in active development. Security fixes are applied to the latest commit on `main`.
+Mithaq is in active development. Security fixes are applied to the latest commit on `main`.
 
 ## Reporting a vulnerability
 
@@ -43,7 +43,7 @@ guarantee, and what each party observes — see
 
 ## Pre-Mainnet Security Checklist
 
-Before deploying StellarCred to the Stellar mainnet, verify that all security parameters and operational keys meet the following production standards:
+Before deploying Mithaq to the Stellar mainnet, verify that all security parameters and operational keys meet the following production standards:
 
 ### 1. Administrative Key Management (Admin Key)
 - [ ] **Multi-Signature / HSM Custody:** The administrator key (contract admin) must NOT be a hot wallet stored in plaintext. It must be custody-secured (e.g., using a hardware wallet, an HSM, or a multi-signature account setup with appropriate thresholds).

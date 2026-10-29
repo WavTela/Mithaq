@@ -1,6 +1,6 @@
 # Issuer Lifecycle: What Happens When an Issuer Goes Away
 
-This document defines the end-of-life policy for issuers in StellarCred and
+This document defines the end-of-life policy for issuers in Mithaq and
 describes what holders should do when their issuer becomes unavailable.
 
 Applies to `IssuerRegistry` (v1.1.0+) and `ProofRegistry`. Related reading:
@@ -11,7 +11,7 @@ management procedure.
 
 ## 1. Policy: two kinds of issuer unavailability
 
-StellarCred distinguishes **retirement** (graceful, planned) from
+Mithaq distinguishes **retirement** (graceful, planned) from
 **compromise** (emergency, immediate) at both the issuer level and the key
 level, mirroring the distinction the key-rotation system already makes between
 `rotate_issuer_key` and `revoke_issuer_key`.

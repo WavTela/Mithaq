@@ -125,7 +125,7 @@ describe("deploymentMismatchMessage", () => {
       ref({ contracts: { proofRegistry: "COTHERDEPLOYMENTCONTRACTID000000000000000000000" } }),
       CURRENT,
     );
-    expect(message).toContain("different StellarCred deployment");
+    expect(message).toContain("different Mithaq deployment");
     expect(message).toContain("proof registry");
     expect(message).toContain("not registered here");
   });
@@ -187,6 +187,6 @@ describe("parseCredential cross-deployment guard (#545)", () => {
           ref({ contracts: { issuerRegistry: "COTHERISSUERREGISTRY00000000000000000000000000" } }),
         ),
       ),
-    ).toThrow(/different StellarCred deployment/);
+    ).toThrow(/different Mithaq deployment/);
   });
 });

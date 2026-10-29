@@ -1,8 +1,8 @@
-# @stellarcred/sdk Client Integration Guide
+# @mithaq/sdk Client Integration Guide
 
 ## Overview
 
-This guide explains how to integrate the StellarCred SDK into your application to verify zero-knowledge credentials on Stellar.
+This guide explains how to integrate the Mithaq SDK into your application to verify zero-knowledge credentials on Stellar.
 
 The SDK provides:
 - **ProofRegistry client**: Query verified credentials
@@ -22,13 +22,13 @@ The SDK provides:
 ### Install via npm
 
 ```bash
-npm install @stellarcred/sdk
+npm install @mithaq/sdk
 ```
 
 ### Install via yarn
 
 ```bash
-yarn add @stellarcred/sdk
+yarn add @mithaq/sdk
 ```
 
 ---
@@ -38,7 +38,7 @@ yarn add @stellarcred/sdk
 ### 1. Query a Verified Credential
 
 ```typescript
-import { ProofRegistry } from "@stellarcred/sdk";
+import { ProofRegistry } from "@mithaq/sdk";
 import { Keypair, networks, rpcUrl } from "@stellar/stellar-sdk";
 import SorobanClient from "stellar-sdk/lib/soroban";
 
@@ -64,7 +64,7 @@ console.log(`KYC verified: ${verified}`);
 ### 2. Query Trusted Issuers
 
 ```typescript
-import { IssuerRegistry } from "@stellarcred/sdk";
+import { IssuerRegistry } from "@mithaq/sdk";
 
 const issuerRegistryId = "CA...";  // From deployment
 const issuerRegistry = new IssuerRegistry(issuerRegistryId, rpc);
@@ -80,7 +80,7 @@ for (const issuer of issuers) {
 ### 3. Access Contract Versions
 
 ```typescript
-import { ProofRegistry, CredentialVerifier } from "@stellarcred/sdk";
+import { ProofRegistry, CredentialVerifier } from "@mithaq/sdk";
 
 const registry = new ProofRegistry(registryId, rpc);
 const verifier = new CredentialVerifier(verifierId, rpc);
@@ -231,7 +231,7 @@ deployments.
 ### Common Errors
 
 ```typescript
-import { ProofRegistry } from "@stellarcred/sdk";
+import { ProofRegistry } from "@mithaq/sdk";
 
 async function safeCheckClaim(holder: string, type: string) {
   const registry = new ProofRegistry(registryId, rpc);
@@ -478,10 +478,10 @@ const verified = await withRetry(() =>
 **Solution:**
 ```bash
 # Update SDK to latest version
-npm install @stellarcred/sdk@latest
+npm install @mithaq/sdk@latest
 
 # Check version compatibility
-npm list @stellarcred/sdk
+npm list @mithaq/sdk
 # Should show 0.2.0+ for newer contracts
 ```
 
@@ -572,7 +572,7 @@ When building a backend service or API gateway, **never** rely solely on an untr
 Use `createWalletChallenge` on your server to produce a short-lived, replay-protected challenge, have the user sign it with their Stellar wallet, and then call `verifyWalletClaim`.
 
 ```typescript
-import { createWalletChallenge, verifyWalletClaim } from "@stellarcred/sdk";
+import { createWalletChallenge, verifyWalletClaim } from "@mithaq/sdk";
 
 // 1. In your challenge generation endpoint (e.g. GET /api/challenge):
 const challenge = createWalletChallenge({
@@ -639,12 +639,12 @@ For issues or questions:
 
 ## Tree-Shaking & Bundle Optimization
 
-`@stellarcred/sdk` is designed for minimal bundle overhead across both browser and server applications:
+`@mithaq/sdk` is designed for minimal bundle overhead across both browser and server applications:
 
 - **`sideEffects: false`**: Configured in `package.json` to enable full dead-code elimination in modern bundlers (Webpack, Vite, Rollup, Next.js).
 - **Subpath entrypoints**:
-  - `import StellarCred from "@stellarcred/sdk"`: Primary client entrypoint.
-  - `import StellarCred from "@stellarcred/sdk/server"`: Node.js and Edge backend runtimes.
+  - `import Mithaq from "@mithaq/sdk"`: Primary client entrypoint.
+  - `import Mithaq from "@mithaq/sdk/server"`: Node.js and Edge backend runtimes.
 - **Dynamic On-Demand Module Loading**:
   - Heavy RPC modules and Soroban contract bindings (`@stellar/stellar-sdk` and `proof-registry`) are loaded on-demand via dynamic `import()` only when on-chain contract queries (`hasClaim`, `getClaim`) are executed.
   - Offline helpers like `buildVerifyUrl()`, `buildBadgeUrl()`, `buildBadgeEmbedCode()`, `CLAIM_TYPES`, `TimeoutError`, and `createClaimGate()` execute with zero network overhead and without loading heavy Soroban dependencies.

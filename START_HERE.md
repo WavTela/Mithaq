@@ -22,8 +22,8 @@ ready.`, and the validation command for each component you touched exits 0.
 ## Step 1 · Clone
 
 ```bash
-git clone https://github.com/ToluLabs/StellarCred.git
-cd StellarCred
+git clone https://github.com/ToluLabs/Mithaq.git
+cd Mithaq
 ```
 
 To send a pull request from outside the maintainer team, fork first and clone

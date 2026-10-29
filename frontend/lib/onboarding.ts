@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { isStorageAvailable } from "./safe-storage";
 
-const STORAGE_KEY = "stellarcred:onboarding";
-const RESET_EVENT = "stellarcred:onboarding:reset";
-const LEGACY_STORAGE_KEY = "stellarcred_onboarding_seen";
+const STORAGE_KEY = "mithaq:onboarding";
+const RESET_EVENT = "mithaq:onboarding:reset";
+const LEGACY_STORAGE_KEY = "mithaq_onboarding_seen";
 
 export type OnboardingStep =
   "welcome" | "connect-wallet" | "get-credential" | "verify-trust" | "generate-proof" | "unlock";

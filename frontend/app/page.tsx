@@ -13,19 +13,19 @@ import {
 import { CredentialCard } from "@/components/CredentialCard";
 
 export const metadata: Metadata = {
-  title: "StellarCred — Prove anything. Reveal nothing.",
+  title: "Mithaq — Prove anything. Reveal nothing.",
   description:
     "Zero-knowledge credentials on Stellar. Prove facts about yourself without the underlying data ever touching the chain.",
   openGraph: {
-    title: "StellarCred — Prove anything. Reveal nothing.",
+    title: "Mithaq — Prove anything. Reveal nothing.",
     description:
       "Zero-knowledge credentials on Stellar. Prove facts about yourself without the underlying data ever touching the chain.",
-    siteName: "StellarCred",
+    siteName: "Mithaq",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "StellarCred — Prove anything. Reveal nothing.",
+    title: "Mithaq — Prove anything. Reveal nothing.",
     description:
       "Zero-knowledge credentials on Stellar. Prove facts about yourself without the underlying data ever touching the chain.",
   },
@@ -142,7 +142,7 @@ export default function Home() {
           {/* right: credential card */}
           <div style={{ display: "flex", justifyContent: "right" }}>
             <CredentialCard
-              issuer="StellarCred Authority"
+              issuer="Mithaq Authority"
               type="Identity Credential"
               holder="GA7X…K3NP"
               fields={[
@@ -175,7 +175,7 @@ export default function Home() {
       <section style={{ marginTop: "8rem" }}>
         <div style={{ marginBottom: "2.5rem" }}>
           <p className="eyebrow" style={{ marginBottom: "0.75rem" }}>Protocol</p>
-          <h2>How StellarCred works</h2>
+          <h2>How Mithaq works</h2>
         </div>
 
         <div className="grid grid-3" style={{ gap: "1.25rem" }}>
@@ -223,9 +223,9 @@ export default function Home() {
         </div>
 
         <CodeBlock>{`// Any Stellar protocol
-import { StellarCred } from "@stellarcred/sdk";
+import { Mithaq } from "@mithaq/sdk";
 
-const canDeposit = await StellarCred.hasClaim(wallet, "kyc");`}</CodeBlock>
+const canDeposit = await Mithaq.hasClaim(wallet, "kyc");`}</CodeBlock>
 
         <div
           className="row"
@@ -275,7 +275,7 @@ const canDeposit = await StellarCred.hasClaim(wallet, "kyc");`}</CodeBlock>
             <div>
               <h3 style={{ marginBottom: "0.5rem" }}>Verify directly</h3>
               <p className="muted" style={{ fontSize: "0.9rem", lineHeight: 1.65 }}>
-                Visit StellarCred before using any app. Your credentials work
+                Visit Mithaq before using any app. Your credentials work
                 everywhere, instantly.
               </p>
             </div>
@@ -303,7 +303,7 @@ const canDeposit = await StellarCred.hasClaim(wallet, "kyc");`}</CodeBlock>
             <div>
               <h3 style={{ marginBottom: "0.5rem" }}>Verify through an app</h3>
               <p className="muted" style={{ fontSize: "0.9rem", lineHeight: 1.65 }}>
-                Apps that integrate StellarCred show a &ldquo;Verify&rdquo; button.
+                Apps that integrate Mithaq show a &ldquo;Verify&rdquo; button.
                 Complete verification and return automatically.
               </p>
             </div>
@@ -318,7 +318,7 @@ const canDeposit = await StellarCred.hasClaim(wallet, "kyc");`}</CodeBlock>
             >
               <span>LendFi</span>
               <IconArrowRight size={13} color="var(--faint)" />
-              <span style={{ color: "var(--accent)" }}>StellarCred</span>
+              <span style={{ color: "var(--accent)" }}>Mithaq</span>
               <IconArrowRight size={13} color="var(--faint)" />
               <span>LendFi</span>
             </div>
@@ -339,14 +339,14 @@ const canDeposit = await StellarCred.hasClaim(wallet, "kyc");`}</CodeBlock>
           <div className="card" style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
             <p className="feature-num">01</p>
             <h3 style={{ fontSize: "1rem" }}>Require a claim</h3>
-            <CodeBlock>{`stellarcred.hasClaim(
+            <CodeBlock>{`mithaq.hasClaim(
   wallet, 'kyc'
 )`}</CodeBlock>
           </div>
           <div className="card" style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
             <p className="feature-num">02</p>
             <h3 style={{ fontSize: "1rem" }}>Redirect if needed</h3>
-            <CodeBlock>{`StellarCred.buildVerifyUrl({
+            <CodeBlock>{`Mithaq.buildVerifyUrl({
   returnUrl,
   claim: 'kyc'
 })`}</CodeBlock>

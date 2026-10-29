@@ -1,4 +1,4 @@
-# StellarCred Circuits — Constraint Audit
+# Mithaq Circuits — Constraint Audit
 
 > Noir **1.0.0-beta.9** · Barretenberg (UltraHonk) **v0.87.0** · `nargo info` run 2026-07-25
 >
@@ -266,10 +266,10 @@ done
 ## Variable Aggregate Proof — Revert Post-Mortem (#607)
 
 > Recorded here so the next attempt starts informed.  
-> Related: issue [#538](https://github.com/ToluLabs/StellarCred/issues/538),
-> PR [#570](https://github.com/ToluLabs/StellarCred/pull/570) (merged),
-> revert PR [#579](https://github.com/ToluLabs/StellarCred/pull/579),
-> follow-up issue [#580](https://github.com/ToluLabs/StellarCred/issues/580).
+> Related: issue [#538](https://github.com/ToluLabs/Mithaq/issues/538),
+> PR [#570](https://github.com/ToluLabs/Mithaq/pull/570) (merged),
+> revert PR [#579](https://github.com/ToluLabs/Mithaq/pull/579),
+> follow-up issue [#580](https://github.com/ToluLabs/Mithaq/issues/580).
 
 ### What was attempted
 

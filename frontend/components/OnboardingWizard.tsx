@@ -309,7 +309,7 @@ function ConnectWalletStep({ t }: { t: OT }) {
           {networkMismatch && (
             <div style={{ marginTop: "0.5rem" }}>
               <StatusBox severity="warning" title="Wrong network detected">
-                Your wallet is not on the network StellarCred is configured for. Switch networks in
+                Your wallet is not on the network Mithaq is configured for. Switch networks in
                 your wallet — onboarding can continue, but proofs will fail until it matches.
               </StatusBox>
             </div>
@@ -412,7 +412,7 @@ function GetCredentialStep({
           credential_types: ["age"],
           holder: address,
           issuerId: process.env.NEXT_PUBLIC_ISSUER_ADDRESS ?? "",
-          issuerName: "StellarCred Authority",
+          issuerName: "Mithaq Authority",
           expiry: "30 days",
           attributes: {
             date_of_birth: "1995-06-15",

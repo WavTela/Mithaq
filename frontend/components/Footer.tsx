@@ -55,7 +55,7 @@ export function Footer() {
         </span>
         <div className="row" style={{ gap: "1.5rem" }}>
           <a
-            href="https://github.com/Psalmuel01/StellarCred"
+            href="https://github.com/Psalmuel01/Mithaq"
             target="_blank"
             rel="noopener noreferrer"
             className="footer-link"
@@ -72,13 +72,13 @@ export function Footer() {
             GitHub
           </a>
           <a
-            href="https://github.com/Psalmuel01/StellarCred/tree/main/frontend/packages/sdk"
+            href="https://github.com/Psalmuel01/Mithaq/tree/main/frontend/packages/sdk"
             target="_blank"
             rel="noopener noreferrer"
             className="footer-link mono"
             style={{ fontSize: "0.75rem" }}
           >
-            @stellarcred/sdk
+            @mithaq/sdk
           </a>
           <a href="/developers" className="footer-link">
             {t("footer.docs")}

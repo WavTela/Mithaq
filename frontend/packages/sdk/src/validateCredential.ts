@@ -1,4 +1,4 @@
-// @stellarcred/sdk — credential JSON validation (#27)
+// @mithaq/sdk — credential JSON validation (#27)
 //
 // Verifiers, importers, and QR-scan flows accept credential JSON from an
 // untrusted source. This helper checks the shape and required metadata before

@@ -4,7 +4,7 @@ import { outboundSinkStats } from "../../../lib/outbound-sink";
 export const dynamic = "force-dynamic";
 
 /** Stable service identifier reported to deployment and monitoring tooling. */
-const SERVICE_NAME = "stellarcred-frontend";
+const SERVICE_NAME = "mithaq-frontend";
 
 /**
  * Liveness check: the Next.js process is up and serving requests. Always 200

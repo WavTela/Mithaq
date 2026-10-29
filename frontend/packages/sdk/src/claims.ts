@@ -1,4 +1,4 @@
-// @stellarcred/sdk â€” shared claim-checking core
+// @mithaq/sdk â€” shared claim-checking core
 //
 // Authoritative module holding the complete claim-checking machinery:
 // config, low-level ProofRegistry reads, and the public functions
@@ -73,14 +73,14 @@ function warnOnClientServerBoundaryViolation(opts: { registryId?: string; rpcUrl
     typeof process !== "undefined" ? (process.env as Record<string, string | undefined>) : {};
 
   const leakedServerVar =
-    !!proc["STELLARCRED_REGISTRY_ID"] ||
-    !!proc["STELLARCRED_RPC_URL"] ||
-    !!proc["STELLARCRED_NETWORK_PASSPHRASE"] ||
-    !!proc["STELLARCRED_BASE_URL"] ||
-    !!proc["STELLARCRED_NETWORK"];
+    !!proc["MITHAQ_REGISTRY_ID"] ||
+    !!proc["MITHAQ_RPC_URL"] ||
+    !!proc["MITHAQ_NETWORK_PASSPHRASE"] ||
+    !!proc["MITHAQ_BASE_URL"] ||
+    !!proc["MITHAQ_NETWORK"];
 
-  const serverEnvRegistryId = proc["STELLARCRED_REGISTRY_ID"] ?? proc["PROOF_REGISTRY_ID"];
-  const serverEnvRpcUrl = proc["STELLARCRED_RPC_URL"];
+  const serverEnvRegistryId = proc["MITHAQ_REGISTRY_ID"] ?? proc["PROOF_REGISTRY_ID"];
+  const serverEnvRpcUrl = proc["MITHAQ_RPC_URL"];
   const configMatchesServerVar =
     (opts.registryId !== undefined &&
       opts.registryId !== "" &&
@@ -92,15 +92,15 @@ function warnOnClientServerBoundaryViolation(opts: { registryId?: string; rpcUrl
   _warnedBoundaryViolation = true;
 
   console.warn(
-    "[StellarCred] configure() was called in a browser context with values that " +
-      "appear to come from server-only environment variables (e.g. STELLARCRED_REGISTRY_ID " +
+    "[Mithaq] configure() was called in a browser context with values that " +
+      "appear to come from server-only environment variables (e.g. MITHAQ_REGISTRY_ID " +
       "or PROOF_REGISTRY_ID without the NEXT_PUBLIC_ prefix).\n\n" +
       "The ProofRegistry contract ID and RPC URL are read-only infrastructure config " +
       "that is safe to expose to the client â€” but they must reach the browser through " +
       "public env vars (NEXT_PUBLIC_PROOF_REGISTRY_ID / NEXT_PUBLIC_RPC_URL in Next.js, " +
       "VITE_* in Vite) rather than server-only names.\n\n" +
       "If you are verifying claims server-side (recommended for access control), " +
-      "import from '@stellarcred/sdk/server' instead â€” the intent is explicit at " +
+      "import from '@mithaq/sdk/server' instead â€” the intent is explicit at " +
       "the import site and this warning will not fire.\n\n" +
       "See the SDK README Â§Trust boundary for details. " +
       "This warning only appears in development mode.",
@@ -122,7 +122,7 @@ function warnOnIndexerKeyInBrowser(indexerApiKey?: string): void {
   _warnedIndexerKeyInBrowser = true;
 
   console.warn(
-    "[StellarCred] configure() was called in a browser context with an " +
+    "[Mithaq] configure() was called in a browser context with an " +
       "`indexerApiKey`. That key is a secret and is now exposed to every visitor " +
       "of this site.\n\n" +
       "Read claims from the browser without a key (leave `indexerApiKey` unset), " +
@@ -175,7 +175,7 @@ function parseNetwork(raw: string | undefined): StellarNetwork {
 }
 
 const _preset =
-  NETWORK_PRESETS[parseNetwork(env("STELLARCRED_NETWORK", "NEXT_PUBLIC_STELLAR_NETWORK"))];
+  NETWORK_PRESETS[parseNetwork(env("MITHAQ_NETWORK", "NEXT_PUBLIC_STELLAR_NETWORK"))];
 
 export interface RetryOptions {
   retries?: number;
@@ -212,7 +212,7 @@ export interface SDKConfig {
   maxDelayMs?: number;
   jitter?: boolean;
   /**
-   * Base URL of a StellarCred indexer, e.g. `https://indexer.example.com`.
+   * Base URL of a Mithaq indexer, e.g. `https://indexer.example.com`.
    * Required before any read can use `source: "indexer"` or
    * `source: "indexer-verified"`; without it those reads fail soft exactly as
    * an unconfigured `registryId` does for chain reads.
@@ -257,20 +257,20 @@ export interface SDKConfig {
 }
 
 const DEFAULT_CONFIG: Required<SDKConfig> = {
-  registryId: env("STELLARCRED_REGISTRY_ID", "NEXT_PUBLIC_PROOF_REGISTRY_ID"),
-  rpcUrl: env("STELLARCRED_RPC_URL", "NEXT_PUBLIC_RPC_URL") || _preset.rpcUrl,
+  registryId: env("MITHAQ_REGISTRY_ID", "NEXT_PUBLIC_PROOF_REGISTRY_ID"),
+  rpcUrl: env("MITHAQ_RPC_URL", "NEXT_PUBLIC_RPC_URL") || _preset.rpcUrl,
   networkPassphrase:
-    env("STELLARCRED_NETWORK_PASSPHRASE", "NEXT_PUBLIC_NETWORK_PASSPHRASE") ||
+    env("MITHAQ_NETWORK_PASSPHRASE", "NEXT_PUBLIC_NETWORK_PASSPHRASE") ||
     _preset.networkPassphrase,
   baseUrl:
-    env("STELLARCRED_BASE_URL", "NEXT_PUBLIC_STELLARCRED_BASE_URL") || "https://stellarcred.xyz",
+    env("MITHAQ_BASE_URL", "NEXT_PUBLIC_MITHAQ_BASE_URL") || "https://mithaq.xyz",
   requestTimeoutMs: 10_000,
   retries: 3,
   baseDelayMs: 500,
   maxDelayMs: 5000,
   jitter: true,
-  indexerUrl: env("STELLARCRED_INDEXER_URL", "NEXT_PUBLIC_INDEXER_URL"),
-  indexerApiKey: env("STELLARCRED_INDEXER_API_KEY"),
+  indexerUrl: env("MITHAQ_INDEXER_URL", "NEXT_PUBLIC_INDEXER_URL"),
+  indexerApiKey: env("MITHAQ_INDEXER_API_KEY"),
   indexerCacheMs: 2000,
   claimCache: false,
   claimCacheTtlMs: 30_000,
@@ -390,10 +390,10 @@ function warnIfMissingRegistryIdOnce(): void {
   _warnedMissingRegistryId = true;
 
   console.warn(
-    "[StellarCred] hasClaim()/getClaim()/getClaims() called with no `registryId` configured. " +
-      "Every check will silently return false/[] until you set STELLARCRED_REGISTRY_ID " +
-      "(or NEXT_PUBLIC_PROOF_REGISTRY_ID) or call StellarCred.configure({ registryId }). " +
-      "Call StellarCred.healthCheck() to diagnose. This warning only logs in development.",
+    "[Mithaq] hasClaim()/getClaim()/getClaims() called with no `registryId` configured. " +
+      "Every check will silently return false/[] until you set MITHAQ_REGISTRY_ID " +
+      "(or NEXT_PUBLIC_PROOF_REGISTRY_ID) or call Mithaq.configure({ registryId }). " +
+      "Call Mithaq.healthCheck() to diagnose. This warning only logs in development.",
   );
 }
 
@@ -414,7 +414,7 @@ export class TimeoutError extends Error {
  * `registryId`). Only surfaces when `{ throwOnError: true }` is passed.
  */
 export class ConfigError extends Error {
-  constructor(message = "StellarCred is not configured: missing registryId") {
+  constructor(message = "Mithaq is not configured: missing registryId") {
     super(message);
     this.name = "ConfigError";
   }
@@ -461,7 +461,7 @@ export class InvalidThresholdError extends Error {
   }
 }
 
-/** The credential types StellarCred supports. Matches the contract Symbols. */
+/** The credential types Mithaq supports. Matches the contract Symbols. */
 export const CLAIM_TYPES = [
   "kyc",
   "age",
@@ -626,7 +626,7 @@ async function getClient(throwOnError = false): Promise<ProofRegistryClient | nu
   const { registryId, rpcUrl, networkPassphrase } = _config;
   if (!registryId) {
     if (throwOnError) {
-      throw new ConfigError("StellarCred is not configured: missing registryId");
+      throw new ConfigError("Mithaq is not configured: missing registryId");
     }
     return null;
   }
@@ -877,10 +877,10 @@ function warnIfMissingIndexerUrlOnce(): void {
   _warnedMissingIndexerUrl = true;
 
   console.warn(
-    '[StellarCred] A claim read used `source: "indexer"` or "indexer-verified" ' +
+    '[Mithaq] A claim read used `source: "indexer"` or "indexer-verified" ' +
       "but no `indexerUrl` is configured, so it fell back to returning " +
-      "false/null. Set STELLARCRED_INDEXER_URL (or NEXT_PUBLIC_INDEXER_URL) or call " +
-      "StellarCred.configure({ indexerUrl }). This warning only logs in development.",
+      "false/null. Set MITHAQ_INDEXER_URL (or NEXT_PUBLIC_INDEXER_URL) or call " +
+      "Mithaq.configure({ indexerUrl }). This warning only logs in development.",
   );
 }
 
@@ -903,7 +903,7 @@ function warnOnIndexerDrift(
   _warnedIndexerDrift = true;
 
   console.warn(
-    `[StellarCred] Indexer disagreed with the chain for claim "${claimType}": ` +
+    `[Mithaq] Indexer disagreed with the chain for claim "${claimType}": ` +
       `indexer said ${indexerValid}, ProofRegistry said ${chainValid}. The chain ` +
       "result was used. This usually means the indexer is lagging or stale — " +
       "check its /health endpoint for ledger lag. This warning logs once per process.",
@@ -920,7 +920,7 @@ async function readIndexerRows(
 
   if (!indexerUrl) {
     if (throwOnError) {
-      throw new ConfigError("StellarCred is not configured for indexer reads: missing indexerUrl");
+      throw new ConfigError("Mithaq is not configured for indexer reads: missing indexerUrl");
     }
     warnIfMissingIndexerUrlOnce();
     return null;
@@ -1383,7 +1383,7 @@ export function getClaimCacheSize(): number {
 
 /**
  * Returns `true` if `wallet` has a currently-valid, unexpired proof of
- * `claimType` in the StellarCred ProofRegistry.
+ * `claimType` in the Mithaq ProofRegistry.
  */
 export async function hasClaim(
   wallet: string,
@@ -1788,7 +1788,7 @@ export function buildBadgeEmbedCode(options: {
   const src = buildBadgeUrl(options);
   const width = options.compact ? "180" : "260";
   const height = options.compact ? "36" : "54";
-  return `<iframe src="${src}" width="${width}" height="${height}" frameborder="0" scrolling="no" style="border:none;overflow:hidden;border-radius:8px;" title="StellarCred Verification Badge"></iframe>`;
+  return `<iframe src="${src}" width="${width}" height="${height}" frameborder="0" scrolling="no" style="border:none;overflow:hidden;border-radius:8px;" title="Mithaq Verification Badge"></iframe>`;
 }
 
 export interface UntrustedReturnParams {

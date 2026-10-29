@@ -1,5 +1,5 @@
 // public/sw.js
-const CACHE_NAME = 'stellarcred-holder-v1';
+const CACHE_NAME = 'mithaq-holder-v1';
 const ASSETS_TO_CACHE = [
   '/holder',
   '/manifest.json',

@@ -21,8 +21,8 @@ describe("challenge generation & replay protection (#543)", () => {
     expect(typeof challenge.nonce).toBe("string");
     expect(challenge.issuedAt).toBeLessThanOrEqual(Date.now());
     expect(challenge.expiresAt).toBeGreaterThan(challenge.issuedAt);
-    expect(challenge.domain).toBe("stellarcred");
-    expect(challenge.message).toContain("stellarcred requests you sign this message");
+    expect(challenge.domain).toBe("mithaq");
+    expect(challenge.message).toContain("mithaq requests you sign this message");
     expect(challenge.message).toContain(`Nonce: ${challenge.nonce}`);
   });
 

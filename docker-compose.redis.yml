@@ -59,7 +59,7 @@ version: "3.9"
 services:
   redis:
     image: redis:7-alpine
-    container_name: stellarcred-redis
+    container_name: mithaq-redis
     restart: unless-stopped
     ports:
       - "6379:6379"

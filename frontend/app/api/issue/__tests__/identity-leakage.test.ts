@@ -28,7 +28,7 @@
 // to leak: error paths are the ones that tend to widen what gets logged,
 // reported, cached, or returned.
 //
-// Node environment (not the jsdom default) because @stellarcred/issuer refuses
+// Node environment (not the jsdom default) because @mithaq/issuer refuses
 // to load when `window` exists — same reason as route.test.ts.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
@@ -40,7 +40,7 @@ import os from "os";
 const HOLDER = "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
 const ISSUER_ID = "GBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBHF2";
 const INQUIRY_ID = "inq_sentinel_0001";
-const ERROR_WEBHOOK = "https://webhook.example.com/stellarcred-errors";
+const ERROR_WEBHOOK = "https://webhook.example.com/mithaq-errors";
 
 // Recognisable, deliberately unrealistic identity values. If any of these
 // strings turns up in any sink, the flow persisted identity data and the gate
@@ -223,7 +223,7 @@ async function startFlow(opts: FlowOptions): Promise<Flow> {
   const { savePersonaPending, PERSONA_PENDING_KEY } = await import(
     "@/lib/persona-pending"
   );
-  const { IssuerClient } = await import("@stellarcred/issuer");
+  const { IssuerClient } = await import("@mithaq/issuer");
 
   // Every id the flow was asked to cache under, so the sink reader can dump
   // each entry rather than only the most recent one.
@@ -280,7 +280,7 @@ async function startFlow(opts: FlowOptions): Promise<Flow> {
         credential_types: ["kyc"],
         holder: HOLDER,
         issuerId: ISSUER_ID,
-        issuerName: "StellarCred Authority",
+        issuerName: "Mithaq Authority",
         expiry: "90 days",
         claimParams: {
           first_name: SENTINELS.firstName,
@@ -337,7 +337,7 @@ function tempAuditPath(): string {
   auditCounter += 1;
   return path.join(
     os.tmpdir(),
-    `stellarcred-identity-leak-${Date.now()}-${auditCounter}.jsonl`,
+    `mithaq-identity-leak-${Date.now()}-${auditCounter}.jsonl`,
   );
 }
 

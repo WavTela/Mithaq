@@ -6,7 +6,7 @@
 // The claim label logic mirrors `buildClaimLabel` in
 // packages/issuer/src/index.ts; the two must stay in sync. We keep them
 // separate so this file can import from `lib/` without pulling in the
-// server-only `@stellarcred/issuer` package.
+// server-only `@mithaq/issuer` package.
 
 import type { CredentialType } from "./stellar";
 import type { ClaimParams } from "./credential";

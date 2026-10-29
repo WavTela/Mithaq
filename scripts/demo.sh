@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# demo.sh — End-to-end StellarCred demo on testnet
+# demo.sh — End-to-end Mithaq demo on testnet
 # ==================================================
 #
 # Seeds a fresh testnet wallet, issues KYC + age + funds credentials in mock
@@ -164,7 +164,7 @@ else
   warn "Issuer pubkey may not match the demo key."
   warn "This means submit_proof will likely fail with IssuerKeyMismatch."
   warn "To fix: re-run deploy.sh with the demo key:"
-  warn "  DEMO_SK_HEX=\$(node -e \"const{sha256}=require('@noble/hashes/sha2');console.log(Buffer.from(sha256(new TextEncoder().encode('stellarcred-demo-issuer'))).toString('hex'))\")"
+  warn "  DEMO_SK_HEX=\$(node -e \"const{sha256}=require('@noble/hashes/sha2');console.log(Buffer.from(sha256(new TextEncoder().encode('mithaq-demo-issuer'))).toString('hex'))\")"
   warn "  ISSUER_PRIVATE_KEY=\$DEMO_SK_HEX SOURCE=deployer ./scripts/deploy.sh"
 fi
 

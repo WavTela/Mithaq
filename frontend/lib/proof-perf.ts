@@ -135,7 +135,7 @@ export function getDeviceClass(): {
 // Storage (bounded, in localStorage)
 // ---------------------------------------------------------------------------
 
-const STORAGE_KEY = "stellarcred:proof-perf";
+const STORAGE_KEY = "mithaq:proof-perf";
 const MAX_RUNS = 50;
 
 function readAll(): ProofRun[] {

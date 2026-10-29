@@ -1,6 +1,6 @@
 # Typed Error Taxonomy
 
-The StellarCred SDK surfaces contract panics, RPC failures, and indexer issues as typed, actionable errors that applications can branch on programmatically.
+The Mithaq SDK surfaces contract panics, RPC failures, and indexer issues as typed, actionable errors that applications can branch on programmatically.
 
 ## Overview
 
@@ -13,7 +13,7 @@ Every contract error code maps to the same human message across the stack (SDK, 
 Thrown when a ProofRegistry transaction fails with a contract panic. Carries a numeric error code and human-friendly message.
 
 ```typescript
-import { ContractError, ContractErrorCode } from "@stellarcred/sdk";
+import { ContractError, ContractErrorCode } from "@mithaq/sdk";
 
 try {
   await submitProof(...);
@@ -44,7 +44,7 @@ try {
 Thrown when an RPC request to the Soroban network fails. May wrap a `ContractError` if the failure was due to a contract panic.
 
 ```typescript
-import { RpcError } from "@stellarcred/sdk";
+import { RpcError } from "@mithaq/sdk";
 
 try {
   await hasClaim(wallet, "kyc");
@@ -67,7 +67,7 @@ try {
 Thrown when an indexer request fails or returns malformed data.
 
 ```typescript
-import { IndexerError } from "@stellarcred/sdk";
+import { IndexerError } from "@mithaq/sdk";
 
 try {
   await hasClaim(wallet, "kyc", { source: "indexer" });
@@ -84,7 +84,7 @@ try {
 All ProofRegistry error codes are exported as constants:
 
 ```typescript
-import { ContractErrorCode } from "@stellarcred/sdk";
+import { ContractErrorCode } from "@mithaq/sdk";
 
 // Available codes:
 ContractErrorCode.NotInitialized          // 1
@@ -130,7 +130,7 @@ Errors that the user can fix without re-issuing credentials:
 ## UI Integration Example
 
 ```typescript
-import { ContractError, ContractErrorCode } from "@stellarcred/sdk";
+import { ContractError, ContractErrorCode } from "@mithaq/sdk";
 
 function handleSubmitError(err: unknown) {
   if (err instanceof ContractError) {
@@ -193,7 +193,7 @@ function handleSubmitError(err: unknown) {
 If you receive a raw error string from the RPC layer, use `parseContractError`:
 
 ```typescript
-import { parseContractError } from "@stellarcred/sdk";
+import { parseContractError } from "@mithaq/sdk";
 
 const rawError = "Error(Contract, #4)";
 const parsed = parseContractError(rawError);
@@ -209,7 +209,7 @@ if (parsed) {
 All error messages are maintained in `PROOF_REGISTRY_ERROR_MESSAGES`:
 
 ```typescript
-import { PROOF_REGISTRY_ERROR_MESSAGES } from "@stellarcred/sdk";
+import { PROOF_REGISTRY_ERROR_MESSAGES } from "@mithaq/sdk";
 
 console.log(PROOF_REGISTRY_ERROR_MESSAGES[4]);
 // "Issuer not trusted — the issuer address isn't registered for this credential type."

@@ -4,7 +4,7 @@
  * Single source of truth for mapping the request-level `attribute` shorthand
  * (a single string, one per credential type) onto the type-specific field in
  * `attributes` that the issuer circuit commits to. The field names mirror
- * `attributeToValue` in @stellarcred/issuer (packages/issuer/src/index.ts).
+ * `attributeToValue` in @mithaq/issuer (packages/issuer/src/index.ts).
  *
  * This logic used to be duplicated inline in POST /api/issue,
  * POST /api/issue/batch, and the issuer page — adding a credential type

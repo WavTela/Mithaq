@@ -1,511 +1,562 @@
-# StellarCred
+# 💍 Mithaq
 
-[![CI](https://github.com/Psalmuel01/StellarCred/actions/workflows/ci.yml/badge.svg)](https://github.com/Psalmuel01/StellarCred/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![npm](https://img.shields.io/npm/v/@stellarcred/sdk?label=%40stellarcred%2Fsdk)](https://www.npmjs.com/package/@stellarcred/sdk)
+**A halal-first Muslim matchmaking platform built on the Stellar network.**
 
-**Privacy-preserving, reusable credentials for the Stellar ecosystem.**
+Mithaq (ميثاق, "the solemn covenant", the Quranic word for marriage in 4:21) helps Muslims find a serious spouse in a way that respects Islamic etiquette, family involvement and trust. Users match on deen and values, chat only after mutual acceptance, pay and tip in XLM or USDC, and can lock a mahr pledge in an on-chain escrow that is released at the nikah.
 
-A user holds a credential issued by a trusted party (KYC provider, bank,
-government, employer), generates a zero-knowledge proof locally in the browser,
-and submits it once on-chain. Any Stellar protocol can then check the result
-with a single read-only contract call — **verify once, trusted everywhere** —
-and the underlying credential data never touches the chain.
-
-> **Scope of that guarantee.** StellarCred hides the *contents* of a credential, not the
-> *fact* of a verification. On-chain claims, the wallet-to-claim link, the issuer's view of
-> the attribute at issuance, and delegation grants are deliberately **not** private. See
-> **[Limitations and non-goals](docs/LIMITATIONS.md)** for exactly what each party — issuer,
-> verifier, chain observer, indexer operator — observes, and what the system does not hide,
-> recover, or guarantee.
-
-StellarCred is not a KYC app. It's the interoperability layer between issuers
-and protocols: issuers integrate once, protocols integrate once, and users carry
-reusable proofs instead of re-submitting personal data to every app.
+> **Status:** 🚧 Early development. This README describes the target architecture and feature set. Items are marked ✅ done, 🛠️ in progress or 🗓️ planned in the [Roadmap](#-roadmap).
 
 ---
 
-## Highlights
+## 📑 Table of Contents
 
-- **Real on-chain ZK verification.** `CredentialVerifier` runs the host-native
-  BN254 UltraHonk verifier ([`rs-soroban-ultrahonk`](https://github.com/yugocabrio/rs-soroban-ultrahonk)),
-  not a stub. The full path — protocol → ProofRegistry → IssuerRegistry +
-  CredentialVerifier → BN254 — is covered by **125 passing contract tests** over
-  genuine proofs for all credential types.
-- **Issuer signature verified in zero-knowledge.** Each circuit verifies the
-  issuer's secp256k1 ECDSA signature over the credential commitment
-  (`std::ecdsa_secp256k1`) inside the proof, and the contract binds that key to
-  the registered issuer — a proof only passes if a *registered* issuer actually
-  signed the credential.
-- **`is_verified` / `check_claim` are the on-chain primitives.** `is_verified` checks binary claims (kyc, jurisdiction); `check_claim(holder, type, min_threshold)` enforces numeric thresholds (age, income, funds) — a proof for ≥200k satisfies a ≥50k gate. One read, no API, no data handling.
-- **Multi-claim issuance.** One verification issues every requested credential
-  (KYC, age, jurisdiction, …) in a single call.
-- **Drop-in integration.** The [`@stellarcred/sdk`](frontend/packages/sdk) gives
-  protocols `hasClaim`, `getClaims`, and `buildVerifyUrl`, plus a return-URL
-  redirect flow so users verify and bounce straight back.
+- [Why Mithaq](#-why-mithaq)
+- [Features](#-features)
+- [How It Works](#-how-it-works)
+- [Architecture](#-architecture)
+- [Monorepo Structure](#-monorepo-structure)
+- [Tech Stack](#-tech-stack)
+- [Stellar Integration](#-stellar-integration)
+- [Smart Contracts](#-smart-contracts)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Scripts](#-scripts)
+- [API Overview](#-api-overview)
+- [AI Assistant](#-ai-assistant)
+- [Safety, Privacy and Moderation](#-safety-privacy-and-moderation)
+- [Testing](#-testing)
+- [Deployment](#-deployment)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [Disclaimer](#-disclaimer)
+- [License](#-license)
 
 ---
 
-## How it works
+## 🌙 Why Mithaq
+
+Most dating apps aren't designed for Muslims looking for marriage. They ignore the role of the family, encourage casual interaction and give users no way to show they are serious. Mithaq is built around three ideas:
+
+1. **Intent over browsing.** Users match on deen, values and life goals, and prove they are serious.
+2. **Family-aware by design.** A wali (guardian) or trusted family member can take part in the process.
+3. **Trust through transparency.** Stellar gives us low-fee payments, non-custodial wallets and escrow, so money-related commitments are verifiable instead of promised.
+
+---
+
+## ✨ Features
+
+### Core
+
+| Feature | Description |
+|---|---|
+| **Sign up and profile** | Email or wallet sign-up, profile with deen details (madhhab, prayer habits, hijab/beard preference), marriage goals and photos |
+| **Matching** | Browse and filter matches by deen, location, age, education and family goals, with a compatibility score |
+| **Chat** | Opens only after a mutual match; limits, reporting and AI moderation built in |
+| **Wallet** | Send and receive **XLM** and **USDC** inside the app |
+| **Subscriptions** | Pay for premium plans in **XLM or USDC**, with on-chain payment verification |
+| **Daily Islamic reminders** | A daily ayah, hadith or dua delivered by push or email |
+| **Islamic quiz and rewards** | Answer questions correctly and earn **XLM** rewards; streaks and leaderboards |
+| **Social feed** | Share experiences, post, like, comment and follow in a "tweet-style" feed |
+| **AI support assistant** | Helps users fix sign-up problems and subscription issues |
+
+### What makes Mithaq different
+
+| Feature | Description |
+|---|---|
+| 🛡️ **Wali / Guardian Mode** | A user can invite a wali or family member to view matches (read-only) or approve introductions before a chat opens |
+| 💰 **Nikah Escrow** | Lock a mahr pledge on-chain; it is released at the agreed nikah date, or returned if both parties cancel |
+| ✅ **Verified Intent Badge** | A small refundable USDC stake that signals seriousness; returned after a period, or slashed for confirmed abuse |
+| 🕊️ **Halal-by-design chat** | Mutual-accept only, optional chaperone mode, message limits and AI content flagging |
+| 🧭 **Deen-based compatibility** | Matching weights prayer consistency, madhhab, family goals and values, not just looks |
+| 🏅 **On-chain reputation badges** | Non-transferable badges for verified ID, quiz streaks and positive conduct |
+| 👨‍👩‍👧 **Family Intro Pack** | A privacy-controlled, shareable summary for parents or a wali, viewable by link |
+| 🤲 **Sadaqah round-ups** | An optional share of subscriptions goes to a transparent charity pool |
+
+---
+
+## 🔄 How It Works
 
 ```
-  Issuer  ──signs──▶  Credential  (held by the user, never on-chain)
- (KYC provider,            │
-  bank, gov)               │  Noir circuit runs in the browser (WASM)
-                           │  → UltraHonk proof + public inputs
-                           ▼
-  ┌──────────────────────────────────────────────────────────────┐
-  │  Soroban contracts                                            │
-  │                                                               │
-  │   IssuerRegistry ──── trust root: which issuers, which types, │
-  │                       and their signing public keys           │
-  │   CredentialVerifier ─ stateless UltraHonk verify (VK / type) │
-  │   ProofRegistry ────── caches "address X verified until T",   │
-  │                       gated on the registered issuer key      │
-  │   GatedPool ────────── demo DeFi pool gated on a KYC proof    │
-  └──────────────────────────────────────────────────────────────┘
-                           ▲
-                           │  one read-only call: is_verified(wallet, claim)
-                   Any protocol / the @stellarcred/sdk
+Sign up ──► Build profile ──► Get matches ──► Mutual accept ──► Chat
+                │                                   │
+                │                          (optional) Wali approves
+                ▼
+        Verified Intent stake                 Agree to proceed
+        (refundable USDC)                          │
+                                                   ▼
+                                       Nikah Escrow (mahr pledge)
+                                                   │
+                                      Released at nikah date, or
+                                      refunded on mutual cancel
 ```
 
-**Issue → Prove → Verify.** The issuer computes `commitment = Poseidon2([value,
-salt])` and signs it server-side. The holder generates a proof locally
-(`noir_js` + `bb.js`) that proves knowledge of the preimage *and* the issuer's
-signature, then calls `ProofRegistry.submit_proof`. The registry verifies the
-proof once and caches the result; every protocol afterwards reads
-`is_verified` instead of re-running the verifier.
+Alongside this core flow, users can read daily reminders, take quizzes to earn XLM, and post in the community feed.
 
 ---
 
-## Architecture & Overview
+## 🏗️ Architecture
 
-For a detailed architectural description with diagrams, see the [Architecture Documentation](docs/ARCHITECTURE.md).
-For the authoritative specification of contract events, topic schemas, and indexer integration, see [docs/EVENTS.md](docs/EVENTS.md).
+```mermaid
+flowchart LR
+    subgraph Clients
+        WEB[Web app<br/>Next.js]
+        MOB[Mobile app<br/>React Native / Expo]
+    end
+
+    subgraph Backend
+        API[API service<br/>REST + WebSocket]
+        AI[AI service<br/>FastAPI]
+        WORKER[Workers<br/>reminders, payouts, indexer]
+    end
+
+    subgraph Data
+        PG[(PostgreSQL)]
+        REDIS[(Redis)]
+        S3[(Object storage)]
+    end
+
+    subgraph Stellar
+        HORIZON[Horizon]
+        SOROBAN[Soroban RPC]
+        CONTRACTS[Mithaq contracts<br/>escrow, stake, badges]
+    end
+
+    WEB --> API
+    MOB --> API
+    API --> PG
+    API --> REDIS
+    API --> S3
+    API --> AI
+    API --> HORIZON
+    API --> SOROBAN
+    WORKER --> PG
+    WORKER --> REDIS
+    WORKER --> HORIZON
+    SOROBAN --> CONTRACTS
+```
+
+**Design principles**
+
+- **Non-custodial first.** Users hold their own keys. The backend never sees a user's secret key.
+- **The chain is the source of truth for money.** Payments and escrow state are confirmed from Stellar, not from client claims.
+- **Privacy by default.** Photos, messages and wali access are permission-gated.
+- **Fail safe.** The AI assistant and quiz payouts degrade gracefully and never block core flows.
 
 ---
 
-## Repository layout
+## 📁 Monorepo Structure
+
+The repo is managed with **pnpm workspaces** and **Turborepo**.
 
 ```
-contracts/              Soroban workspace (Rust, soroban-sdk 26)
-  issuer_registry/        trust root; submit_proof checks is_valid_issuer_key
-  credential_verifier/    real UltraHonk verify via host-native BN254 (VK per type)
-  proof_registry/         caches verifications w/ expiry + TTL; gated on issuer key
-  gated_pool/             demo DeFi pool gated on a KYC proof
-circuits/               Noir circuits (UltraHonk · Noir 1.0.0-beta.9 / bb 0.87.0)
-  commit/                 issuer helper: returns Poseidon2([value, salt], 2)
-  kyc_proof/              "I hold a credential the issuer committed to"
-  age_proof/              "I am over N" without revealing date of birth
-  date_range/             "my credential was issued in this window" without revealing the date
-  income_proof/           "my income exceeds T" without revealing it
-  jurisdiction_proof/     "my country is not restricted" without revealing it
-  funds_proof/            "my balance exceeds T" without revealing it
-  scripts/build.sh        compile + prove + stage circuit JSON for the frontend
-fixtures/<type>/        real vk / proof / public_inputs per type (contract tests)
-frontend/               Next.js 14 app (App Router)
-  app/                    landing, holder, verify, issuer, apps, developers, docs
-  app/api/issue/          server-side credential issuance, via @stellarcred/issuer
-  packages/sdk/           @stellarcred/sdk — hasClaim / getClaims / buildVerifyUrl
-  packages/issuer/        @stellarcred/issuer — server-only issuance (value/salt/commitment/sig)
-  lib/                    proof.ts (noir_js + bb.js), contracts.ts (stellar-sdk), wallet
-services/
-  indexer/                off-chain event indexing service (SQLite/Postgres, [README](services/indexer/README.md))
-scripts/deploy.sh       deploy + wire + register issuer + install all VKs on testnet
-scripts/benchmark.sh    measure instruction budget for every public function on testnet
-BENCHMARKS.md           per-function instruction counts, ledger I/O, and fee estimates
-docs/EVENTS.md          authoritative contract event topic & payload schemas
-docs/BACKFILL.md        when and how to backfill the indexer (ranges, resume, timing)
-docs/STORAGE_TTL.md     contract storage lifetime model, rent fees, and archival behavior
+mithaq/
+├── apps/
+│   ├── web/                 # Next.js web application
+│   ├── mobile/              # React Native (Expo) app
+│   ├── api/                 # REST + WebSocket backend (NestJS)
+│   └── ai/                  # FastAPI AI assistant service
+│
+├── contracts/               # Soroban smart contracts (Rust)
+│   ├── nikah-escrow/        # Mahr pledge escrow
+│   ├── intent-stake/        # Verified Intent stake and slashing
+│   └── badges/              # Non-transferable reputation badges
+│
+├── packages/
+│   ├── ui/                  # Shared React component library
+│   ├── sdk/                 # Typed API client and Stellar helpers
+│   ├── types/               # Shared TypeScript types and schemas
+│   ├── config/              # Shared ESLint, TS and Tailwind configs
+│   └── content/             # Quiz bank, daily reminders (reviewed content)
+│
+├── infra/
+│   ├── docker/              # Dockerfiles and compose files
+│   └── ci/                  # CI/CD workflows and scripts
+│
+├── docs/                    # Architecture notes, ADRs, API docs
+├── scripts/                 # Dev and ops scripts (seed, fund testnet, etc.)
+├── .env.example
+├── package.json
+├── pnpm-workspace.yaml
+├── turbo.json
+└── README.md
 ```
-
-All five credential circuits share one commitment scheme,
-`commitment = Poseidon2([value, salt], 2)`, so the issuer derives every
-commitment with a single `commit` helper and each type is independently issuable
-and provable.
 
 ---
 
-## Integrating a protocol
+## 🧰 Tech Stack
 
-Install the SDK:
+| Layer | Technology |
+|---|---|
+| **Web** | Next.js (App Router), TypeScript, Tailwind CSS |
+| **Mobile** | React Native (Expo), TypeScript |
+| **API** | NestJS (Node.js), TypeScript, WebSockets |
+| **AI service** | Python 3.11+, FastAPI, Google Gemini |
+| **Database** | PostgreSQL (Prisma ORM) |
+| **Cache / queues** | Redis, BullMQ |
+| **Storage** | S3-compatible object storage |
+| **Blockchain** | Stellar (Horizon + Soroban), `@stellar/stellar-sdk` |
+| **Contracts** | Rust, Soroban SDK |
+| **Wallets** | Freighter, Lobstr and other Stellar wallets (SEP-7 / wallet kit) |
+| **Tooling** | pnpm, Turborepo, ESLint, Prettier, Vitest, Playwright, GitHub Actions |
+
+> The stack above is the intended default. Swap pieces as the project evolves.
+
+---
+
+## ⭐ Stellar Integration
+
+| Use case | How it works |
+|---|---|
+| **Send and receive XLM / USDC** | Users sign payments with their own wallet; the app builds the transaction and displays the confirmed result |
+| **Subscriptions** | The user pays a unique address or memo; a worker watches Horizon for matching payments and activates the plan after confirmation |
+| **Quiz rewards** | The backend validates answers server-side and pays XLM from a funded rewards account, with per-user daily caps |
+| **Nikah Escrow** | A Soroban contract (or claimable balance) holds the pledge until release conditions are met |
+| **Verified Intent stake** | A refundable USDC deposit held by a contract, released after the lock period or slashed on a moderator-confirmed violation |
+| **Badges** | Non-transferable on-chain records of verified status and conduct |
+| **Charity round-ups** | A fixed share of subscription payments is sent to a public sadaqah account |
+
+**Networks.** Develop and test on **Stellar testnet**. Switch to **public** by changing `STELLAR_NETWORK`.
+
+**USDC.** Always use Circle's official USDC issuer for the network you are on, and set it in `.env`. Do not hardcode asset issuers in application code.
+
+**Key handling rules**
+
+- Users' secret keys and seed phrases are never requested, stored or logged.
+- The rewards and escrow-admin keys live only in a secrets manager, never in the repo.
+- All amounts use decimal or integer arithmetic (stroops), never floats.
+
+---
+
+## 📜 Smart Contracts
+
+Contracts live in `contracts/` and are written in Rust for Soroban.
+
+### `nikah-escrow`
+Holds a mahr pledge between two parties.
+
+- `create(payer, payee, asset, amount, release_date)`
+- `release()` pays the payee once the release date is reached and the release condition is met
+- `cancel()` returns funds if both parties approve, or on expiry rules
+- Emits events for every state change, indexed by the worker
+
+### `intent-stake`
+Manages the Verified Intent deposit.
+
+- `stake(user, amount)`, `unstake(user)` after the lock period
+- `slash(user, reason)` callable only by the authorized moderation role, with an on-chain reason code
+- Slashed funds go to a defined destination (for example, the sadaqah pool)
+
+### `badges`
+Non-transferable reputation records.
+
+- `award(user, badge_id)` callable only by the admin or a verifier role
+- `has_badge(user, badge_id)` read-only check used by the app
+
+**Build and test**
 
 ```bash
-npm install @stellarcred/sdk
+cd contracts/nikah-escrow
+cargo test
+stellar contract build
 ```
 
-> Full SDK docs: [`frontend/packages/sdk/README.md`](frontend/packages/sdk/README.md) · [npm](https://www.npmjs.com/package/@stellarcred/sdk)
->
-> **Canonical Integration Example**: Looking for a complete, runnable end-to-end integration with wallet control challenge proof and server-side route gating? See [`examples/canonical-integration`](examples/canonical-integration).
->
-> **TypeScript SDK Example**: Minimal TypeScript integration demonstrating typed imports, anti-spoofing challenge verification, and credential-gated Stellar transaction creation and signing. See [`examples/typescript`](examples/typescript).
->
-> **TypeScript quickstart**: A minimal, CI-typechecked walkthrough — typed claim reads, a signed Stellar transaction, and the challenge flow — is in [`docs/SDK_TYPESCRIPT_EXAMPLE.md`](docs/SDK_TYPESCRIPT_EXAMPLE.md) and [`examples/typescript-quickstart`](examples/typescript-quickstart).
-
-Protocols never handle credential data - they ask the on-chain registry one
-question: _has this wallet proven the claim I require?_
-
-```ts
-import { StellarCred } from "@stellarcred/sdk";
-
-// Binary claim — KYC, jurisdiction
-const canDeposit = await StellarCred.hasClaim(wallet, "kyc");
-
-// Threshold claim — enforce minimum on-chain
-const canAccessVault = await StellarCred.hasClaim(wallet, "funds", {
-  minThreshold: 50000,
-});
-const canTrade = await StellarCred.hasClaim(wallet, "age", {
-  minThreshold: 21,
-});
-```
-
-If the user hasn't verified yet, send them to StellarCred and get them back
-automatically:
-
-```ts
-const verifyUrl = StellarCred.buildVerifyUrl({
-  returnUrl: "https://yourapp.xyz/deposit",
-  claim: "kyc",
-});
-window.location.href = verifyUrl;
-// StellarCred returns the user to returnUrl with ?sc_verified=true&sc_wallet=…
-```
-
-Two entry points, one backend:
-
-- **User-first** — a user verifies at StellarCred before ever visiting your app;
-  their credentials work everywhere immediately.
-- **Protocol-first** — your app shows a "Verify" button, the user verifies, and
-  returns automatically.
-
-Prefer Soroban directly? Read `ProofRegistry.is_verified` from your own contract;
-no SDK required. See [`/developers`](frontend/app/developers/page.tsx) for the
-full reference.
+> ⚠️ Contracts handle real funds. Get an independent audit before any mainnet deployment.
 
 ---
 
-## Credential types
+## 🚀 Getting Started
 
-| Claim          | Proves                       | Private input kept hidden |
-| -------------- | ---------------------------- | ------------------------- |
-| `kyc`          | Identity verified            | The credential secret     |
-| `age`          | Age ≥ threshold              | Date of birth             |
-| `income`       | Income ≥ threshold           | Actual income             |
-| `jurisdiction` | Country not restricted       | Country code              |
-| `funds`        | Balance ≥ threshold          | Exact balances (aggregate of linked Plaid accounts) |
+### Prerequisites
 
-### Aggregate proof-of-funds
+- **Node.js** 20+
+- **pnpm** 9+
+- **Python** 3.11+ (for `apps/ai`)
+- **Rust** and the **Stellar CLI** (for `contracts/`)
+- **Docker** (for local PostgreSQL and Redis)
+- A **Google Gemini API key** (for the AI assistant)
 
-Real proof-of-funds spans multiple accounts — checking here, a high-yield
-savings there. `funds` credentials attest to the **aggregate** balance summed
-across every linked Plaid item:
-
-- Configure one item via `PLAID_ACCESS_TOKEN`, or several (up to 25) via
-  `PLAID_ACCESS_TOKENS` (comma-separated); both may be set together.
-- The issuance server fetches each linked item, sums the available depository
-  balances, and the issuer signs a single commitment to the **sum**.
-- The `funds_proof` circuit then proves `sum ≥ threshold` without revealing
-  any component balance.
-- Per-source data (account names, per-item balances, access tokens) stays
-  server-side: it is never committed, logged (only source/account counts
-  reach the logs), stored in the browser credential, or written on-chain.
-- Aggregation **fails closed** — if any linked item errors or times out, no
-  balance is attested at all, because a partial sum is not the sum the
-  issuer would be attesting to.
-
-**Issuing credentials?** The issuer is the trust anchor of the system and has
-the most responsibility of the three roles — registration, key custody, what a
-signature actually attests to, rotation and revocation. Start here:
-**[Issuer onboarding guide](docs/ISSUER_ONBOARDING.md)**.
-
----
-
-## Security model
-
-1. **Issuer ↔ commitment binding is cryptographic.** The issuer signs the
-   commitment with secp256k1; each circuit verifies that signature in-circuit
-   (`std::ecdsa_secp256k1`) against the issuer public key (a public input), and
-   `ProofRegistry` checks that public-input key equals the issuer's registered
-   key. A proof is accepted only if a registered, trusted issuer actually signed
-   the credential.
-   - `prehash: false` is required when signing — Noir uses the raw 32-byte
-     commitment as the message digest directly.
-2. **The signing key is server-side only.** Issuance runs in the
-   [`/api/issue`](frontend/app/api/issue/route.ts) route handler and signs with
-   `ISSUER_PRIVATE_KEY` (never prefixed `NEXT_PUBLIC_`, never shipped to the
-   browser). A production issuer would hold this key in an HSM or secrets
-   manager, and move it between HSMs with `IssuerRegistry.rotate_issuer_key`
-   (see [docs/ISSUER_KEY_ROTATION.md](docs/ISSUER_KEY_ROTATION.md)). With no key
-   set, the route runs a clearly-logged demo fallback.
-3. **Attestation relay.** Issuance can be gated on a real KYC provider — the
-   route integrates Persona's sandbox and only signs credentials after a positive
-   result. Identity fields are sent once to the provider and never stored.
-4. **Proof expiry.** `ProofRegistry` uses persistent storage with an explicit
-   `expiry` (checked against ledger time) plus TTL extension.
-5. **Contract governance is role-based.** Privileged actions on `CredentialVerifier`, `IssuerRegistry`, and `ProofRegistry` are gated by a role map (`Map<Symbol, Address>`) rather than a single admin key. The deployer is seeded the `admin` role (plus `upgrader` and `pauser` on `ProofRegistry`) at construction, and the root admin can delegate or rotate holders with `grant_role` / `revoke_role` (`has_role` is a public view). Each privileged function is guarded by its specific role: `set_vk` / `deprecate_version` / `refresh_latest_version_ttl` → `admin`, issuer registration / revocation / metadata → `admin`, `ProofRegistry.upgrade` → `upgrader`, `pause` / `unpause` → `pauser`, `migrate_record` → `admin`. Upgrade and pause power can therefore live on separate keys (multisig, release engineer, security/ops key, DAO) from day-to-day administration, and each key can be rotated independently. The two-step `propose_admin` / `accept_admin` flow transfers the root key together with every role the old root held, so the existing deploy/upgrade flow is unchanged.
-
-Points 1–3 are **obligations on every issuer**, not background reading. The
-[issuer onboarding guide](docs/ISSUER_ONBOARDING.md) states each of them as a
-requirement, with the custody, rotation and revocation duties that go with them.
-
-These controls enforce what the cryptography protects. They do not make a verification
-private: for what the system deliberately does **not** hide, recover, or guarantee — broken
-down by which party observes what — see
-**[Limitations and non-goals](docs/LIMITATIONS.md)**.
-
----
-
-## Where your credentials live
-
-Credentials — including the raw attribute value and its random salt — are stored
-**only in the browser's `localStorage`** (key `stellarcred:credentials`). There is
-no StellarCred account and no server-side credential database. This means:
-
-- **Credentials are device-bound.** Clearing site data, switching browsers or
-  devices, or browsing privately erases them — there is no server copy to
-  recover them from.
-- **Back up before you lose them.** On the **Holder** page, click **Export
-  backup** to download a JSON file of every credential (treat it like a
-  password — it contains the raw values). Restore on any device with **Import
-  credential JSON**.
-- **Guardian recovery (Shamir Secret Sharing).** On the **Holder** page, click
-  **Guardian recovery** to split your 256-bit credential-encryption key among
-  $N$ chosen guardians or devices with a threshold $K$ (e.g. 2-of-3). Guardians
-  receive only key shares (never credential data). Entering any threshold of
-  shares reconstructs the key client-side and restores credentials.
-- **Move one credential at a time.** A credential's detail view offers
-  **Transfer to another device**: you pick a passphrase and the app shows a QR
-  code whose payload is encrypted (AES-256-GCM, PBKDF2 key derivation) before
-  leaving the device — scan it on the other device and enter the passphrase to
-  import.
-- **Choose which PII fields exports include.** On the Holder page, **Export
-  field visibility** controls the sensitive credential attribute value and
-  holder wallet address. Both are included by default (including for existing
-  browser profiles). Turning either off omits that key from credential JSON
-  backups, encrypted transfers, and Guardian recovery exports; proof-history
-  JSON/CSV contain proof metadata only. An export with an omitted field cannot
-  fully restore or prove that credential. Preferences are local to this browser
-  profile, and no admin override exists for local exports.
-- **What reaches the server and chain.** The only server round-trip is
-  `POST /api/witness` (rate-limited, never logged or persisted), which runs the
-  Noir circuit and returns witness bytes for in-browser proving. On chain, only
-  the public inputs — commitment (a hash), issuer key, credential type, expiry —
-  and the proof bytes are written. See the in-app docs (`/docs`) for the full
-  breakdown.
-
----
-
-## Prerequisites
-
-- Rust (nightly ok) + the `wasm32v1-none` target: `rustup target add wasm32v1-none`
-- Stellar CLI **v26+** to deploy (BN254 protocol); verified on 27.0.0
-- Noir `nargo` **1.0.0-beta.9** (`noirup -v 1.0.0-beta.9`) and Barretenberg
-  **bb v0.87.0** (`bbup -v 0.87.0`) — the versions must match or the VK won't validate
-- Node 20+ and pnpm
-
----
-
-## Build & test
+### Setup
 
 ```bash
-# Contracts — real proof verification in tests
-cargo test                 # 125 tests, incl. genuine BN254 verification
-stellar contract build     # wasm artifacts → target/wasm32v1-none/release
+# 1. Clone
+git clone https://github.com/<your-org>/mithaq.git
+cd mithaq
 
-# Circuits — compile, prove, and stage circuit JSON for the frontend
-./circuits/scripts/build.sh                 # all circuits
-./circuits/scripts/build.sh kyc_proof       # one
+# 2. Install JS dependencies for all workspaces
+pnpm install
 
-# Frontend
-cd frontend && pnpm install && pnpm dev
+# 3. Configure environment
+cp .env.example .env
+# then fill in the values (see Environment Variables)
+
+# 4. Start PostgreSQL and Redis
+docker compose -f infra/docker/docker-compose.dev.yml up -d
+
+# 5. Run database migrations and seed data
+pnpm --filter api db:migrate
+pnpm --filter api db:seed
+
+# 6. Set up the AI service
+cd apps/ai
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cd ../..
+
+# 7. Fund testnet accounts (rewards pool, escrow admin)
+pnpm run stellar:fund-testnet
+
+# 8. Start everything
+pnpm dev
 ```
+
+| Service | URL |
+|---|---|
+| Web app | http://localhost:3000 |
+| API | http://localhost:4000 |
+| API docs | http://localhost:4000/docs |
+| AI service | http://localhost:8000 |
+| AI docs | http://localhost:8000/docs |
 
 ---
 
-## Contract Deployments
+## 🔐 Environment Variables
 
-See [`DEPLOYMENTS.md`](./DEPLOYMENTS.md) for the authoritative list of live
-contract IDs, versions, WASM hashes, and deployment dates by network.
+Copy `.env.example` to `.env`. Never commit real secrets.
 
----
+### Shared / Stellar
 
-## Try it in 2 minutes
-
-Already have the toolchain installed and contracts deployed? Run the end-to-end
-demo — it seeds a wallet, issues mock credentials, generates proofs, submits
-them on-chain, and prints the verified claims table:
-
-```bash
-./scripts/demo.sh
-```
-
-> **What it does:** creates a fresh testnet wallet → issues KYC, age, and funds
-> credentials in mock mode (no real KYC provider) → generates UltraHonk proofs
-> locally → submits them to ProofRegistry → prints the verified claims.
->
-> **Prerequisites:** `stellar` CLI, `node`, `bb` (Barretenberg), `pnpm install`
-> in frontend/, and deployed contracts (run `./scripts/deploy.sh` once).
->
-> The script is idempotent — safe to re-run. Fails clearly if anything is missing.
-
----
-
-## Run it end to end (testnet) (manual)
-
-One-time toolchain (macOS):
-
-```bash
-brew install stellar-cli            # need v26+; verified on 27.0.0
-rustup target add wasm32v1-none
-curl -L https://raw.githubusercontent.com/noir-lang/noirup/main/install | bash
-noirup -v 1.0.0-beta.9              # nargo
-curl -L https://raw.githubusercontent.com/AztecProtocol/aztec-packages/refs/heads/next/barretenberg/bbup/install | bash
-bbup -v 0.87.0                      # bb
-```
-
-Deploy and wire the contracts, then point the frontend at them:
-
-```bash
-# 1. Create and fund a deployer identity (friendbot)
-stellar keys generate --global deployer --network testnet --fund
-
-# 2. Build, deploy all 4 contracts, wire them, and register the VKs.
-#    Set ISSUER_PRIVATE_KEY so the registered issuer key matches the one the
-#    app signs with (a 64-char hex secp256k1 key).
-ISSUER_PRIVATE_KEY=<hex> SOURCE=deployer ./scripts/deploy.sh
-
-# 3. Configure the frontend
-cp frontend/.env.example frontend/.env.local
-#    Paste the printed NEXT_PUBLIC_* contract ids, set NEXT_PUBLIC_ISSUER_ADDRESS,
-#    and set ISSUER_PRIVATE_KEY (server-only). Persona vars are optional.
-
-# 4. (optional) regenerate circuit artifacts + VKs
-./circuits/scripts/build.sh
-
-# 5. Run the app
-cd frontend && pnpm install && pnpm dev
-```
-
----
-
-## Development & Common Commands (`Makefile`)
-
-StellarCred spans four toolchains (Rust contracts, Noir zk-circuits, Next.js frontend/SDK, and Node.js indexer). A top-level `Makefile` provides unified build, test, and lint commands:
-
-| Command | Workspace | Description |
+| Variable | Description | Example |
 |---|---|---|
-| `make verify-deployment` | Verification | End-to-end verification of contract IDs, on-chain versions, reproducible WASM hashes, and VKs (`NETWORK=testnet|mainnet`). |
-| `make all` | All | Runs `build`, `test`, and `lint` across all workspaces (mirrors CI). |
-| `make build` | All | Builds Soroban contracts, frontend bundles, and indexer service. |
-| `make test` | All | Runs contract unit/snapshot tests, frontend/SDK tests, and indexer tests. |
-| `make lint` | All | Runs cargo clippy (`-D warnings`) and frontend ESLint/typecheck. |
-| `make fmt` | Rust | Checks code formatting across all contract crates (`cargo fmt --check`). |
-| `make build-contracts` | Contracts | Compiles contracts to `wasm32v1-none`. |
-| `make test-contracts` | Contracts | Runs `cargo test --locked`. |
-| `make compile-circuits`| Circuits | Compiles Noir circuits and verifies verification keys (`bb`). |
-| `make test-frontend` | Frontend | Runs frontend SDK tests, theme tests, and issuer package tests. |
-| `make test-sdk` | SDK | Runs standalone `@stellarcred/sdk` integration tests. |
-| `make test-example` | Examples | Runs typecheck and test suite for `examples/canonical-integration` and `examples/typescript`. |
-| `make test-a11y` | Frontend | Runs axe-core accessibility checks via Playwright. |
-| `make test-indexer` | Indexer | Runs Jest test suite for the indexer service. |
-| `make run-indexer` | Indexer | Starts the local indexer service. |
-| `make clean` | All | Cleans all target outputs and build artifacts. |
+| `STELLAR_NETWORK` | `testnet` or `public` | `testnet` |
+| `HORIZON_URL` | Horizon endpoint | `https://horizon-testnet.stellar.org` |
+| `SOROBAN_RPC_URL` | Soroban RPC endpoint | `https://soroban-testnet.stellar.org` |
+| `USDC_ISSUER` | Official USDC issuer for the chosen network | (verify with Circle docs) |
+| `REWARDS_SECRET_KEY` | Secret key of the quiz rewards account | server only |
+| `REWARDS_DAILY_CAP_XLM` | Max XLM a user can earn per day | `5` |
+| `SUBSCRIPTION_RECEIVER` | Public key that receives subscription payments | `G...` |
+| `SADAQAH_ACCOUNT` | Public key of the charity pool | `G...` |
+| `ESCROW_CONTRACT_ID` | Deployed `nikah-escrow` contract ID | `C...` |
+| `STAKE_CONTRACT_ID` | Deployed `intent-stake` contract ID | `C...` |
+| `BADGES_CONTRACT_ID` | Deployed `badges` contract ID | `C...` |
+
+### API
+
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `REDIS_URL` | Redis connection string |
+| `JWT_SECRET` | Secret for signing session tokens |
+| `S3_BUCKET`, `S3_REGION`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` | Object storage for photos |
+| `AI_SERVICE_URL` | URL of the AI service |
+| `AI_SERVICE_API_KEY` | Shared key sent as `X-API-Key` to the AI service |
+| `EMAIL_PROVIDER_API_KEY` | For verification emails and reminders |
+| `PUSH_PROVIDER_KEY` | For push notifications |
+
+### AI service
+
+| Variable | Description | Default |
+|---|---|---|
+| `GEMINI_API_KEY` | Google Gemini API key | none |
+| `SERVICE_API_KEY` | Required key for incoming requests | none |
+| `MODEL_NAME` | Gemini model to use | `gemini-1.5-flash` |
+| `AUTH_DISABLED` | Skip auth for local development only | `false` |
+
+### Web / Mobile
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | Public API base URL |
+| `NEXT_PUBLIC_STELLAR_NETWORK` | Network shown and used by the wallet connector |
 
 ---
 
-In the browser: install a Stellar wallet (**Freighter**, Albedo, xBull, and
-others via [Stellar Wallets Kit](https://github.com/Creit-Tech/Stellar-Wallets-Kit)
-are supported), switch it to **testnet**, and fund the account
-(https://lab.stellar.org or friendbot).
+## 🧪 Scripts
 
-- **Verify** — pick one or more claims; the app issues the credentials to your
-  wallet (saved locally, never server-side).
-- **Holder** — connect the wallet → "Generate proof" (proves locally, ~seconds)
-  → submit to Stellar (signs + submits).
-- **Apps** — three demo protocols (LendFi, FundVault, AgeGate) each gated on a
-  different claim type; watch *access denied → granted* as `is_verified` flips.
+Run from the repo root.
 
-**Rotating the issuer key** doesn't require a redeploy — generate a new key and
-call `rotate_issuer_key` on the existing IssuerRegistry. The previous key is
-retired with a validity window, so credentials it already signed keep verifying
-until they reach their natural expiry. If a key is compromised instead, call
-`revoke_issuer_key` to kill it immediately. See
-[docs/ISSUER_KEY_ROTATION.md](docs/ISSUER_KEY_ROTATION.md).
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start all apps in watch mode |
+| `pnpm build` | Build all apps and packages |
+| `pnpm lint` | Lint all workspaces |
+| `pnpm typecheck` | Type-check all workspaces |
+| `pnpm test` | Run unit tests across the monorepo |
+| `pnpm test:e2e` | Run Playwright end-to-end tests |
+| `pnpm --filter <name> <script>` | Run a script in one workspace |
+| `pnpm run stellar:fund-testnet` | Create and fund testnet accounts via Friendbot |
+| `pnpm run contracts:build` | Build all Soroban contracts |
+| `pnpm run contracts:test` | Run all contract tests |
 
-> In-browser proving uses cross-origin isolation (COOP/COEP headers in
-> `next.config.mjs`) for multithreading, falling back to single-threaded. See
-> [docs/CSP.md](docs/CSP.md) for the Content-Security-Policy configuration and headers.
+---
 
-### Testnet reset recovery
+## 🔗 API Overview
 
-After a Stellar testnet reset (which happens periodically and wipes all deployed contracts), you can recover your setup in one command. This script re-funds your deployer, redeploys all contracts, registers your issuer/VKs, and automatically updates the IDs in `frontend/.env.local`.
+Full interactive docs are served at `/docs`. A high-level map:
+
+| Area | Example routes |
+|---|---|
+| **Auth** | `POST /auth/signup`, `POST /auth/login`, `POST /auth/wallet/challenge` |
+| **Profiles** | `GET /profiles/me`, `PUT /profiles/me`, `POST /profiles/me/photos` |
+| **Matching** | `GET /matches/suggestions`, `POST /matches/:id/accept`, `POST /matches/:id/decline` |
+| **Chat** | `GET /chats`, `GET /chats/:id/messages`, WebSocket `/ws` |
+| **Wali mode** | `POST /wali/invite`, `POST /wali/approvals/:id`, `GET /wali/view` |
+| **Wallet** | `POST /payments/build`, `GET /payments/history` |
+| **Subscriptions** | `GET /plans`, `POST /subscriptions/checkout`, `GET /subscriptions/status` |
+| **Escrow** | `POST /escrow`, `GET /escrow/:id`, `POST /escrow/:id/release`, `POST /escrow/:id/cancel` |
+| **Intent stake** | `POST /stake`, `POST /stake/unstake`, `GET /stake/status` |
+| **Quiz** | `GET /quiz/next`, `POST /quiz/answer`, `GET /quiz/leaderboard` |
+| **Reminders** | `GET /reminders/today`, `PUT /reminders/preferences` |
+| **Feed** | `GET /feed`, `POST /posts`, `POST /posts/:id/like`, `POST /posts/:id/comments` |
+| **Moderation** | `POST /reports`, `POST /blocks` |
+| **Support (AI)** | `POST /support/chat` |
+
+All authenticated routes expect `Authorization: Bearer <token>`. The AI service additionally requires an `X-API-Key` header.
+
+---
+
+## 🤖 AI Assistant
+
+The AI service (`apps/ai`) is a FastAPI app that wraps Gemini with a Mithaq-specific system prompt.
+
+**What it does**
+
+- Helps users fix **sign-up problems** (verification emails, wallet connection, profile errors)
+- Helps with **subscription issues** (pending payments, wrong memo, plan not activated)
+- Suggests respectful conversation starters and explains basic marriage etiquette
+
+**What it does not do**
+
+- It does not give religious rulings (fatwa). It points users to qualified scholars.
+- It never asks for, accepts or repeats a secret key or seed phrase. If a message looks like one, it refuses and tells the user to treat the key as compromised.
+- It never signs or submits Stellar transactions.
+
+**Safety**
+
+- Input and output are checked by a content-safety layer.
+- Account-specific answers (subscription state, payment status) come from the API, not from the model's memory.
+- Responses with account data are never cached.
+
+---
+
+## 🛡️ Safety, Privacy and Moderation
+
+| Area | Approach |
+|---|---|
+| **Mutual consent** | Chat opens only after both users accept |
+| **Wali controls** | Access is invited, scoped and revocable at any time by the user |
+| **Photo privacy** | Option to blur or hide photos until a mutual match |
+| **Reporting and blocking** | In-app reporting on profiles, posts and messages, reviewed by moderators |
+| **AI moderation** | Messages and posts are screened for harassment, explicit content and scams |
+| **Anti-scam** | Rate limits, new-account restrictions and warnings about off-platform requests |
+| **Slashing safeguards** | Stake slashing requires a documented moderator decision and an appeal path |
+| **Data protection** | Encryption in transit and at rest; minimal data retention; account deletion on request |
+| **Rewards abuse** | Server-side answer validation, daily caps, rate limits and duplicate-account checks |
+
+---
+
+## ✅ Testing
 
 ```bash
-# Ensure ISSUER_PRIVATE_KEY and SOURCE are set
-ISSUER_PRIVATE_KEY=<hex> SOURCE=deployer ./scripts/reset-testnet.sh
+pnpm test              # unit and integration tests
+pnpm test:e2e          # end-to-end (Playwright)
+pnpm run contracts:test   # Soroban contract tests
+cd apps/ai && pytest -q   # AI service tests
 ```
 
----
-
-## Run it end to end (mainnet)
-
-Deploy and wire the contracts on the Stellar Mainnet:
-
-1. **Prepare a funded mainnet identity:**
-   Import your funded mainnet deployment account into the Stellar CLI:
-   ```bash
-   stellar keys import deployer --private-key <your-secret-key>
-   ```
-
-2. **Deploy, wire, and register VKs:**
-   Run the mainnet deployment script (providing your private issuer key in the environment for registration):
-   ```bash
-   ISSUER_PRIVATE_KEY=<hex> SOURCE=deployer ./scripts/deploy-mainnet.sh
-   ```
-
-3. **Configure the frontend:**
-   Copy the printed environment variables to your production environment configuration (e.g., `frontend/.env.local` for local production builds).
+- Contracts are tested against Soroban's local test environment, and critical flows are rehearsed on testnet.
+- Payment and subscription logic is tested with mocked Horizon responses and testnet runs.
+- Stellar-related code must have tests for failure cases (wrong asset, wrong memo, underpayment, duplicate payment).
 
 ---
 
-## Status
+## ☁️ Deployment
 
-- **ZK verification is real**, on soroban-sdk 26 with host-native BN254
-  (`soroban_sdk::crypto::bn254`) — on-chain verification fits the resource budget
-  (~0.014 XLM/verify on testnet). See [BENCHMARKS.md](BENCHMARKS.md) for the
-  full per-function instruction budget and fee breakdown.
-- **All public functions benchmarked.** `submit_proof` uses ~13.5M instructions
-  (~13.5% of the 100M per-transaction budget), confirming the protocol fits
-  comfortably within Soroban's limits. Read-only functions (`is_verified`,
-  `check_claim`) use <400K instructions (<0.4%). See [BENCHMARKS.md](BENCHMARKS.md).
-- **154 contract tests pass**, including real proof verification for all credential
-  types, in-circuit ECDSA, untrusted-issuer and wrong-issuer-key rejections,
-  issuer key rotation (a credential signed before a rotation still verifies, and
-  stops verifying once its validity window closes or the key is revoked),
-  proof-expiry tests that advance ledger time, and role-based access control
-  (role holder can act, non-holder cannot, admin can grant/revoke).
-- **Toolchain is pinned**: Noir `1.0.0-beta.9`, Barretenberg `bb 0.87.0`, matching
-  the verifier crate; the VK is deterministic from the circuit.
-- Server-side issuance, multi-claim flow, the return-URL redirect, the
-  `@stellarcred/sdk`, and the Persona relay are wired and build-clean.
-- **Bundle size budget & CI checks enforced**: WASM proving assets and route bundles are monitored with `@size-limit/file` and `@next/bundle-analyzer`. See [docs/BUNDLE_SIZE_BUDGET.md](docs/BUNDLE_SIZE_BUDGET.md).
+| Component | Suggested target |
+|---|---|
+| `apps/web` | Vercel |
+| `apps/api`, `apps/ai` | Render, Fly.io or any Docker host |
+| PostgreSQL / Redis | Managed services |
+| Contracts | Stellar testnet first, then mainnet after audit |
+
+CI (GitHub Actions) runs lint, type-checks, tests and contract builds on every pull request. Deploys happen from `main` after checks pass.
+
+**Pre-mainnet checklist**
+
+- [ ] Independent smart contract audit
+- [ ] Secrets in a managed secrets store; rotate all keys
+- [ ] Rewards account funded with a limited balance only
+- [ ] Moderation team and appeals process in place
+- [ ] Privacy policy and terms published
+- [ ] Legal review of payments and stake/slashing terms in target regions
 
 ---
 
-## References
+## 🗺️ Roadmap
 
-- ZK on Stellar — https://developers.stellar.org/docs/build/apps/zk
-- UltraHonk Soroban verifier — https://github.com/yugocabrio/rs-soroban-ultrahonk
-- Noir — https://noir-lang.org/docs
-- Stellar Wallets Kit — https://stellarwalletskit.dev
+**Phase 1: Foundation (MVP)**
+- 🛠️ Sign-up, profiles, matching
+- 🛠️ Mutual-accept chat
+- 🗓️ XLM / USDC send and receive
+- 🗓️ Subscriptions via XLM / USDC
+- 🗓️ Daily Islamic reminders
+
+**Phase 2: Community and engagement**
+- 🗓️ Quiz with XLM rewards
+- 🗓️ Social feed (posts, likes, comments)
+- 🗓️ AI support assistant
+
+**Phase 3: Trust and commitment**
+- 🗓️ Wali / Guardian Mode
+- 🗓️ Verified Intent stake
+- 🗓️ Nikah Escrow
+- 🗓️ Reputation badges
+
+**Phase 4: Growth**
+- 🗓️ Family Intro Packs
+- 🗓️ Sadaqah round-ups
+- 🗓️ Mobile apps release
+- 🗓️ Contract audit and mainnet launch
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, development workflow, and areas open for contribution.
+Contributions are welcome.
 
-## License
+1. Fork the repo and create a branch from `dev`: `git checkout -b feat/your-feature`
+2. Make your changes and add tests
+3. Run `pnpm lint && pnpm typecheck && pnpm test`
+4. Open a pull request against `dev` with a clear description
 
-[MIT](LICENSE) © 2026 Samuel Dahunsi
+**Guidelines**
+
+- Follow the existing code style (ESLint and Prettier run in CI).
+- Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`).
+- Claim an issue by commenting on it before you start.
+- Never commit secrets, real user data or private keys.
+- Islamic content (quiz questions, reminders) must cite its source and be reviewed before merging.
+
+See `CONTRIBUTING.md` for details.
+
+---
+
+## ⚠️ Disclaimer
+
+- Mithaq is a technology platform that connects people. It does **not** conduct, validate or guarantee any marriage.
+- Content in the app, including reminders, quizzes and AI replies, is for general education and is **not** a religious ruling. Consult a qualified scholar for fatwa and personal religious matters.
+- Escrow, staking and rewards involve real digital assets on mainnet. Use testnet while developing, and understand the terms before using mainnet features.
+- Nothing here is financial or legal advice.
+
+---
+
+## 📜 License
+
+Released under the [MIT License](LICENSE).
+
+---
+
+<p align="center">
+  <i>"And among His signs is that He created for you spouses from among yourselves, that you may find tranquility in them, and He placed between you affection and mercy."</i><br/>
+  <b>Quran 30:21</b>
+</p>

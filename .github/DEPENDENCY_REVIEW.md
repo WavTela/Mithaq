@@ -1,10 +1,10 @@
 # Dependency Review & License Checking
 
-This document describes the automated dependency review and license checking system for StellarCred.
+This document describes the automated dependency review and license checking system for Mithaq.
 
 ## Overview
 
-StellarCred has implemented a multi-layered dependency review system to protect the security of credential material (keys, proofs, wallet interactions) that lives in the browser. The system runs on every PR and:
+Mithaq has implemented a multi-layered dependency review system to protect the security of credential material (keys, proofs, wallet interactions) that lives in the browser. The system runs on every PR and:
 
 1. **Detects new npm packages** being added to the project
 2. **Checks for known advisories** in newly added packages using the GitHub Advisory Database

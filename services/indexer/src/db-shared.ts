@@ -647,7 +647,7 @@ function buildIssuerAnalytics(
     },
     {
       name: "DeFi Compliance Portal",
-      addressOrDomain: "compliance.stellarcred.xyz",
+      addressOrDomain: "compliance.mithaq.xyz",
       count: Math.floor(totalVerificationAttempts * 0.28),
       percentage: 28.0,
     },

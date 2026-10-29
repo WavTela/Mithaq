@@ -8,9 +8,9 @@
  * ## Usage
  *
  * ```ts
- * import { getCredentialCircuitVersion, isCompatibleCredential } from "@stellarcred/sdk/version";
+ * import { getCredentialCircuitVersion, isCompatibleCredential } from "@mithaq/sdk/version";
  * // or from the main entry point:
- * import { getCredentialCircuitVersion, isCompatibleCredential } from "@stellarcred/sdk";
+ * import { getCredentialCircuitVersion, isCompatibleCredential } from "@mithaq/sdk";
  * ```
  *
  * ## Compatibility check pattern
@@ -19,9 +19,9 @@
  * with the current circuit version. If not, prompt the holder to re-verify:
  *
  * ```ts
- * import StellarCred, { isCompatibleCredential } from "@stellarcred/sdk";
+ * import Mithaq, { isCompatibleCredential } from "@mithaq/sdk";
  *
- * const status = StellarCred.getCredentialVersionStatus(credential);
+ * const status = Mithaq.getCredentialVersionStatus(credential);
  * if (status !== "compatible") {
  *   // Prompt the holder to re-verify
  *   showReVerifyPrompt(status);
@@ -117,9 +117,9 @@ export type CredentialVersionStatus =
 /**
  * Known circuit versions, keyed by `{network}:{proofRegistryContractId}`.
  *
- * Protocols integrating StellarCred can extend this map with their own
+ * Protocols integrating Mithaq can extend this map with their own
  * deployment entries, or compare against a version they receive out-of-band
- * (e.g. from the StellarCred deployment registry at DEPLOYMENTS.md).
+ * (e.g. from the Mithaq deployment registry at DEPLOYMENTS.md).
  *
  * Version tag format: `{noir_version}+{bb_version}` — matches the tool
  * versions in `.github/workflows/ci.yml`.
@@ -178,10 +178,10 @@ export function getCredentialCircuitVersion(
  * @param credential  The credential to check.
  * @param expectedVersion  The circuit version string to compare against.
  *   Obtain the current version from `getDeploymentCircuitVersion()` or from
- *   the StellarCred deployment registry.
+ *   the Mithaq deployment registry.
  *
  * @example
- * const current = await StellarCred.getDeploymentCircuitVersion("testnet", proofRegistryId);
+ * const current = await Mithaq.getDeploymentCircuitVersion("testnet", proofRegistryId);
  * if (!isCompatibleCredential(credential, current)) {
  *   promptReVerify(credential);
  * }

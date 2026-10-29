@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy the StellarCred contracts to testnet, wiring them together in
+# Deploy the Mithaq contracts to testnet, wiring them together in
 # dependency order, and print the resulting env vars for the frontend.
 #
 # Usage:

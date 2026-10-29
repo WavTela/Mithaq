@@ -16,29 +16,29 @@
 
 // ─── 1. Configure at startup (call once, e.g. in instrumentation.ts) ─────────
 
-import StellarCred, {
+import Mithaq, {
   configure,
   hasClaim,
   buildVerifyUrl,
   parseReturnParams,
   createWalletChallenge,
   verifyWalletClaim,
-} from "@stellarcred/sdk";
+} from "@mithaq/sdk";
 
 // Option A: configure explicitly
 configure({
-  registryId: process.env.STELLARCRED_REGISTRY_ID ?? "",
+  registryId: process.env.MITHAQ_REGISTRY_ID ?? "",
   rpcUrl:
-    process.env.STELLARCRED_RPC_URL ?? "https://soroban-testnet.stellar.org",
+    process.env.MITHAQ_RPC_URL ?? "https://soroban-testnet.stellar.org",
 });
 
 // Option B: set env vars and skip configure() — the SDK picks them up
-// automatically if STELLARCRED_REGISTRY_ID and STELLARCRED_RPC_URL are set.
+// automatically if MITHAQ_REGISTRY_ID and MITHAQ_RPC_URL are set.
 // Call healthCheck() at startup to confirm configuration before serving traffic.
 
-const health = StellarCred.healthCheck();
+const health = Mithaq.healthCheck();
 if (!health.configured) {
-  console.error("[StellarCred] misconfigured — missing:", health.missing);
+  console.error("[Mithaq] misconfigured — missing:", health.missing);
   // Don't crash; gates will deny access until the config is fixed.
 }
 
@@ -72,7 +72,7 @@ export async function kycGate(
   const verified = await hasClaim(wallet, "kyc");
 
   if (!verified) {
-    // Redirect unverified users to StellarCred, with this page as the return URL
+    // Redirect unverified users to Mithaq, with this page as the return URL
     const verifyUrl = buildVerifyUrl({
       claim: "kyc",
       returnUrl: currentUrl,
@@ -126,7 +126,7 @@ export async function fundsGate(
   return null;
 }
 
-// ─── 4. Handling the return redirect from StellarCred ────────────────────────
+// ─── 4. Handling the return redirect from Mithaq ────────────────────────
 
 /**
  * Called in the route that receives the user back from /verify.

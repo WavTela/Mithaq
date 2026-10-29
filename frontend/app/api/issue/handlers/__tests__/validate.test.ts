@@ -1,6 +1,6 @@
 // @vitest-environment node
 //
-// Node environment, not the workspace-default jsdom: `@stellarcred/issuer`
+// Node environment, not the workspace-default jsdom: `@mithaq/issuer`
 // refuses to load when `window` exists (see its server-only guard), and
 // validate.ts imports CREDENTIAL_TYPES from it.
 //
@@ -114,7 +114,7 @@ describe("normalizeIssueRequest", () => {
     expect(request.credentialTypes).toEqual(["kyc", "age"]);
     expect(request.holder).toBe(HOLDER);
     expect(request.issuerId).toBe(ISSUER_ID);
-    expect(request.issuerName).toBe("StellarCred Authority");
+    expect(request.issuerName).toBe("Mithaq Authority");
     expect(request.expiry).toBe("90 days");
     expect(request.attributes).toEqual({ date_of_birth: "1995-06-15" });
   });

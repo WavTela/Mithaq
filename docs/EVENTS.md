@@ -1,6 +1,6 @@
-# StellarCred Contract Events Schema
+# Mithaq Contract Events Schema
 
-This document authoritatively specifies every event emitted by StellarCred's Soroban contracts, their exact topic structure, payload data types, emission triggers, and stability guarantees for off-chain indexers and protocol integrators.
+This document authoritatively specifies every event emitted by Mithaq's Soroban contracts, their exact topic structure, payload data types, emission triggers, and stability guarantees for off-chain indexers and protocol integrators.
 
 > **Canonical location: `docs/EVENTS.md`.** There is exactly one copy of this
 > specification in the repository, and it is this file. There is no root-level
@@ -11,7 +11,7 @@ This document authoritatively specifies every event emitted by StellarCred's Sor
 
 ## Architecture & Topic Convention
 
-All StellarCred contract events follow a deterministic, structured topic tuple convention:
+All Mithaq contract events follow a deterministic, structured topic tuple convention:
 
 ```text
 ( contract: Symbol, action: Symbol[, credential_type: Symbol] )
@@ -626,7 +626,7 @@ Off-chain indexers (e.g. `services/indexer`) monitor events using Soroban RPC `g
 ### SDK Real-Time Subscription Helper (`#392`)
 
 Protocols that need push-style notification when a watched wallet gains or
-loses a claim should use `subscribeClaims()` from `@stellarcred/sdk` instead
+loses a claim should use `subscribeClaims()` from `@mithaq/sdk` instead
 of decoding these events themselves. It consumes the indexer service
 (`services/indexer`) so a single subscription covers many wallets:
 

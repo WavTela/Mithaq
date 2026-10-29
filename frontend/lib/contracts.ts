@@ -1,6 +1,6 @@
 "use client";
 
-// Public surface of the StellarCred client-side contract layer.
+// Public surface of the Mithaq client-side contract layer.
 //
 // This barrel re-exports every symbol that was previously defined in this
 // file so that all existing import paths (`@/lib/contracts`) continue to

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { CREDENTIAL_TYPES, type ClaimParams, type Credential } from "@stellarcred/issuer";
+import { CREDENTIAL_TYPES, type ClaimParams, type Credential } from "@mithaq/issuer";
 import { fetchIssuerPubkey } from "@/lib/issuer-registry";
 import { circuitVersionStampFor } from "@/lib/circuit-versions";
 import { readJsonBody, bodyErrorResponse } from "@/lib/request-limits";
@@ -294,7 +294,7 @@ async function executeBatchRequest(
     const holder = item.holder?.trim();
     const rawIssuerId = item.issuerId?.trim();
     const issuerId = rawIssuerId ?? tenant?.config.issuerId ?? SIM_ACCOUNT;
-    const issuerName = item.issuerName ?? tenant?.config.issuerName ?? "StellarCred Authority";
+    const issuerName = item.issuerName ?? tenant?.config.issuerName ?? "Mithaq Authority";
     const expiry = item.expiry ?? "90 days";
 
     if (!holder) {

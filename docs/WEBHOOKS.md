@@ -1,12 +1,12 @@
-# StellarCred Webhook Integration Guide
+# Mithaq Webhook Integration Guide
 
-This guide describes how to configure, receive, and verify asynchronous issuance callbacks from external identity providers (Persona, Plaid, or custom providers) using StellarCred's dedicated webhook endpoint (#846).
+This guide describes how to configure, receive, and verify asynchronous issuance callbacks from external identity providers (Persona, Plaid, or custom providers) using Mithaq's dedicated webhook endpoint (#846).
 
 ---
 
 ## 1. Overview
 
-During credential verification and issuance, some external checks (such as government ID document review or fraud checks) complete asynchronously. External providers send webhook HTTP POST notifications to StellarCred to update verification status.
+During credential verification and issuance, some external checks (such as government ID document review or fraud checks) complete asynchronously. External providers send webhook HTTP POST notifications to Mithaq to update verification status.
 
 The dedicated endpoint:
 

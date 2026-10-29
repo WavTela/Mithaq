@@ -35,7 +35,7 @@ import {
   InvalidAddressError,
   RpcError,
   TimeoutError,
-  StellarCred,
+  Mithaq,
   withRetry,
   __resetBoundaryWarningForTesting,
 } from "./index";
@@ -45,10 +45,10 @@ const WALLET = "GABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
 describe("error taxonomy exports", () => {
   it("exports ConfigError, RpcError, and TimeoutError on the namespace", () => {
-    expect(StellarCred.ConfigError).toBe(ConfigError);
-    expect(StellarCred.RpcError).toBe(RpcError);
-    expect(StellarCred.TimeoutError).toBe(TimeoutError);
-    expect(StellarCred.InvalidAddressError).toBe(InvalidAddressError);
+    expect(Mithaq.ConfigError).toBe(ConfigError);
+    expect(Mithaq.RpcError).toBe(RpcError);
+    expect(Mithaq.TimeoutError).toBe(TimeoutError);
+    expect(Mithaq.InvalidAddressError).toBe(InvalidAddressError);
     expect(new ConfigError().name).toBe("ConfigError");
     expect(new RpcError().name).toBe("RpcError");
     expect(new InvalidAddressError().name).toBe("InvalidAddressError");
@@ -447,8 +447,8 @@ describe("verifyPreset", () => {
     expect(isVerified).not.toHaveBeenCalled();
   });
 
-  it("is exported on the StellarCred namespace", () => {
-    expect(StellarCred.verifyPreset).toBe(verifyPreset);
+  it("is exported on the Mithaq namespace", () => {
+    expect(Mithaq.verifyPreset).toBe(verifyPreset);
   });
 });
 
@@ -462,9 +462,9 @@ describe("warnOnClientServerBoundaryViolation", () => {
     // Reset the one-shot flag before every test so each case starts fresh.
     __resetBoundaryWarningForTesting();
     // Ensure no leaked env vars linger from a previous test.
-    delete (process.env as Record<string, string | undefined>)["STELLARCRED_REGISTRY_ID"];
+    delete (process.env as Record<string, string | undefined>)["MITHAQ_REGISTRY_ID"];
     delete (process.env as Record<string, string | undefined>)["PROOF_REGISTRY_ID"];
-    delete (process.env as Record<string, string | undefined>)["STELLARCRED_RPC_URL"];
+    delete (process.env as Record<string, string | undefined>)["MITHAQ_RPC_URL"];
   });
 
   afterEach(() => {
@@ -472,36 +472,36 @@ describe("warnOnClientServerBoundaryViolation", () => {
     __resetBoundaryWarningForTesting();
     // Clean up any injected globals or env vars.
     delete (globalThis as Record<string, unknown>).window;
-    delete (process.env as Record<string, string | undefined>)["STELLARCRED_REGISTRY_ID"];
+    delete (process.env as Record<string, string | undefined>)["MITHAQ_REGISTRY_ID"];
     delete (process.env as Record<string, string | undefined>)["PROOF_REGISTRY_ID"];
-    delete (process.env as Record<string, string | undefined>)["STELLARCRED_RPC_URL"];
+    delete (process.env as Record<string, string | undefined>)["MITHAQ_RPC_URL"];
   });
 
   it("does NOT warn in a non-browser (Node.js) context even with server-only env vars", () => {
     // In vitest/Node, `window` is not defined â€” simulates a real Node.js environment.
     // Ensure window is absent.
     delete (globalThis as Record<string, unknown>).window;
-    process.env["STELLARCRED_REGISTRY_ID"] = "C_SERVER_REGISTRY";
+    process.env["MITHAQ_REGISTRY_ID"] = "C_SERVER_REGISTRY";
 
     configure({ registryId: "C_SERVER_REGISTRY" });
 
     // No boundary warning should fire â€” we're in Node, not a browser.
     const boundaryWarnings = consoleWarnSpy.mock.calls.filter(([msg]) =>
-      typeof msg === "string" && msg.includes("[StellarCred]") && msg.includes("server-only"),
+      typeof msg === "string" && msg.includes("[Mithaq]") && msg.includes("server-only"),
     );
     expect(boundaryWarnings).toHaveLength(0);
   });
 
-  it("warns in a browser context when a leaked STELLARCRED_* env var is visible in process.env", () => {
+  it("warns in a browser context when a leaked MITHAQ_* env var is visible in process.env", () => {
     // Simulate browser context by setting window on globalThis.
     (globalThis as Record<string, unknown>).window = {};
     // Simulate a leaked server-only env var visible in process.env.
-    process.env["STELLARCRED_REGISTRY_ID"] = "C_LEAKED_REGISTRY";
+    process.env["MITHAQ_REGISTRY_ID"] = "C_LEAKED_REGISTRY";
 
     configure({ registryId: "C_LEAKED_REGISTRY" });
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("[StellarCred]"),
+      expect.stringContaining("[Mithaq]"),
     );
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       expect.stringContaining("server-only environment variables"),
@@ -516,42 +516,42 @@ describe("warnOnClientServerBoundaryViolation", () => {
     configure({ registryId: process.env["PROOF_REGISTRY_ID"] });
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("[StellarCred]"),
+      expect.stringContaining("[Mithaq]"),
     );
   });
 
   it("does NOT warn in a browser context when no suspicious env indicators are present", () => {
     (globalThis as Record<string, unknown>).window = {};
     // Ensure no leaked vars exist.
-    delete (process.env as Record<string, string | undefined>)["STELLARCRED_REGISTRY_ID"];
+    delete (process.env as Record<string, string | undefined>)["MITHAQ_REGISTRY_ID"];
     delete (process.env as Record<string, string | undefined>)["PROOF_REGISTRY_ID"];
 
     // Use a fresh value not in process.env.
     configure({ registryId: "C_FRESH_PUBLIC_REGISTRY_ID_NOT_IN_ENV" });
 
     const boundaryWarnings = consoleWarnSpy.mock.calls.filter(([msg]) =>
-      typeof msg === "string" && msg.includes("[StellarCred]") && msg.includes("server-only"),
+      typeof msg === "string" && msg.includes("[Mithaq]") && msg.includes("server-only"),
     );
     expect(boundaryWarnings).toHaveLength(0);
   });
 
   it("warns at most once per load even if configure() is called multiple times", () => {
     (globalThis as Record<string, unknown>).window = {};
-    process.env["STELLARCRED_REGISTRY_ID"] = "C_LEAKED";
+    process.env["MITHAQ_REGISTRY_ID"] = "C_LEAKED";
 
     configure({ registryId: "C_LEAKED" });
     configure({ registryId: "C_LEAKED" });
     configure({ registryId: "C_LEAKED" });
 
     const boundaryWarnings = consoleWarnSpy.mock.calls.filter(([msg]) =>
-      typeof msg === "string" && msg.includes("[StellarCred]") && msg.includes("server-only"),
+      typeof msg === "string" && msg.includes("[Mithaq]") && msg.includes("server-only"),
     );
     expect(boundaryWarnings).toHaveLength(1);
   });
 
   it("does NOT warn when NODE_ENV is 'production'", () => {
     (globalThis as Record<string, unknown>).window = {};
-    process.env["STELLARCRED_REGISTRY_ID"] = "C_LEAKED_PROD";
+    process.env["MITHAQ_REGISTRY_ID"] = "C_LEAKED_PROD";
     const envMut = process.env as Record<string, string | undefined>;
     const origNodeEnv = envMut["NODE_ENV"];
     envMut["NODE_ENV"] = "production";
@@ -560,7 +560,7 @@ describe("warnOnClientServerBoundaryViolation", () => {
       configure({ registryId: "C_LEAKED_PROD" });
 
       const boundaryWarnings = consoleWarnSpy.mock.calls.filter(([msg]) =>
-        typeof msg === "string" && msg.includes("[StellarCred]") && msg.includes("server-only"),
+        typeof msg === "string" && msg.includes("[Mithaq]") && msg.includes("server-only"),
       );
       expect(boundaryWarnings).toHaveLength(0);
     } finally {
@@ -738,21 +738,21 @@ describe("buildVerifyUrl expiry + single-use", () => {
 
 describe("unique personhood and nullifier support (#395)", () => {
   it("derives deterministic nullifier within the same context", () => {
-    const n1 = StellarCred.deriveNullifier("secret_123", "app_context_a");
-    const n2 = StellarCred.deriveNullifier("secret_123", "app_context_a");
+    const n1 = Mithaq.deriveNullifier("secret_123", "app_context_a");
+    const n2 = Mithaq.deriveNullifier("secret_123", "app_context_a");
     expect(n1).toBe(n2);
     expect(n1).toHaveLength(64);
   });
 
   it("derives unlinkable nullifiers across different contexts for same secret", () => {
-    const n_a = StellarCred.deriveNullifier("secret_123", "app_context_a");
-    const n_b = StellarCred.deriveNullifier("secret_123", "app_context_b");
+    const n_a = Mithaq.deriveNullifier("secret_123", "app_context_a");
+    const n_b = Mithaq.deriveNullifier("secret_123", "app_context_b");
     expect(n_a).not.toBe(n_b);
   });
 
   it("derives different nullifiers for different secrets in same context", () => {
-    const n1 = StellarCred.deriveNullifier("secret_1", "app_context_a");
-    const n2 = StellarCred.deriveNullifier("secret_2", "app_context_a");
+    const n1 = Mithaq.deriveNullifier("secret_1", "app_context_a");
+    const n2 = Mithaq.deriveNullifier("secret_2", "app_context_a");
     expect(n1).not.toBe(n2);
   });
 });

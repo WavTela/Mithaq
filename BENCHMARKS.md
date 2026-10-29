@@ -1,4 +1,4 @@
-# StellarCred — Contract Instruction Budget Benchmarks
+# Mithaq — Contract Instruction Budget Benchmarks
 
 Pre-mainnet cost documentation for every public function across all four Soroban contracts.
 Soroban charges per CPU instruction, memory byte, and ledger entry read/write — unexpectedly

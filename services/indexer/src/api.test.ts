@@ -131,7 +131,7 @@ describe("GET /health", () => {
 
   it("includes service and version metadata", async () => {
     const res = await request(app).get("/health");
-    expect(res.body.service).toBe("stellarcred-indexer");
+    expect(res.body.service).toBe("mithaq-indexer");
     expect(typeof res.body.version).toBe("string");
     expect(res.body.version.length).toBeGreaterThan(0);
     expect(res.body.ready).toBe(true);
@@ -473,34 +473,34 @@ describe("CORS & Rate Limiting integration in API", () => {
   it("emits CORS headers for allowed origin and handles preflight", async () => {
     const customConfig = {
       ...makeConfig(tmpFile),
-      corsOrigins: ["https://app.stellarcred.xyz"],
+      corsOrigins: ["https://app.mithaq.xyz"],
     };
     const customApp = buildApp(db, makeIngester(), customConfig);
 
     // GET request from allowed origin
     const getRes = await request(customApp)
       .get("/health")
-      .set("Origin", "https://app.stellarcred.xyz");
+      .set("Origin", "https://app.mithaq.xyz");
     expect(getRes.status).toBe(200);
     expect(getRes.headers["access-control-allow-origin"]).toBe(
-      "https://app.stellarcred.xyz"
+      "https://app.mithaq.xyz"
     );
 
     // OPTIONS preflight request
     const optRes = await request(customApp)
       .options("/claims")
-      .set("Origin", "https://app.stellarcred.xyz")
+      .set("Origin", "https://app.mithaq.xyz")
       .set("Access-Control-Request-Method", "GET");
     expect(optRes.status).toBe(204);
     expect(optRes.headers["access-control-allow-origin"]).toBe(
-      "https://app.stellarcred.xyz"
+      "https://app.mithaq.xyz"
     );
   });
 
   it("does not emit CORS headers for untrusted origins", async () => {
     const customConfig = {
       ...makeConfig(tmpFile),
-      corsOrigins: ["https://app.stellarcred.xyz"],
+      corsOrigins: ["https://app.mithaq.xyz"],
     };
     const customApp = buildApp(db, makeIngester(), customConfig);
 

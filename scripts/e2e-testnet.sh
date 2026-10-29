@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Run the complete StellarCred happy path against an ephemeral testnet wallet.
+# Run the complete Mithaq happy path against an ephemeral testnet wallet.
 # The contracts are deployed fresh; the wallet and local artifacts are removed
 # on exit. Testnet contract instances are immutable and remain network state.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SOURCE="${SOURCE:-stellarcred-e2e-$$}"
+SOURCE="${SOURCE:-mithaq-e2e-$$}"
 NETWORK="${NETWORK:-testnet}"
 STARTED_AT="$(date +%s)"
 TMP="$(mktemp -d)"

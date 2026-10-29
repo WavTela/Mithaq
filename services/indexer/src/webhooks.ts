@@ -98,8 +98,8 @@ async function sendWebhook(
         headers: {
           "Content-Type": "application/json",
           "Content-Length": Buffer.byteLength(body),
-          "X-StellarCred-Timestamp": timestamp,
-          "X-StellarCred-Signature": signature,
+          "X-Mithaq-Timestamp": timestamp,
+          "X-Mithaq-Signature": signature,
         },
         timeout: DELIVERY_TIMEOUT_MS,
         lookup: (_hostname, _options, callback) => {

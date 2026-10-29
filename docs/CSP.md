@@ -1,6 +1,6 @@
 # Content Security Policy (CSP)
 
-This document details the Content Security Policy implementation for the StellarCred frontend, its operational modes, directive requirements, violation reporting pipeline, and rollout procedures.
+This document details the Content Security Policy implementation for the Mithaq frontend, its operational modes, directive requirements, violation reporting pipeline, and rollout procedures.
 
 ---
 
@@ -38,7 +38,7 @@ The table below outlines directives present across the legacy policy (`strict: f
 | `script-src` | Legacy: `'self' 'unsafe-inline' 'wasm-unsafe-eval'`<br>Strict: `'self' 'nonce-<nonce>' 'wasm-unsafe-eval'` | Required for Next.js runtime bundles. `'wasm-unsafe-eval'` is strictly required for WebAssembly instantiation in Noir and Aztec Barretenberg (`bb.js`). Strict mode disallows `'unsafe-inline'` and requires valid nonces. |
 | `style-src` | `'self' 'unsafe-inline'` | Retains `'unsafe-inline'` because React and Next.js emit inline style attributes dynamically at runtime, which CSP nonces cannot govern. |
 | `img-src` | `'self' data: https://stellar.creit.tech https://storage.herewallet.app` (+ `https://explorer-api.walletconnect.com` if WalletConnect enabled) | `stellar.creit.tech` hosts wallet icons for Freighter, xBull, Lobstr, Albedo, etc. in Stellar Wallets Kit. `storage.herewallet.app` hosts HOT Wallet icons. `explorer-api.walletconnect.com` loads WalletConnect modal icons when enabled. data: allows data URIs for images. |
-| `connect-src` | `'self' https://soroban-testnet.stellar.org https://soroban-mainnet.stellar.org` (+ `NEXT_PUBLIC_RPC_URL` if set, + `NEXT_PUBLIC_INDEXER_URL` if set, + `wss://relay.walletconnect.com wss://relay.walletconnect.org https://explorer-api.walletconnect.com https://verify.walletconnect.com https://verify.walletconnect.org` if WalletConnect enabled) | Browser-side client RPC calls (`contracts.ts`) against Soroban endpoints and client-side indexer claim queries (`@stellarcred/sdk`). WalletConnect requires WebSocket relays and verify/explorer APIs hardcoded in `@walletconnect/core`. |
+| `connect-src` | `'self' https://soroban-testnet.stellar.org https://soroban-mainnet.stellar.org` (+ `NEXT_PUBLIC_RPC_URL` if set, + `NEXT_PUBLIC_INDEXER_URL` if set, + `wss://relay.walletconnect.com wss://relay.walletconnect.org https://explorer-api.walletconnect.com https://verify.walletconnect.com https://verify.walletconnect.org` if WalletConnect enabled) | Browser-side client RPC calls (`contracts.ts`) against Soroban endpoints and client-side indexer claim queries (`@mithaq/sdk`). WalletConnect requires WebSocket relays and verify/explorer APIs hardcoded in `@walletconnect/core`. |
 | `frame-src` | `'self' https://verify.walletconnect.com https://verify.walletconnect.org` (WalletConnect only) | Permits WalletConnect's domain verification iframe loaded by `@walletconnect/sign-client`. Omitted when WalletConnect is disabled. |
 | `object-src` | Both policies: `'none'` (added to the legacy policy upstream in #800 and mirrored in `lib/csp.mjs`) | Blocks legacy plugin execution (Flash, Java applets). |
 | `base-uri` | Both policies: `'self'` (added to the legacy policy upstream in #800 and mirrored in `lib/csp.mjs`) | Prevents malicious injection of `<base>` elements altering relative URLs. |

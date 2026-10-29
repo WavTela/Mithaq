@@ -17,7 +17,7 @@ const basePayload: PersonaPendingPayload = {
   credential_types: ["kyc"],
   holder: "GHOLDER123",
   issuerId: "GISSUER456",
-  issuerName: "StellarCred Authority",
+  issuerName: "Mithaq Authority",
   expiry: "2026-12-31T00:00:00Z",
   claimParams: { thresholdYears: "18", mode: "any" },
 };

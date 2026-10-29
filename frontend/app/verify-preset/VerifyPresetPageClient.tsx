@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import {
   verifyPreset,
   type PresetVerificationResult,
-} from "@stellarcred/sdk";
+} from "@mithaq/sdk";
 import { decodePresetClaims } from "@/lib/presets";
 import { TYPE_META } from "@/lib/credential";
 import { classifyRpcError, probeRpcHealth } from "@/lib/rpc-health";

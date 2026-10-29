@@ -183,7 +183,7 @@ export function CredentialTypeSelector({
                   style={{ fontSize: "0.75rem", margin: "0.5rem 0 0" }}
                 >
                   You&rsquo;ll be taken to a secure identity verification flow.
-                  No personal data is stored by StellarCred.
+                  No personal data is stored by Mithaq.
                 </p>
               )}
               {on && key === "age" && (

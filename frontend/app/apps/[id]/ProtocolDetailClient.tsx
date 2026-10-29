@@ -115,7 +115,7 @@ function ProtocolDetailBody({
           <IconCheck size={18} color="var(--accent)" stroke={2.5} />
           <span>
             <strong>Verification complete.</strong>{" "}
-            <span className="muted">You were returned here from StellarCred automatically.</span>
+            <span className="muted">You were returned here from Mithaq automatically.</span>
           </span>
         </div>
       )}
@@ -147,7 +147,7 @@ function ProtocolDetailBody({
           <span>
             <strong style={{ color: "#f5b942" }}>Illustrative demo.</strong>{" "}
             {protocol.name} is not a real deployed protocol. It exists to show how
-            StellarCred credential gating works end-to-end — the access check and
+            Mithaq credential gating works end-to-end — the access check and
             the ZK proofs are real, the app behind the gate is not.
           </span>
         </div>

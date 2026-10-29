@@ -6,7 +6,7 @@ import {
 import * as verifyNonce from "../verify-nonce";
 
 describe("verify-redirect", () => {
-  const currentOrigin = "https://stellarcred.xyz";
+  const currentOrigin = "https://mithaq.xyz";
   const address = "GBJPTQJ74N2O4SQUB2T2U3M2WJ27GZTXOQ2HQZ6A2O4SQUB2T2U3M2WJ";
 
   describe("resolveVerifyRedirect", () => {
@@ -46,7 +46,7 @@ describe("verify-redirect", () => {
 
     it("resolves same-origin absolute URL as internal navigation", () => {
       const res = resolveVerifyRedirect({
-        returnUrl: "https://stellarcred.xyz/dashboard",
+        returnUrl: "https://mithaq.xyz/dashboard",
         address,
         justIssuedClaims: ["funds"],
         currentOrigin,

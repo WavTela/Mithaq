@@ -58,7 +58,7 @@ describe("buildVerifyUrl helper & typed options", () => {
       };
       const url = new URL(buildVerifyUrl(opts));
 
-      expect(url.origin).toBe("https://stellarcred.xyz");
+      expect(url.origin).toBe("https://mithaq.xyz");
       expect(url.pathname).toBe("/verify");
       expect(url.searchParams.get("return_url")).toBe("https://app.xyz/deposit");
       expect(url.searchParams.get("claim")).toBe("kyc");
@@ -88,7 +88,7 @@ describe("buildVerifyUrl helper & typed options", () => {
     });
 
     it("uses configured baseUrl from SDK configure()", () => {
-      configure({ baseUrl: "https://staging.stellarcred.xyz" });
+      configure({ baseUrl: "https://staging.mithaq.xyz" });
 
       const url = new URL(
         buildVerifyUrl({
@@ -96,7 +96,7 @@ describe("buildVerifyUrl helper & typed options", () => {
         }),
       );
 
-      expect(url.origin).toBe("https://staging.stellarcred.xyz");
+      expect(url.origin).toBe("https://staging.mithaq.xyz");
     });
 
     it("supports multiple claims", () => {

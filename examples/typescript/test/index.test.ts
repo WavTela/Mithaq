@@ -25,7 +25,7 @@ test("TypeScript SDK Example Suite", async (t) => {
 
   await t.test("proveAndVerifyWalletControl verifies wallet signature with ed25519", async () => {
     const keypair = Keypair.random();
-    const result = await proveAndVerifyWalletControl(keypair, "kyc", "test.stellarcred.xyz");
+    const result = await proveAndVerifyWalletControl(keypair, "kyc", "test.mithaq.xyz");
 
     // The signature itself must be cryptographically valid
     assert.strictEqual(result.signatureValid, true);

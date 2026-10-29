@@ -36,7 +36,7 @@ const APP_NETWORK = (
 
 const CONNECT_TIMEOUT_MS = 60_000;
 const APP_BASE_URL =
-  process.env.NEXT_PUBLIC_STELLARCRED_BASE_URL ?? "https://stellarcred.xyz";
+  process.env.NEXT_PUBLIC_MITHAQ_BASE_URL ?? "https://mithaq.xyz";
 // Get a free project ID at https://cloud.reown.com — WalletConnect is omitted
 // from the wallet-picker modal entirely when unset (see loadKit() below), it
 // isn't a hard error.
@@ -69,7 +69,7 @@ async function loadKit(): Promise<StellarWalletsKit> {
         if (!WALLETCONNECT_PROJECT_ID) return null;
         return new WalletConnectModule({
           projectId: WALLETCONNECT_PROJECT_ID,
-          name: "StellarCred",
+          name: "Mithaq",
           description: "Privacy-preserving on-chain credentials for Stellar",
           url: APP_BASE_URL,
           icons: [`${APP_BASE_URL}/icon.svg`],
@@ -207,7 +207,7 @@ export function getWalletErrorInfo(err: WalletConnectError): WalletErrorInfo {
  * `unknown` connection failures, so users have a concrete way to surface bugs.
  */
 export function getWalletReportUrl(): string {
-  const url = new URL("https://github.com/ToluLabs/StellarCred/issues/new");
+  const url = new URL("https://github.com/ToluLabs/Mithaq/issues/new");
   url.searchParams.set("labels", "bug");
   url.searchParams.set("title", "Wallet connection failed (unknown error)");
   url.searchParams.set(

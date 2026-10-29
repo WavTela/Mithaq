@@ -7,7 +7,7 @@ import {
   setInquiryResult,
   registerPendingInquiry,
 } from "@/lib/persona-webhook";
-import type { Credential } from "@stellarcred/issuer";
+import type { Credential } from "@mithaq/issuer";
 
 describe("GET /api/persona/result", () => {
   beforeEach(() => {
@@ -57,7 +57,7 @@ describe("GET /api/persona/result", () => {
       type: "kyc",
       title: "Identity Verified",
       claim: "identity verified",
-      issuer: "StellarCred Authority",
+      issuer: "Mithaq Authority",
       issuerId: "G222",
       holder: "G111",
       value: "0x123",

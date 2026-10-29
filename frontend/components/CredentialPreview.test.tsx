@@ -5,7 +5,7 @@ import { CredentialPreview } from "./CredentialPreview";
 const holder = "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
 
 const data = {
-  issuerName: "StellarCred Authority",
+  issuerName: "Mithaq Authority",
   issuerId: "GBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBHF2",
   type: "income" as const,
   title: "Accredited (Income)",

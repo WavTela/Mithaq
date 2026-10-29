@@ -10,7 +10,7 @@
     "dismiss": "Descartar notificación"
   },
   "nav": {
-    "brand": "StellarCred",
+    "brand": "Mithaq",
     "wallet": "Cartera",
     "verify": "Verificar",
     "issuer": "Emisor",
@@ -22,9 +22,9 @@
     "login": "Iniciar sesión"
   },
   "footer": {
-    "copyright": "© {year} StellarCred",
+    "copyright": "© {year} Mithaq",
     "github": "GitHub",
-    "sdk": "@stellarcred/sdk",
+    "sdk": "@mithaq/sdk",
     "docs": "Documentos",
     "versionInfo": "Haz clic para mostrar información de versión",
     "deploymentVersions": "Versiones de Implementación",
@@ -64,7 +64,7 @@
       "validity": "Validez de la prueba"
     },
     "how_it_works": {
-      "title": "Cómo funciona StellarCred",
+      "title": "Cómo funciona Mithaq",
       "step_01_title": "Emitir",
       "step_01_body": "Un emisor de confianza firma una credencial a tu cartera. Vive en tu dispositivo — nunca en un servidor.",
       "step_02_title": "Probar",
@@ -76,10 +76,10 @@
       "title": "Verificado una vez. De confianza en todas partes.",
       "subtitle": "Cualquier protocolo en Stellar puede verificar tus credenciales en una llamada de contrato. Tu prueba es válida en todas partes.",
       "direct_verify": "Verificar directamente",
-      "direct_verify_body": "Visita StellarCred antes de usar cualquier aplicación. Tus credenciales funcionan en todas partes, al instante.",
+      "direct_verify_body": "Visita Mithaq antes de usar cualquier aplicación. Tus credenciales funcionan en todas partes, al instante.",
       "get_verified": "Verificarse",
       "verify_through_app": "Verificar a través de una aplicación",
-      "verify_through_app_body": "Las aplicaciones que integran StellarCred muestran un botón \"Verificar\". Completa la verificación y vuelve automáticamente."
+      "verify_through_app_body": "Las aplicaciones que integran Mithaq muestran un botón \"Verificar\". Completa la verificación y vuelve automáticamente."
     },
     "developers": {
       "title": "Construido para desarrolladores",
@@ -141,7 +141,7 @@
   "onboarding": {
     "steps": {
       "welcome": {
-        "title": "Bienvenido a StellarCred",
+        "title": "Bienvenido a Mithaq",
         "summary": "Demuestra hechos sobre ti mismo sin revelar datos personales. Este recorrido te guía por el ciclo completo una vez: una cartera, una credencial y una prueba que cualquiera puede verificar.",
         "tip": "Tus credenciales viven solo en este navegador — nunca en un servidor. Puedes repetir este recorrido en cualquier momento con el botón “Tour” del encabezado.",
         "railLabel": "Bienvenida"
@@ -154,7 +154,7 @@
       },
       "get-credential": {
         "title": "Crea tu credencial",
-        "summary": "Solicita una credencial de edad de demostración a la Autoridad StellarCred. Certifica «edad ≥ 18» sin incluir tu fecha de nacimiento — solo se almacena un compromiso criptográfico.",
+        "summary": "Solicita una credencial de edad de demostración a la Autoridad Mithaq. Certifica «edad ≥ 18» sin incluir tu fecha de nacimiento — solo se almacena un compromiso criptográfico.",
         "tip": "La credencial se cifra en reposo en tu navegador con una clave derivada de tu contraseña de desbloqueo. Haz una copia de seguridad desde el panel antes de borrar los datos del sitio.",
         "railLabel": "Credencial"
       },
@@ -173,7 +173,7 @@
       "unlock": {
         "title": "Estás listo",
         "summary": "Cartera, credencial, confianza — el ciclo principal está completo. Cualquier protocolo de Stellar puede ahora verificar tus pruebas en una sola llamada de contrato.",
-        "tip": "Explora las aplicaciones que aceptan pruebas de StellarCred, o abre tu panel para generar una prueba real en cadena.",
+        "tip": "Explora las aplicaciones que aceptan pruebas de Mithaq, o abre tu panel para generar una prueba real en cadena.",
         "railLabel": "Finalizar"
       }
     },
@@ -240,7 +240,7 @@
     },
     "revokedGuidance": {
       "title": "Credencial de una clave revocada",
-      "message": "Tu credencial fue emitida por una clave revocada. Para continuar usando StellarCred, obtén una nueva credencial de un emisor de confianza."
+      "message": "Tu credencial fue emitida por una clave revocada. Para continuar usando Mithaq, obtén una nueva credencial de un emisor de confianza."
     },
     "nudge": {
       "message": "Completa tu configuración — genera tu primera prueba para finalizar el proceso de incorporación",

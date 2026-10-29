@@ -234,7 +234,7 @@ export default function IssuerPageClient() {
             <IconKey size={14} style={{ verticalAlign: "-2px", marginRight: "0.35rem" }} />
             <span style={{ color: "var(--text)" }}>Becoming an issuer?</span>{" "}
             <a
-              href="https://github.com/Psalmuel01/StellarCred/blob/main/docs/ISSUER_ONBOARDING.md"
+              href="https://github.com/Psalmuel01/Mithaq/blob/main/docs/ISSUER_ONBOARDING.md"
               target="_blank"
               rel="noopener noreferrer"
               style={{ color: "var(--accent)", textDecoration: "underline" }}

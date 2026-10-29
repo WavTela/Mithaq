@@ -16,7 +16,7 @@ import {
 
 export { DecryptionError };
 
-const BASE_URL = process.env.NEXT_PUBLIC_STELLARCRED_BASE_URL ?? "https://stellarcred.xyz";
+const BASE_URL = process.env.NEXT_PUBLIC_MITHAQ_BASE_URL ?? "https://mithaq.xyz";
 
 /** Query param carrying the encrypted payload on /holder. */
 export const IMPORT_PARAM = "import";

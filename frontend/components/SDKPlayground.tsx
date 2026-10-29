@@ -74,16 +74,16 @@ function HasClaimDemo() {
     if (!wallet.trim()) return;
     setLoading(true); setResult(null); setError(null);
     try {
-      const { StellarCred } = await import("@stellarcred/sdk");
+      const { Mithaq } = await import("@mithaq/sdk");
       const t = threshold ? Number(threshold) : undefined;
-      const ok = await StellarCred.hasClaim(wallet, claimType, t ? { minThreshold: t } : undefined);
+      const ok = await Mithaq.hasClaim(wallet, claimType, t ? { minThreshold: t } : undefined);
       setResult(JSON.stringify(ok));
     } catch (err: unknown) { setError(err instanceof Error ? err.message : "SDK call failed"); }
     finally { setLoading(false); }
   }, [wallet, claimType, threshold]);
   const code = threshold
-    ? 'import { StellarCred } from "@stellarcred/sdk";\n\nconst ok = await StellarCred.hasClaim(\n  "' + wallet + '",\n  "' + claimType + '",\n  { minThreshold: ' + threshold + ' }\n);\n\n// => ' + (result ?? "...")
-    : 'import { StellarCred } from "@stellarcred/sdk";\n\nconst ok = await StellarCred.hasClaim(\n  "' + wallet + '",\n  "' + claimType + '"\n);\n\n// => ' + (result ?? "...");
+    ? 'import { Mithaq } from "@mithaq/sdk";\n\nconst ok = await Mithaq.hasClaim(\n  "' + wallet + '",\n  "' + claimType + '",\n  { minThreshold: ' + threshold + ' }\n);\n\n// => ' + (result ?? "...")
+    : 'import { Mithaq } from "@mithaq/sdk";\n\nconst ok = await Mithaq.hasClaim(\n  "' + wallet + '",\n  "' + claimType + '"\n);\n\n// => ' + (result ?? "...");
   return (
     <div style={{ display: "flex", flexDirection: "column" as const, gap: "1rem" }}>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
@@ -107,13 +107,13 @@ function GetClaimsDemo() {
     if (!wallet.trim()) return;
     setLoading(true); setResult(null); setError(null);
     try {
-      const { StellarCred } = await import("@stellarcred/sdk");
-      const claims = await StellarCred.getClaims(wallet);
+      const { Mithaq } = await import("@mithaq/sdk");
+      const claims = await Mithaq.getClaims(wallet);
       setResult(JSON.stringify(claims, null, 2));
     } catch (err: unknown) { setError(err instanceof Error ? err.message : "SDK call failed"); }
     finally { setLoading(false); }
   }, [wallet]);
-  const code = 'import { StellarCred } from "@stellarcred/sdk";\n\nconst claims = await StellarCred.getClaims(\n  "' + wallet + '"\n);\n\n// => ' + (result ?? "...");
+  const code = 'import { Mithaq } from "@mithaq/sdk";\n\nconst claims = await Mithaq.getClaims(\n  "' + wallet + '"\n);\n\n// => ' + (result ?? "...");
   return (
     <div style={{ display: "flex", flexDirection: "column" as const, gap: "1rem" }}>
       <InputField label="Wallet address" value={wallet} onChange={setWallet} placeholder="GABCDEF..." mono />
@@ -135,16 +135,16 @@ function BuildVerifyUrlDemo() {
   const [error, setError] = useState<string | null>(null);
   const generate = useCallback(async () => {
     try {
-      const { StellarCred } = await import("@stellarcred/sdk");
+      const { Mithaq } = await import("@mithaq/sdk");
       const cp: Record<string, string> = {};
       if (thresholdYears) cp.threshold_years = thresholdYears;
       if (threshold) cp.threshold = threshold;
       if (restricted) cp.restricted = restricted;
-      const url = StellarCred.buildVerifyUrl({ returnUrl, claim: claimType, ...(Object.keys(cp).length > 0 ? { claimParams: cp } : {}), ...(state ? { state } : {}) });
+      const url = Mithaq.buildVerifyUrl({ returnUrl, claim: claimType, ...(Object.keys(cp).length > 0 ? { claimParams: cp } : {}), ...(state ? { state } : {}) });
       setResult(url); setError(null);
     } catch (err: unknown) { setError(err instanceof Error ? err.message : "SDK call failed"); }
   }, [returnUrl, claimType, thresholdYears, threshold, restricted, state]);
-  const lines = ['import { StellarCred } from "@stellarcred/sdk";', "", "const url = StellarCred.buildVerifyUrl({", '  returnUrl: "' + returnUrl + '",', '  claim: "' + claimType + '",'];
+  const lines = ['import { Mithaq } from "@mithaq/sdk";', "", "const url = Mithaq.buildVerifyUrl({", '  returnUrl: "' + returnUrl + '",', '  claim: "' + claimType + '",'];
   if (thresholdYears) lines.push('  claimParams: { threshold_years: "' + thresholdYears + '" },');
   if (threshold) lines.push('  claimParams: { threshold: "' + threshold + '" },');
   if (restricted) lines.push('  claimParams: { restricted: "' + restricted + '" },');
@@ -174,12 +174,12 @@ function ParseReturnParamsDemo() {
   const [error, setError] = useState<string | null>(null);
   const parse = useCallback(async () => {
     try {
-      const { StellarCred } = await import("@stellarcred/sdk");
-      const hint = StellarCred.parseReturnParams(url);
+      const { Mithaq } = await import("@mithaq/sdk");
+      const hint = Mithaq.parseReturnParams(url);
       setResult(JSON.stringify(hint, null, 2)); setError(null);
     } catch (err: unknown) { setError(err instanceof Error ? err.message : "Parse failed"); }
   }, [url]);
-  const code = 'import { StellarCred } from "@stellarcred/sdk";\n\nconst hint = StellarCred.parseReturnParams(\n  "' + url + '"\n);\n\n// => ' + (result ?? "...") + '\n\n// Always re-verify on-chain:\nif (hint.verified && hint.wallet) {\n  const ok = await StellarCred.hasClaim(hint.wallet, "kyc");\n}';
+  const code = 'import { Mithaq } from "@mithaq/sdk";\n\nconst hint = Mithaq.parseReturnParams(\n  "' + url + '"\n);\n\n// => ' + (result ?? "...") + '\n\n// Always re-verify on-chain:\nif (hint.verified && hint.wallet) {\n  const ok = await Mithaq.hasClaim(hint.wallet, "kyc");\n}';
   return (
     <div style={{ display: "flex", flexDirection: "column" as const, gap: "1rem" }}>
       <InputField label="Return URL to parse" value={url} onChange={setUrl} placeholder="https://yourapp.xyz/callback?sc_verified=true..." />

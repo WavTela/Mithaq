@@ -28,7 +28,7 @@ import { env } from "./env";
 export const CAPABILITIES_DESCRIPTOR_VERSION = 1;
 
 /**
- * @stellarcred/sdk versions this deployment's contracts are known to work
+ * @mithaq/sdk versions this deployment's contracts are known to work
  * against. Bump when contract/SDK behaviour drifts (see DEPLOYMENTS.md).
  */
 export const SUPPORTED_SDK_VERSION_RANGE = ">=0.1.1 <1";
@@ -140,6 +140,6 @@ export async function buildCapabilitiesDescriptor(): Promise<CapabilitiesDescrip
       // account and the server-only secret must be present.
       available: Boolean(SPONSOR_ACCOUNT_ID) && Boolean(process.env.SPONSOR_SECRET),
     },
-    sdk: { package: "@stellarcred/sdk", version_range: SUPPORTED_SDK_VERSION_RANGE },
+    sdk: { package: "@mithaq/sdk", version_range: SUPPORTED_SDK_VERSION_RANGE },
   };
 }

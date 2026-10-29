@@ -1,7 +1,7 @@
 /**
  * examples/typescript/src/index.ts
  *
- * Minimal, clean TypeScript example demonstrating how to integrate @stellarcred/sdk:
+ * Minimal, clean TypeScript example demonstrating how to integrate @mithaq/sdk:
  * 1. Typed imports and SDK configuration
  * 2. On-chain credential verification (hasClaim, getClaimRecord)
  * 3. Wallet challenge and anti-spoofing signature verification (verifyWalletClaim)
@@ -9,7 +9,7 @@
  * 5. Type-safe error handling
  */
 
-import StellarCred, {
+import Mithaq, {
   configure,
   healthCheck,
   hasClaim,
@@ -26,7 +26,7 @@ import StellarCred, {
   ContractError,
   TimeoutError,
   InvalidAddressError,
-} from "@stellarcred/sdk";
+} from "@mithaq/sdk";
 
 import {
   Account,
@@ -43,23 +43,23 @@ import {
 // ─── 1. SDK Configuration ────────────────────────────────────────────────────
 
 /**
- * Configure the StellarCred SDK with explicit environment parameters.
+ * Configure the Mithaq SDK with explicit environment parameters.
  * Configuration can also be provided automatically via environment variables
- * (STELLARCRED_REGISTRY_ID, STELLARCRED_RPC_URL, STELLARCRED_NETWORK_PASSPHRASE).
+ * (MITHAQ_REGISTRY_ID, MITHAQ_RPC_URL, MITHAQ_NETWORK_PASSPHRASE).
  */
 export function initializeSdk(config?: Partial<SDKConfig>): void {
   configure({
     registryId:
       config?.registryId ??
-      process.env.STELLARCRED_REGISTRY_ID ??
+      process.env.MITHAQ_REGISTRY_ID ??
       "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
     rpcUrl:
       config?.rpcUrl ??
-      process.env.STELLARCRED_RPC_URL ??
+      process.env.MITHAQ_RPC_URL ??
       "https://soroban-testnet.stellar.org",
     networkPassphrase:
       config?.networkPassphrase ??
-      process.env.STELLARCRED_NETWORK_PASSPHRASE ??
+      process.env.MITHAQ_NETWORK_PASSPHRASE ??
       Networks.TESTNET,
     requestTimeoutMs: config?.requestTimeoutMs ?? 10_000,
   });
@@ -67,7 +67,7 @@ export function initializeSdk(config?: Partial<SDKConfig>): void {
   const health = healthCheck();
   if (!health.configured) {
     console.warn(
-      `[StellarCred] Warning: Missing configuration parameters: ${health.missing.join(", ")}`
+      `[Mithaq] Warning: Missing configuration parameters: ${health.missing.join(", ")}`
     );
   }
 }
@@ -114,7 +114,7 @@ export async function fetchProofRecord(
 export async function proveAndVerifyWalletControl(
   walletKeypair: Keypair,
   claim: ClaimType = "kyc",
-  domain = "myapp.stellarcred.xyz"
+  domain = "myapp.mithaq.xyz"
 ): Promise<VerifyWalletClaimResult> {
   // 1. Server generates replay-protected challenge
   const challenge: WalletChallenge = createWalletChallenge({
@@ -159,7 +159,7 @@ export interface GatedTransactionResult {
  * Create, gate, and sign a Stellar transaction.
  *
  * The transaction is ONLY created and signed if the sender wallet proves
- * the required credential on-chain via @stellarcred/sdk.
+ * the required credential on-chain via @mithaq/sdk.
  *
  * @param senderKeypair - Sender Stellar Keypair (for signing)
  * @param destinationAddress - Target Stellar public key
@@ -176,7 +176,7 @@ export async function createAndSignGatedPayment(
   const requiredClaim = options.claimType ?? "kyc";
   const passphrase = options.networkPassphrase ?? Networks.TESTNET;
 
-  // Step 1: Gate on verified credential via @stellarcred/sdk
+  // Step 1: Gate on verified credential via @mithaq/sdk
   const isVerified = await hasClaim(senderAddress, requiredClaim, options.claimOptions);
   if (!isVerified) {
     throw new Error(
@@ -228,7 +228,7 @@ export async function createAndSignGatedPayment(
  * Demonstrates the complete flow from configuration to signing with typed error handling.
  */
 export async function runExample(): Promise<void> {
-  console.log("=== StellarCred SDK TypeScript Example ===");
+  console.log("=== Mithaq SDK TypeScript Example ===");
 
   // 1. Setup SDK
   initializeSdk();

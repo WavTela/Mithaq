@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import * as indexExports from "../index";
 import * as claimsExports from "../claims";
 import * as errorsExports from "../errors";
-import StellarCred from "../index";
+import Mithaq from "../index";
 
 describe("SDK deduplication (#522)", () => {
   beforeEach(() => {
@@ -42,11 +42,11 @@ describe("SDK deduplication (#522)", () => {
     expect(indexExports.CLAIM_TYPES).toBe(claimsExports.CLAIM_TYPES);
   });
 
-  it("binds StellarCred namespace to the deduplicated implementations", () => {
-    expect(StellarCred.hasClaim).toBe(claimsExports.hasClaim);
-    expect(StellarCred.getClaims).toBe(claimsExports.getClaims);
-    expect(StellarCred.configure).toBe(claimsExports.configure);
-    expect(StellarCred.verifyPreset).toBe(claimsExports.verifyPreset);
+  it("binds Mithaq namespace to the deduplicated implementations", () => {
+    expect(Mithaq.hasClaim).toBe(claimsExports.hasClaim);
+    expect(Mithaq.getClaims).toBe(claimsExports.getClaims);
+    expect(Mithaq.configure).toBe(claimsExports.configure);
+    expect(Mithaq.verifyPreset).toBe(claimsExports.verifyPreset);
   });
 
   it("shares configuration state between index.configure and claims.getConfig", () => {

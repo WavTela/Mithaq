@@ -1,6 +1,6 @@
 # Health checks
 
-StellarCred exposes health endpoints for the frontend app and the indexer
+Mithaq exposes health endpoints for the frontend app and the indexer
 worker so deployment and monitoring tooling can confirm each service is up and
 responding before routing traffic or marking a rollout healthy.
 
@@ -20,7 +20,7 @@ Both `/api/health` (frontend) and `/health` (indexer) return:
 | --- | --- | --- |
 | `status` | `"ok" \| "degraded" \| "error"` | Coarse health state (frontend is always `"ok"` while it can respond) |
 | `ready` | boolean | `true` when the service should receive traffic |
-| `service` | string | `stellarcred-frontend` or `stellarcred-indexer` |
+| `service` | string | `mithaq-frontend` or `mithaq-indexer` |
 | `version` | string | Deployed version, `"dev"` when not set |
 | `uptimeSeconds` | number | Seconds since the process started |
 | `timestamp` | string | ISO-8601 time the response was generated |
@@ -40,7 +40,7 @@ the health response tells you exactly which build is running.
 {
   "status": "ok",
   "ready": true,
-  "service": "stellarcred-frontend",
+  "service": "mithaq-frontend",
   "version": "1.0.0",
   "uptimeSeconds": 512,
   "timestamp": "2026-10-26T12:00:00.000Z",
@@ -58,7 +58,7 @@ with per-dependency details when it is not ready.
 {
   "status": "ok",
   "ready": true,
-  "service": "stellarcred-indexer",
+  "service": "mithaq-indexer",
   "version": "1.0.0",
   "uptimeSeconds": 3600,
   "timestamp": "2026-10-26T12:00:00.000Z",

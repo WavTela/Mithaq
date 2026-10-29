@@ -119,7 +119,7 @@ jobs:
           name: ${{ github.ref_name }}
           body: ${{ env.RELEASE_NOTES }}
 
-      # Build and publish @stellarcred/sdk to npm
+      # Build and publish @mithaq/sdk to npm
       - name: Build SDK
         working-directory: frontend/packages/sdk
         run: pnpm build

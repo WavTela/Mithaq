@@ -110,7 +110,7 @@ function estimateProvingSeconds(circuitName, opcodes) {
 
 function main() {
   console.log("==================================================================");
-  console.log("        StellarCred Circuit Constraint & Proving-Time Tracker     ");
+  console.log("        Mithaq Circuit Constraint & Proving-Time Tracker     ");
   console.log("==================================================================\n");
 
   const results = [];

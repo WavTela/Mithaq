@@ -210,7 +210,7 @@ export class EnvSecretsProvider implements SecretsProvider {
       return process.env[trimmed]!;
     }
 
-    // Normalized env variable: "stellarcred/tenants/acme/signing-key" -> "STELLARCRED_TENANTS_ACME_SIGNING_KEY"
+    // Normalized env variable: "mithaq/tenants/acme/signing-key" -> "MITHAQ_TENANTS_ACME_SIGNING_KEY"
     const normalizedKey = trimmed
       .replace(/[^a-zA-Z0-9_]/g, "_")
       .replace(/_+/g, "_")
@@ -325,7 +325,7 @@ export async function resolveSigningKey(secretRef?: string): Promise<string | nu
   }
 
   // Fallback to default issuer key reference in secrets provider
-  const defaultFromProvider = await provider.getSecret("stellarcred/issuer/private-key");
+  const defaultFromProvider = await provider.getSecret("mithaq/issuer/private-key");
   if (defaultFromProvider && /^[0-9a-fA-F]{64}$/.test(defaultFromProvider.trim())) {
     return defaultFromProvider.trim();
   }

@@ -11,7 +11,7 @@ import {
   type Credential,
   type CredentialType,
   type ClaimParams,
-} from "@stellarcred/issuer";
+} from "@mithaq/issuer";
 import { env } from "./env";
 import { logger, stripSensitiveFields } from "./logger";
 import { auditLogAppend, auditLogBootstrap, auditLogFilePath, auditLogPersist } from "./audit-log";
@@ -27,7 +27,7 @@ import { resolveSigningKey } from "./secrets-vault";
 export function getIssuerPrivateKeyHex(): string {
   return (
     env.ISSUER_PRIVATE_KEY ||
-    Buffer.from(sha256(new TextEncoder().encode("stellarcred-demo-issuer"))).toString("hex")
+    Buffer.from(sha256(new TextEncoder().encode("mithaq-demo-issuer"))).toString("hex")
   );
 }
 
@@ -88,7 +88,7 @@ export async function issueAndAuditCredentials(params: IssueAndAuditParams): Pro
     credentialTypes,
     holder,
     issuerId,
-    issuerName = "StellarCred Authority",
+    issuerName = "Mithaq Authority",
     expiry = "90 days",
     attributes,
     claimParams,

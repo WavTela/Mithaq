@@ -29,7 +29,7 @@ const VALID_DESCRIPTOR: CapabilitiesDescriptor = {
   issuers: { count: 2, credential_types: ["kyc"] },
   indexer: null,
   sponsored_submission: { available: false },
-  sdk: { package: "@stellarcred/sdk", version_range: ">=0.1.1 <1" },
+  sdk: { package: "@mithaq/sdk", version_range: ">=0.1.1 <1" },
 };
 
 function jsonResponse(body: unknown, status = 200): Response {

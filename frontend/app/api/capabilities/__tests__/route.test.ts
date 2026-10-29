@@ -103,7 +103,7 @@ describe("GET /api/capabilities", () => {
     expect(body.issuers).toBeNull();
     expect(body.indexer).toBeNull();
     expect(body.sponsored_submission).toEqual({ available: false });
-    expect(body.sdk).toEqual({ package: "@stellarcred/sdk", version_range: ">=0.1.1 <1" });
+    expect(body.sdk).toEqual({ package: "@mithaq/sdk", version_range: ">=0.1.1 <1" });
     expect(fetchOnChainContractVersion).not.toHaveBeenCalled();
     expect(fetchRegisteredIssuers).not.toHaveBeenCalled();
   });

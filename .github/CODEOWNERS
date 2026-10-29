@@ -1,4 +1,4 @@
-# Code owners for StellarCred
+# Code owners for Mithaq
 #
 # GitHub requests a review from the owners of every file a pull request
 # touches.
@@ -8,7 +8,7 @@
 # broad catch-alls first, narrow overrides after. Moving a block without
 # re-checking what follows it will silently change who reviews what.
 #
-# Why this file exists: StellarCred is a ZK credential layer whose trust
+# Why this file exists: Mithaq is a ZK credential layer whose trust
 # anchor is the pair (on-chain contract, ZK circuit). A docs typo and a
 # change to proof verification do not deserve the same amount of review.
 #

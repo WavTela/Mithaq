@@ -31,7 +31,7 @@ import {
   getClaimCacheSize,
   getConfig,
   ConfigError,
-  StellarCred,
+  Mithaq,
 } from "./index";
 import { ClaimCache, claimCacheKey } from "./claim-cache";
 
@@ -295,7 +295,7 @@ describe("claim cache — invalidate", () => {
     // The proof lands on-chain; the cached `false` would hide it for 30s.
     isVerified.mockResolvedValue(verified());
     await expect(hasClaim(WALLET, "kyc")).resolves.toBe(false);
-    StellarCred.invalidate(` ${WALLET} `, "kyc");
+    Mithaq.invalidate(` ${WALLET} `, "kyc");
     await expect(hasClaim(WALLET, "kyc")).resolves.toBe(true);
   });
 

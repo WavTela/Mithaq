@@ -36,7 +36,7 @@ services:
       retries: 3
       start_period: 10s
 
-  # ── StellarCred frontend ─────────────────────────────────────────────────
+  # ── Mithaq frontend ─────────────────────────────────────────────────
   frontend:
     build:
       context: ./frontend
@@ -47,7 +47,7 @@ services:
       NEXT_PUBLIC_RPC_URL: ${NEXT_PUBLIC_RPC_URL:-https://soroban-testnet.stellar.org}
       NEXT_PUBLIC_NETWORK_PASSPHRASE: ${NEXT_PUBLIC_NETWORK_PASSPHRASE:-Test SDF Network ; September 2015}
       NEXT_PUBLIC_ISSUER_ADDRESS: ${NEXT_PUBLIC_ISSUER_ADDRESS:-}
-      NEXT_PUBLIC_STELLARCRED_BASE_URL: ${NEXT_PUBLIC_STELLARCRED_BASE_URL:-}
+      NEXT_PUBLIC_MITHAQ_BASE_URL: ${NEXT_PUBLIC_MITHAQ_BASE_URL:-}
       NEXT_PUBLIC_ISSUER_REGISTRY_ID: ${NEXT_PUBLIC_ISSUER_REGISTRY_ID:-}
       NEXT_PUBLIC_CREDENTIAL_VERIFIER_ID: ${NEXT_PUBLIC_CREDENTIAL_VERIFIER_ID:-}
       NEXT_PUBLIC_PROOF_REGISTRY_ID: ${NEXT_PUBLIC_PROOF_REGISTRY_ID:-}

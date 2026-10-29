@@ -61,8 +61,8 @@ Proof records could be stored encrypted, with holders issuing time-limited decry
 ## Consequences
 
 **What this makes true:**
-- Any protocol can integrate with StellarCred permissionlessly. No admin registration or approval step is required before a contract can call `check_claim`.
-- The `@stellarcred/sdk` can call `is_verified` from any front-end without authentication, enabling simple one-line integration for protocol dApps.
+- Any protocol can integrate with Mithaq permissionlessly. No admin registration or approval step is required before a contract can call `check_claim`.
+- The `@mithaq/sdk` can call `is_verified` from any front-end without authentication, enabling simple one-line integration for protocol dApps.
 - The privacy model is honest: a holder who submits a proof is making a public on-chain claim, and the system documents this clearly rather than providing a misleading gate.
 
 **What this makes harder:**

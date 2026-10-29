@@ -21,7 +21,7 @@
  *    per-source account detail never leaves this function.
  */
 
-import type { Credential, CredentialType, IssuerClient } from "@stellarcred/issuer";
+import type { Credential, CredentialType, IssuerClient } from "@mithaq/issuer";
 import { createPersonaInquiry, resolvePersonaKYC } from "@/lib/persona";
 import { registerPendingInquiry } from "@/lib/persona-webhook";
 import { fetchPlaidBalance } from "@/lib/plaid";
@@ -104,7 +104,7 @@ export async function runIssuanceFlow(
           },
         };
       }
-      const baseUrl = env.NEXT_PUBLIC_STELLARCRED_BASE_URL ?? origin;
+      const baseUrl = env.NEXT_PUBLIC_MITHAQ_BASE_URL ?? origin;
 
       // Every Persona call in this block is wrapped so a provider failure
       // cannot escape the handler. See invariant (1) in the module header.

@@ -1,8 +1,8 @@
-# StellarCred Contract Upgrade & Migration Runbook
+# Mithaq Contract Upgrade & Migration Runbook
 
 ## Overview
 
-This runbook documents the safe, transparent upgrade process for StellarCred smart contracts on Stellar. The system supports zero-downtime upgrades with comprehensive versioning, audit trails, and rollback capabilities.
+This runbook documents the safe, transparent upgrade process for Mithaq smart contracts on Stellar. The system supports zero-downtime upgrades with comprehensive versioning, audit trails, and rollback capabilities.
 
 For the authoritative statement of support windows, deprecation timelines, and
 the VK pruning safety rule, see [SUPPORT_POLICY.md](SUPPORT_POLICY.md).
@@ -312,7 +312,7 @@ with the deployed contract IDs, contract versions, WASM hashes, and deployment
 
 > This section covers **on-chain** `ProofRecord` migrations. For the client-side
 > proof-history **export** pipeline and the schema-v1 backfill scripts
-> ([#780](https://github.com/ToluLabs/StellarCred/issues/780)), see
+> ([#780](https://github.com/ToluLabs/Mithaq/issues/780)), see
 > [`docs/EXPORT_BACKFILL.md`](docs/EXPORT_BACKFILL.md).
 
 ### Scenario 1: Adding Fields to ProofRecord

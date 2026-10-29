@@ -265,7 +265,7 @@ export function checkMultiInstanceStoreWarning(): void {
     // eslint-disable-next-line no-console
     console.warn(
       "\n================================================================================\n" +
-        "[StellarCred] ⚠️ WARNING: Running in a multi-instance or serverless environment\n" +
+        "[Mithaq] ⚠️ WARNING: Running in a multi-instance or serverless environment\n" +
         "without a shared store (UPSTASH_REDIS_REST_URL / KV_REST_API_URL).\n" +
         "In-process Map fallback is active. Rate-limiting and idempotency guarantees will\n" +
         "only be effective per instance and can be bypassed across concurrent cold starts\n" +

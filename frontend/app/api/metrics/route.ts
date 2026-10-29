@@ -1,7 +1,7 @@
 /**
  * GET /api/metrics
  *
- * Prometheus-compatible metrics endpoint for the StellarCred frontend.
+ * Prometheus-compatible metrics endpoint for the Mithaq frontend.
  *
  * ## Scrape target configuration
  *
@@ -9,7 +9,7 @@
  *
  * ```yaml
  * scrape_configs:
- *   - job_name: stellarcred_frontend
+ *   - job_name: mithaq_frontend
  *     scrape_interval: 15s
  *     static_configs:
  *       - targets: ["<your-deployment-host>"]

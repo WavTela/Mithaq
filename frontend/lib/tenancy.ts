@@ -13,7 +13,7 @@ export interface TenantIssuerConfig {
   issuerId: string;
   issuerName: string;
   /**
-   * Reference path to key in secrets provider (e.g. Vault KV path "stellarcred/tenants/acme/signing-key").
+   * Reference path to key in secrets provider (e.g. Vault KV path "mithaq/tenants/acme/signing-key").
    * Plaintext keys must never be stored here.
    */
   signingKeySecretRef: string;

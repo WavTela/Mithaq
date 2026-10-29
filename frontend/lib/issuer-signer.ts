@@ -8,7 +8,7 @@ import {
   type Credential,
   type CredentialType,
   type ClaimParams,
-} from "@stellarcred/issuer";
+} from "@mithaq/issuer";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { env } from "./env";
 import {
@@ -38,7 +38,7 @@ export class IssuerSigner {
       privateKeyHex ||
       env.ISSUER_PRIVATE_KEY ||
       Buffer.from(
-        sha256(new TextEncoder().encode("stellarcred-demo-issuer")),
+        sha256(new TextEncoder().encode("mithaq-demo-issuer")),
       ).toString("hex");
 
     if (!privateKeyHex && !env.ISSUER_PRIVATE_KEY) {
@@ -65,7 +65,7 @@ export class IssuerSigner {
       type,
       holder,
       issuerId,
-      issuerName = "StellarCred Authority",
+      issuerName = "Mithaq Authority",
       expiry = "90 days",
       attribute = {},
       claimParams,

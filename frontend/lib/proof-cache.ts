@@ -42,7 +42,7 @@ export interface ProofCacheEntry {
   revoked?: boolean;
 }
 
-const CACHE_KEY = "stellarcred:proof-cache";
+const CACHE_KEY = "mithaq:proof-cache";
 const MAX_ENTRIES = 50;
 
 /**

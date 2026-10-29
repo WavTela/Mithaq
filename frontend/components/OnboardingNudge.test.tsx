@@ -95,7 +95,7 @@ describe("OnboardingNudge — gating", () => {
   });
 
   it("returns null when the nudge was previously dismissed via localStorage", () => {
-    store["stellarcred:onboarding-nudge-dismissed"] = "1";
+    store["mithaq:onboarding-nudge-dismissed"] = "1";
     const { container } = render(<OnboardingNudge />);
     expect(container.firstChild).toBeNull();
   });
@@ -111,7 +111,7 @@ describe("OnboardingNudge — dismiss", () => {
 
     expect(container.firstChild).toBeNull();
     expect(localStorage.setItem).toHaveBeenCalledWith(
-      "stellarcred:onboarding-nudge-dismissed",
+      "mithaq:onboarding-nudge-dismissed",
       "1",
     );
   });

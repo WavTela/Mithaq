@@ -1,5 +1,5 @@
 /**
- * Central enumeration of all StellarCred localStorage keys.
+ * Central enumeration of all Mithaq localStorage keys.
  * 
  * Every feature that persists state should be listed here so that:
  * 1. The data wipe flow (#558) can remove everything without orphaning keys
@@ -13,17 +13,17 @@
  */
 
 /**
- * All localStorage keys used by StellarCred, organized by category.
+ * All localStorage keys used by Mithaq, organized by category.
  */
 export const STORAGE_KEYS = {
   /** Encrypted credential wallet (lib/credential.ts) */
-  CREDENTIALS: "stellarcred:credentials",
+  CREDENTIALS: "mithaq:credentials",
 
   /** Per-field PII visibility preferences for credential exports */
-  EXPORT_VISIBILITY: "stellarcred:export-visibility",
+  EXPORT_VISIBILITY: "mithaq:export-visibility",
 
   /** Local proof cache for performance optimization (lib/proof-cache.ts) */
-  PROOF_CACHE: "stellarcred:proof-cache",
+  PROOF_CACHE: "mithaq:proof-cache",
 
   /** 
    * Proof timeline events per credential (lib/useProofTimeline.ts).
@@ -33,19 +33,19 @@ export const STORAGE_KEYS = {
   PROOF_TIMELINE_PREFIX: "proofTimeline:",
 
   /** Onboarding wizard state (lib/onboarding.ts) */
-  ONBOARDING: "stellarcred:onboarding",
+  ONBOARDING: "mithaq:onboarding",
 
   /** Legacy onboarding flag (lib/onboarding.ts) — migrated to ONBOARDING */
-  ONBOARDING_LEGACY: "stellarcred_onboarding_seen",
+  ONBOARDING_LEGACY: "mithaq_onboarding_seen",
 
   /** Connected wallet identifier for session restore (lib/wallet-context.tsx) */
-  WALLET_ID: "stellarcred:wallet-id",
+  WALLET_ID: "mithaq:wallet-id",
 
   /** User theme preference: "light" | "dark" (lib/theme.ts) */
   THEME: "theme",
 
   /** Dismissal flag for the onboarding re-entry nudge banner on /holder (#899) */
-  ONBOARDING_NUDGE_DISMISSED: "stellarcred:onboarding-nudge-dismissed",
+  ONBOARDING_NUDGE_DISMISSED: "mithaq:onboarding-nudge-dismissed",
 } as const;
 
 /**
@@ -70,7 +70,7 @@ export function getTimelineKeys(): string[] {
 
 /**
  * Get all storage keys currently in use (including dynamic timeline keys).
- * Use this to iterate over everything StellarCred has written to localStorage.
+ * Use this to iterate over everything Mithaq has written to localStorage.
  */
 export function getAllStorageKeys(): string[] {
   return [
@@ -87,9 +87,9 @@ export function getAllStorageKeys(): string[] {
 }
 
 /**
- * Type-safe check for whether a key is managed by StellarCred.
+ * Type-safe check for whether a key is managed by Mithaq.
  */
-export function isStellarCredKey(key: string): boolean {
+export function isMithaqKey(key: string): boolean {
   return (
     Object.values(STORAGE_KEYS).some((k) => k === key) ||
     key.startsWith(STORAGE_KEYS.PROOF_TIMELINE_PREFIX)

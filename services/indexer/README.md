@@ -1,6 +1,6 @@
-# StellarCred Indexer Service
+# Mithaq Indexer Service
 
-An event ingestion and query service for StellarCred's on-chain Soroban contracts.
+An event ingestion and query service for Mithaq's on-chain Soroban contracts.
 
 The indexer continuously polls Soroban contract events emitted by `ProofRegistry` (and other registry contracts), ingests them into a local database (SQLite or PostgreSQL), and exposes a lightweight HTTP API for client applications, wallets, and community explorers. Read endpoints are public by default; authenticated app review and webhook subscription management are write operations.
 
@@ -20,7 +20,7 @@ The indexer continuously polls Soroban contract events emitted by `ProofRegistry
 
 ## Contract Events Reference
 
-For the authoritative specification of all contract events, topic tuples, payload structures, and drift-prevention guarantees across all StellarCred contracts, see [docs/EVENTS.md](../../docs/EVENTS.md).
+For the authoritative specification of all contract events, topic tuples, payload structures, and drift-prevention guarantees across all Mithaq contracts, see [docs/EVENTS.md](../../docs/EVENTS.md).
 
 ---
 
@@ -30,7 +30,7 @@ For the authoritative specification of all contract events, topic tuples, payloa
 Cross-Origin Resource Sharing (CORS) is enforced via `CORS_ORIGIN` (or `CORS_ALLOWED_ORIGINS`):
 - **Development**: Defaults to `http://localhost:3000` when unset.
 - **Production**: Defaults to same-origin / default-deny when unset.
-- **Custom Origins**: Supply comma-separated origins (e.g. `https://stellarcred.app, https://app.stellarcred.xyz`) or `*` for public access.
+- **Custom Origins**: Supply comma-separated origins (e.g. `https://mithaq.app, https://app.mithaq.xyz`) or `*` for public access.
 
 ### Rate Limiting
 To prevent scraping and denial-of-service, all HTTP endpoints are protected by per-IP rate limiting:
@@ -121,7 +121,7 @@ the first page; a `null` `nextCursor` means there are no more claims. `limit`
 ### Real-time claim subscriptions (`#392`)
 
 The `/recent` feed and `/claims?wallet=` snapshot are the two endpoints the
-SDK's `subscribeClaims()` helper (`@stellarcred/sdk`, see
+SDK's `subscribeClaims()` helper (`@mithaq/sdk`, see
 [frontend/packages/sdk/README.md](../../frontend/packages/sdk/README.md))
 composes into a push subscription: it tails `/recent` once per poll for
 `gained` events (keyset cursor over `nextCursor`), and periodically re-reads
@@ -260,7 +260,7 @@ POST /webhooks/subscriptions
 Content-Type: application/json
 
 {
-  "url": "https://protocol.example/stellarcred/events",
+  "url": "https://protocol.example/mithaq/events",
   "wallet": "G...",
   "claimType": "kyc"
 }
@@ -292,8 +292,8 @@ The indexer sends `claim.revoked` or `claim.expired` JSON payloads:
 
 For expiry, `type` is `claim.expired`, `occurredAt` is the credential expiry,
 and `reasonCode` is `credential_expired`. Delivery includes
-`X-StellarCred-Timestamp` (Unix seconds) and
-`X-StellarCred-Signature: sha256=<hex>`. Verify it as HMAC-SHA256 over
+`X-Mithaq-Timestamp` (Unix seconds) and
+`X-Mithaq-Signature: sha256=<hex>`. Verify it as HMAC-SHA256 over
 `<timestamp>.<raw request body>` with `WEBHOOK_SIGNING_SECRET`, compare
 signatures in constant time, and reject stale timestamps. Use `eventId` for
 idempotency: successful delivery is at-least-once, not exactly-once.
@@ -453,7 +453,7 @@ npm start
 | Database adapter | `src/db.test.ts` | SQLite + Postgres schema and query correctness |
 | **Parsing & persistence** | `tests/indexer.test.ts` | Event XDR parsing, upsertClaim idempotency, revocation, cursor durability |
 
-The `tests/indexer.test.ts` suite (added for [#820](https://github.com/ToluLabs/StellarCred/issues/820))
+The `tests/indexer.test.ts` suite (added for [#820](https://github.com/ToluLabs/Mithaq/issues/820))
 covers the critical parsing-and-persistence paths:
 
 - `upsertClaim` writes new claims and updates on conflict
@@ -487,11 +487,11 @@ contract.
 ### Build & Run Container
 
 ```bash
-docker build -t stellarcred-indexer services/indexer
+docker build -t mithaq-indexer services/indexer
 docker run -p 3001:3001 \
   -e PROOF_REGISTRY_CONTRACT_ID=C... \
   -e RPC_URL=https://soroban-testnet.stellar.org \
-  stellarcred-indexer
+  mithaq-indexer
 ```
 
 ### Docker Compose

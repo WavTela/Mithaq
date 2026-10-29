@@ -51,7 +51,7 @@ The corrected local files need to be pushed to the remote repository so GitHub A
 ### Steps to Push (From My Local Machine):
 
 ```bash
-cd /path/to/StellarCred
+cd /path/to/Mithaq
 git status  # Verify files are correct
 git push origin main --force-with-lease
 ```
@@ -73,14 +73,14 @@ The local repository HAS the correct changes, but they're not on GitHub yet.
 
 **Option 1: Manual Push (Recommended)**
 ```bash
-cd c:\github repo\StellarCred
+cd c:\github repo\Mithaq
 git status
 git push origin main -f
 ```
 
 **Option 2: Create New Commit**
 ```bash
-cd c:\github repo\StellarCred
+cd c:\github repo\Mithaq
 git add contracts/issuer_registry/src/lib.rs
 git add contracts/issuer_registry/src/test.rs
 git add contracts/credential_verifier/src/lib.rs

@@ -2,7 +2,7 @@
 
 This document describes how to migrate **legacy proof-history exports** into the
 versioned export pipeline introduced for schema-versioned artifacts
-([#780](https://github.com/ToluLabs/StellarCred/issues/780)). It covers the
+([#780](https://github.com/ToluLabs/Mithaq/issues/780)). It covers the
 schema, the backfill scripts, the dry-run safety workflow, migration steps,
 risks, and estimated resource costs.
 
@@ -117,13 +117,13 @@ Additional guards at the CLI layer:
    files; collect their paths.
 2. **Dry-run each file** and review the report:
    ```
-   pnpm backfill:export -- --input ./exports/stellarcred-history-2025-12-01.json --dry-run
+   pnpm backfill:export -- --input ./exports/mithaq-history-2025-12-01.json --dry-run
    ```
    Confirm `read / carried / skipped` numbers are what you expect. Investigate
    every `skipped` line before proceeding.
 3. **Backfill for real** once the dry-run is clean:
    ```
-   pnpm backfill:export -- --input ./exports/stellarcred-history-2025-12-01.json \
+   pnpm backfill:export -- --input ./exports/mithaq-history-2025-12-01.json \
         --output ./exports/v1/2025-12-01.json --generator "ops-backfill-v1"
    ```
 4. **Validate the artifact** loads under the new pipeline:

@@ -1,6 +1,6 @@
-# StellarCred Circuits
+# Mithaq Circuits
 
-This document describes the public input layout, commitment schemes, and cryptographic conventions for all StellarCred zero-knowledge circuits. 
+This document describes the public input layout, commitment schemes, and cryptographic conventions for all Mithaq zero-knowledge circuits. 
 
 Protocol integrators and credential issuers can use this reference to interact with the deployed verification contracts and issue valid credentials without needing to read the Noir source code.
 

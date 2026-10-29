@@ -1,8 +1,8 @@
 {
-  "name": "stellarcred-canonical-integration-example",
+  "name": "mithaq-canonical-integration-example",
   "version": "1.0.0",
   "private": true,
-  "description": "Canonical end-to-end example application demonstrating the complete StellarCred integration pattern including wallet-control proof, route gating, and failure states",
+  "description": "Canonical end-to-end example application demonstrating the complete Mithaq integration pattern including wallet-control proof, route gating, and failure states",
   "type": "module",
   "scripts": {
     "start": "tsx src/server.ts",
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@stellar/stellar-sdk": "^13.3.0",
-    "@stellarcred/sdk": "file:../../frontend/packages/sdk"
+    "@mithaq/sdk": "file:../../frontend/packages/sdk"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",

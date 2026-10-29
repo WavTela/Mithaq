@@ -1,4 +1,4 @@
-# actionlint configuration for the StellarCred repository.
+# actionlint configuration for the Mithaq repository.
 #
 # The repository's CI workflows keep least-privilege permissions explicitly;
 # actionlint flags guessed top-level defaults, so we pin them as documentation.

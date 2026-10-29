@@ -1,11 +1,11 @@
-# StellarCred Canonical Integration Example
+# Mithaq Canonical Integration Example
 
-A minimal, complete, runnable reference application demonstrating the full recommended StellarCred integration pattern end-to-end against Stellar Testnet.
+A minimal, complete, runnable reference application demonstrating the full recommended Mithaq integration pattern end-to-end against Stellar Testnet.
 
 This example covers the complete flow:
-1. **Redirect to Verify** (`buildVerifyUrl`): Direct unverified users to the StellarCred web app.
+1. **Redirect to Verify** (`buildVerifyUrl`): Direct unverified users to the Mithaq web app.
 2. **Handle the Return** (`parseReturnParams`): Receive users back while treating URL query parameters as **untrusted hints**.
-3. **Prove Wallet Control** (`createWalletChallenge` & signature check): Defend against the wallet-spoofing vulnerability ([Issue #543](https://github.com/ToluLabs/StellarCred/issues/543)).
+3. **Prove Wallet Control** (`createWalletChallenge` & signature check): Defend against the wallet-spoofing vulnerability ([Issue #543](https://github.com/ToluLabs/Mithaq/issues/543)).
 4. **Re-Verify On-Chain Server-Side** (`verifyWalletClaim`): Perform trustless verification directly against `ProofRegistry`.
 5. **Gate a Route**: Enforce session-based access control to sensitive resources.
 6. **Handle Failure States**: Distinguish and handle all failure conditions (`not_verified`, `expired`, `revoked`, `wrong_issuer`, `unmet_threshold`, `invalid_signature`, `challenge_replayed`).
@@ -39,10 +39,10 @@ cp .env.example .env
 
 The defaults point to the canonical testnet deployment of `ProofRegistry`:
 ```env
-STELLARCRED_REGISTRY_ID=CBEXHUMCNS4TJWNYXRFJNIWCNUW62MHAXL4JOBT764CLMHAPNJKIRWXV
-STELLARCRED_RPC_URL=https://soroban-testnet.stellar.org
-STELLARCRED_NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
-STELLARCRED_BASE_URL=https://stellarcred.xyz
+MITHAQ_REGISTRY_ID=CBEXHUMCNS4TJWNYXRFJNIWCNUW62MHAXL4JOBT764CLMHAPNJKIRWXV
+MITHAQ_RPC_URL=https://soroban-testnet.stellar.org
+MITHAQ_NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+MITHAQ_BASE_URL=https://mithaq.xyz
 PORT=3000
 APP_DOMAIN=localhost:3000
 ```
@@ -71,7 +71,7 @@ The entire server is contained in [`src/server.ts`](src/server.ts) and can be re
 ### Step 1: Redirect to Verify (`GET /api/verify-url`)
 Constructs the verification URL for the required claim type and threshold:
 ```ts
-import { buildVerifyUrl } from "@stellarcred/sdk/server";
+import { buildVerifyUrl } from "@mithaq/sdk/server";
 
 const verifyUrl = buildVerifyUrl({
   claim: "kyc",
@@ -84,7 +84,7 @@ const verifyUrl = buildVerifyUrl({
 ### Step 2: Handle Return (`GET /verify-return`)
 Extracts the parameters returned when the user is redirected back:
 ```ts
-import { parseReturnParams } from "@stellarcred/sdk/server";
+import { parseReturnParams } from "@mithaq/sdk/server";
 
 const hint = parseReturnParams(url.searchParams);
 // hint.verified is a client-side UI hint — do NOT grant access yet!
@@ -93,7 +93,7 @@ const hint = parseReturnParams(url.searchParams);
 ### Step 3: Issue Replay-Protected Challenge (`GET /api/auth/challenge`)
 Creates a single-use cryptographic challenge:
 ```ts
-import { createWalletChallenge } from "@stellarcred/sdk/server";
+import { createWalletChallenge } from "@mithaq/sdk/server";
 
 const challenge = createWalletChallenge({
   domain: "localhost:3000",
@@ -105,7 +105,7 @@ const challenge = createWalletChallenge({
 ### Step 4: Verify Wallet Control & On-Chain Claim (`POST /api/auth/verify`)
 Atomically validates the signature and queries the on-chain registry:
 ```ts
-import { verifyWalletClaim } from "@stellarcred/sdk/server";
+import { verifyWalletClaim } from "@mithaq/sdk/server";
 
 const result = await verifyWalletClaim({
   wallet: req.body.wallet,
@@ -146,8 +146,8 @@ The SDK and server distinguish each failure state clearly:
 | :--- | :--- | :--- |
 | `invalid_signature` | Provided signature did not match wallet key (spoofing attempt blocked). | User must sign challenge with their actual private key. |
 | `challenge_replayed` | Challenge nonce was already consumed or expired. | Request fresh challenge from `/api/auth/challenge`. |
-| `not_verified` | Wallet has no cached proof for this claim in `ProofRegistry`. | User redirects to StellarCred to prove claim. |
-| `expired` | On-chain credential has passed its `expiry` timestamp. | User returns to StellarCred to refresh/re-prove. |
+| `not_verified` | Wallet has no cached proof for this claim in `ProofRegistry`. | User redirects to Mithaq to prove claim. |
+| `expired` | On-chain credential has passed its `expiry` timestamp. | User returns to Mithaq to refresh/re-prove. |
 | `revoked` | Issuer revoked this holder's credential on-chain. | User must obtain new credential from authorized issuer. |
 | `wrong_issuer` | Proof was signed by an issuer not in the application's `trustedIssuers` list. | User must prove credential signed by an approved issuer. |
 | `unmet_threshold` | Proven threshold on-chain is below application's `minThreshold`. | User must prove a higher value meeting the threshold. |

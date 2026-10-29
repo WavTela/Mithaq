@@ -112,14 +112,14 @@ function BadgeContent() {
 
   const title =
     status === "loading"
-      ? "Verifying StellarCred claim on-chain..."
+      ? "Verifying Mithaq claim on-chain..."
       : status === "verified"
-        ? `StellarCred: ${claimText} Verified for ${wallet}`
+        ? `Mithaq: ${claimText} Verified for ${wallet}`
         : status === "unknown"
-          ? `StellarCred: ${claimText} status unknown — ${
+          ? `Mithaq: ${claimText} status unknown — ${
               issue?.message ?? "the network could not be reached"
             } This is not a rejection.`
-          : `StellarCred: ${claimText} Not Verified`;
+          : `Mithaq: ${claimText} Not Verified`;
 
   return (
     <div
@@ -137,7 +137,7 @@ function BadgeContent() {
       }}
     >
       <a
-        href="https://stellarcred.xyz"
+        href="https://mithaq.xyz"
         target="_blank"
         rel="noopener noreferrer"
         title={title}
@@ -194,7 +194,7 @@ function BadgeContent() {
               gap: "0.3rem",
             }}
           >
-            <span style={{ fontWeight: 600 }}>StellarCred</span>
+            <span style={{ fontWeight: 600 }}>Mithaq</span>
             <span style={{ color: faintColor }}>·</span>
             <span style={{ fontWeight: 500, color: faintColor }}>
               {claimText}

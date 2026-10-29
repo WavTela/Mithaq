@@ -1,4 +1,4 @@
-//! Shared test harness for the StellarCred contract suites.
+//! Shared test harness for the Mithaq contract suites.
 //!
 //! Every contract test suite used to open with the same block of setup:
 //! generate an admin, register `IssuerRegistry`, register `CredentialVerifier`,

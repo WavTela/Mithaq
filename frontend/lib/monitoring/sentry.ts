@@ -128,7 +128,7 @@ export class SentryClient {
         process.env.VERCEL_GIT_COMMIT_SHA ??
         process.env.GITHUB_SHA ??
         "local",
-      service: config.service ?? "stellarcred-api",
+      service: config.service ?? "mithaq-api",
       enabled: config.enabled ?? Boolean(config.dsn ?? process.env.SENTRY_DSN),
       beforeSend: config.beforeSend,
     };

@@ -1,11 +1,11 @@
-// @stellarcred/sdk — framework-agnostic core
+// @mithaq/sdk — framework-agnostic core
 //
 // `createClaimGate` is the framework-agnostic entry point for gating UI on
 // verified claims. It exposes subscribe/unsubscribe so any framework
 // (React, Vue, Svelte, vanilla JS) can react to claim state changes.
 // No React import.
 //
-//   import { createClaimGate } from "@stellarcred/sdk";
+//   import { createClaimGate } from "@mithaq/sdk";
 //
 //   const gate = createClaimGate({ wallet: "G…" });
 //   gate.subscribe((state) => console.log(state));

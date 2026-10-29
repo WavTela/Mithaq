@@ -22,7 +22,7 @@ import {
 } from "../credential";
 import { isStorageAvailable } from "../safe-storage";
 
-const STORAGE_KEY = "stellarcred:credentials";
+const STORAGE_KEY = "mithaq:credentials";
 
 export function useCredentialStore() {
   const [creds, setCreds] = useState<Credential[]>([]);

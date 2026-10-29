@@ -391,7 +391,7 @@ function AppsInner() {
           <IconCheck size={18} color="var(--accent)" stroke={2.5} />
           <span>
             <strong>Verification complete.</strong>{" "}
-            <span className="muted">You were returned here from StellarCred automatically.</span>
+            <span className="muted">You were returned here from Mithaq automatically.</span>
           </span>
         </div>
       )}

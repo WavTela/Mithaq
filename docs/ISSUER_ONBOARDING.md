@@ -1,7 +1,7 @@
 # Issuer Onboarding
 
 **Audience:** an organisation (a bank, an employer, a KYC provider, a DAO) that
-wants to become a credential issuer in StellarCred.
+wants to become a credential issuer in Mithaq.
 
 The holder journey and the protocol-integration path are documented elsewhere.
 This guide covers the third role, and the least-documented one: **the issuer is
@@ -95,7 +95,7 @@ ISSUER_PRIVATE_KEY=<your 64-hex key> node circuits/scripts/sign.js --pubkey-hex
 ```
 
 > **This script falls back to a hard-coded public demo key**
-> (`sha256("stellarcred-demo-issuer")`) when `ISSUER_PRIVATE_KEY` is unset, and
+> (`sha256("mithaq-demo-issuer")`) when `ISSUER_PRIVATE_KEY` is unset, and
 > it prints that key without warning. Always export the variable first and
 > sanity-check the output against your own key before registering it.
 
@@ -103,7 +103,7 @@ Confirm the value you are about to register matches your signing key, with no
 independent tool:
 
 ```ts
-import { IssuerClient } from "@stellarcred/issuer";
+import { IssuerClient } from "@mithaq/issuer";
 const { x, y } = new IssuerClient({ privateKey: process.env.ISSUER_PRIVATE_KEY! }).publicKey();
 console.log(Buffer.from([...x, ...y]).toString("hex")); // must equal the registered value
 ```
@@ -124,7 +124,7 @@ console.log(Buffer.from([...x, ...y]).toString("hex")); // must equal the regist
 > key through the client-side config.
 
 > **REQUIREMENT — The key must never appear in a client bundle, a browser
-> request body, a log line, an error message, or a repo.** `@stellarcred/issuer`
+> request body, a log line, an error message, or a repo.** `@mithaq/issuer`
 > is built to make this hard and you must not defeat it:
 > - its `package.json` `exports` map only defines a `"node"` condition;
 > - the module throws at import time if `typeof window !== "undefined"`;
@@ -273,7 +273,7 @@ country code about 250. Without a random salt the commitment is a deterministic
 hash and can be reversed by hashing candidates until one matches — reading the
 credential straight off the public inputs.
 
-The circuits assert `salt != 0` as defense-in-depth. `@stellarcred/issuer`
+The circuits assert `salt != 0` as defense-in-depth. `@mithaq/issuer`
 generates 31 bytes (248 bits) of `node:crypto` randomness per issuance. Reuse
 a salt across two credentials and you have linked them; ship `salt` as a
 constant and you have published your attribute.
@@ -397,12 +397,12 @@ Registration emits an event with topics `("iss_reg", "register")` and payload
 
 ### 5.1 Using the package
 
-`@stellarcred/issuer` is server-only (see §2.4). It performs the salt
+`@mithaq/issuer` is server-only (see §2.4). It performs the salt
 generation, Poseidon2 commitment (executing the same circuit artifact the
 proofs use) and prehash-free signing.
 
 ```ts
-import { IssuerClient } from "@stellarcred/issuer";
+import { IssuerClient } from "@mithaq/issuer";
 
 const issuer = new IssuerClient({
   privateKey: process.env.ISSUER_PRIVATE_KEY!,  // server-side only
@@ -634,7 +634,7 @@ These are obligations, not advice. Each is checkable before you issue.
 |---|---|---|
 | 1 | Signing key held in an HSM or secrets manager, never a plaintext host env | Custody attestation; access review |
 | 2 | Key never carries a `NEXT_PUBLIC_` prefix | `grep -r NEXT_PUBLIC_ISSUER frontend/` |
-| 3 | Key never present in any client bundle or browser request | `@stellarcred/issuer` node-only exports + `window` guard; `cross-boundary.test.ts` |
+| 3 | Key never present in any client bundle or browser request | `@mithaq/issuer` node-only exports + `window` guard; `cross-boundary.test.ts` |
 | 4 | Key never in git, logs, or error reports | Secret scanning; log review |
 | 5 | `prehash: false` preserved, byte-for-byte, with big-endian `be32` | `cross-boundary.test.ts` |
 | 6 | No identity field retained after the provider call | `stripSensitiveFields` on every log path; storage review |

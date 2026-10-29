@@ -1,8 +1,8 @@
-# StellarCred roadmap — v1.0 release plan
+# Mithaq roadmap — v1.0 release plan
 
-This roadmap coordinates the work needed to ship **StellarCred v1.0**: a tagged,
-reproducible release of the Soroban contracts, Noir circuits, `@stellarcred/sdk`,
-`@stellarcred/issuer`, the reference app, and the indexer, with stability promises
+This roadmap coordinates the work needed to ship **Mithaq v1.0**: a tagged,
+reproducible release of the Soroban contracts, Noir circuits, `@mithaq/sdk`,
+`@mithaq/issuer`, the reference app, and the indexer, with stability promises
 that integrators can rely on.
 
 It is a plan, not a date commitment. Estimates are rough, and owners are roles
@@ -20,8 +20,8 @@ was checked against open issues on 2026-10-22.
 |---|---|---|
 | Contracts | `contracts/` (`issuer_registry`, `credential_verifier`, `proof_registry`, `gated_pool`; soroban-sdk 26.0.1) | `CONTRACT_VERSION = 1_000_000` already; real UltraHonk verifier via `rs-soroban-ultrahonk` pinned to a git rev (not published). Testnet only. |
 | Circuits | `circuits/` (12 proven circuits in `circuit-versions.json`, Noir 1.0.0-beta.9 / bb 0.87.0) | All at circuit `1.0.0`, VK version 1. Constraint baseline in `circuits/AUDIT.md`. |
-| SDK | `frontend/packages/sdk` (`@stellarcred/sdk` 0.1.1) | Read-only claim client. A second, private package `sdk/` (`@sdk/core` 0.0.0) still exists at the repo root. |
-| Issuer package | `frontend/packages/issuer` (`@stellarcred/issuer` 0.1.0) | Server-only issuance. Not published by `release.yml`. |
+| SDK | `frontend/packages/sdk` (`@mithaq/sdk` 0.1.1) | Read-only claim client. A second, private package `sdk/` (`@sdk/core` 0.0.0) still exists at the repo root. |
+| Issuer package | `frontend/packages/issuer` (`@mithaq/issuer` 0.1.0) | Server-only issuance. Not published by `release.yml`. |
 | Generated clients | `frontend/packages/proof-registry`, `frontend/packages/issuer-registry` | Generated from contracts (`scripts/gen-bindings.sh`). |
 | App + API | `frontend/` (Next.js; holder, verify, issuer, admin, apps, developers; `app/api/issue`) | Beta. Several open security and correctness issues. |
 | Indexer | `services/indexer` | Event indexer (SQLite/Postgres). No tests running in CI yet. |
@@ -45,8 +45,8 @@ Already done and counted as gates for v1.0 (verify regression coverage at RC):
   schema-version promises in `SUPPORT_POLICY.md`.
 - **Circuits:** a declared v1.0 set of supported credential types, with frozen
   public-input layouts and registered VKs.
-- **SDK:** `@stellarcred/sdk` 1.0.0 with a reviewed, documented public API under
-  semver. `@stellarcred/issuer` 1.0.0 published alongside it.
+- **SDK:** `@mithaq/sdk` 1.0.0 with a reviewed, documented public API under
+  semver. `@mithaq/issuer` 1.0.0 published alongside it.
 - **App:** holder, verify, and issuer flows on testnet with security headers,
   validated APIs, and E2E coverage of verify → prove → submit.
 - **Indexer:** tested in CI and able to backfill.
@@ -116,7 +116,7 @@ Exit criteria:
 
 Exit criteria:
 - [ ] Release checklist (section 5) fully ticked by the release manager.
-- [ ] `v1.0.0` tag; GitHub release with changelog; `@stellarcred/sdk@1.0.0` and `@stellarcred/issuer@1.0.0` on npm.
+- [ ] `v1.0.0` tag; GitHub release with changelog; `@mithaq/sdk@1.0.0` and `@mithaq/issuer@1.0.0` on npm.
 - [ ] `DEPLOYMENTS.md` updated with contract IDs, source commit, and WASM hashes for the v1.0 testnet deployment.
 - [ ] Post-v1 backlog moved to a `v1.1` milestone.
 
@@ -194,7 +194,7 @@ Owners are roles; replace them with a GitHub handle when someone claims the task
 
 | Task | Issue | Est. | Owner | Milestone |
 |---|---|---|---|---|
-| Release pipeline: align versions, publish `@stellarcred/issuer`, fix package metadata, support pre-release tags | NEW | M (3d) | Release manager (maintainer) | alpha |
+| Release pipeline: align versions, publish `@mithaq/issuer`, fix package metadata, support pre-release tags | NEW | M (3d) | Release manager (maintainer) | alpha |
 | Fix deploy-script typo and non-idempotent deploys | #764, #910 | M (3d) | Contributor | beta |
 | Better logging in deploy scripts | #754 | S (1d) | Contributor | beta |
 | One command to verify a deployment end to end | #692 | S (2d) | Contributor | rc |
@@ -246,7 +246,7 @@ Release manager runs this list and pastes it, ticked, into the release PR or iss
 - [ ] App `/api/ready` reports the expected contract versions.
 
 **After release**
-- [ ] Smoke test: issue → prove → submit → `is_verified` from the deployed app and from a fresh `npm install @stellarcred/sdk`.
+- [ ] Smoke test: issue → prove → submit → `is_verified` from the deployed app and from a fresh `npm install @mithaq/sdk`.
 - [ ] Announce the release with upgrade notes. For breaking changes, follow the deprecation procedure in `SUPPORT_POLICY.md`.
 - [ ] Open the next milestone. Move leftovers.
 

@@ -1,4 +1,4 @@
-// @stellarcred/sdk — submitTransaction wrapper (#744)
+// @mithaq/sdk — submitTransaction wrapper (#744)
 //
 // Provides a single entry point for the submit_proof transaction path that
 // wires together exponential-backoff retry (withRetry), transient-failure
@@ -7,7 +7,7 @@
 // actionable error object on every failure.
 //
 // Usage:
-//   import { submitTransaction } from "@stellarcred/sdk";
+//   import { submitTransaction } from "@mithaq/sdk";
 //
 //   await submitTransaction(() => client.submit_proof(args));
 //   // On failure: throws TransactionSubmissionError with code + message + retryable
@@ -72,7 +72,7 @@ export interface SubmitTransactionOptions {
  *
  * @example
  * ```ts
- * import { submitTransaction, TransactionSubmissionError, ContractErrorCode } from "@stellarcred/sdk";
+ * import { submitTransaction, TransactionSubmissionError, ContractErrorCode } from "@mithaq/sdk";
  *
  * try {
  *   const result = await submitTransaction(

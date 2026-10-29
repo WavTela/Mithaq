@@ -23,7 +23,7 @@ export interface StepGuidance {
 
 export const STEP_GUIDANCE: Record<OnboardingStep, StepGuidance> = {
   welcome: {
-    title: "Welcome to StellarCred",
+    title: "Welcome to Mithaq",
     summary:
       "Prove facts about yourself without revealing personal data. This walkthrough takes you through the full loop once: a wallet, a credential, and a proof anyone can verify.",
     tip: "Your credentials live in this browser only — never on a server. You can replay this tour anytime with the “Tour” button in the header.",
@@ -39,7 +39,7 @@ export const STEP_GUIDANCE: Record<OnboardingStep, StepGuidance> = {
   "get-credential": {
     title: "Create your credential",
     summary:
-      "Request a demo age credential from the StellarCred Authority. It attests “age ≥ 18” without carrying your date of birth — only a cryptographic commitment is stored.",
+      "Request a demo age credential from the Mithaq Authority. It attests “age ≥ 18” without carrying your date of birth — only a cryptographic commitment is stored.",
     tip: "The credential is encrypted at rest in your browser with a key derived from your unlock passphrase. Back it up from the dashboard before clearing site data.",
     railLabel: "Credential",
   },
@@ -61,7 +61,7 @@ export const STEP_GUIDANCE: Record<OnboardingStep, StepGuidance> = {
     title: "You're ready",
     summary:
       "Wallet, credential, trust — the core loop is done. Any Stellar protocol can now verify your proofs in a single contract call.",
-    tip: "Explore apps that accept StellarCred proofs, or open your dashboard to generate a real proof on-chain.",
+    tip: "Explore apps that accept Mithaq proofs, or open your dashboard to generate a real proof on-chain.",
     railLabel: "Finish",
   },
 };

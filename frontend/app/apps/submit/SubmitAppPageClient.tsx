@@ -207,7 +207,7 @@ export default function SubmitAppPageClient() {
           className="muted"
           style={{ fontSize: "0.875rem", marginTop: "0.5rem", lineHeight: 1.6 }}
         >
-          List your StellarCred integration in the Apps gallery. Submissions are
+          List your Mithaq integration in the Apps gallery. Submissions are
           reviewed before being published.
         </p>
       </div>
@@ -225,7 +225,7 @@ export default function SubmitAppPageClient() {
           <label className="field-label" htmlFor="app-description" style={{ display: "block", marginBottom: "0.4rem" }}>
             Description *
           </label>
-          <textarea id="app-description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe what your app does and how it uses StellarCred credentials..." rows={4} maxLength={2000} style={{ ...fieldStyle, resize: "vertical", minHeight: "5rem" }} />
+          <textarea id="app-description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe what your app does and how it uses Mithaq credentials..." rows={4} maxLength={2000} style={{ ...fieldStyle, resize: "vertical", minHeight: "5rem" }} />
           <div className="faint" style={{ fontSize: "0.72rem", marginTop: "0.3rem", textAlign: "right" }}>
             {description.length}/2000
           </div>
@@ -237,7 +237,7 @@ export default function SubmitAppPageClient() {
             Required claims *
           </label>
           <p className="faint" style={{ fontSize: "0.8125rem", marginBottom: "0.75rem", lineHeight: 1.5 }}>
-            Which StellarCred credential types does your app gate access on?
+            Which Mithaq credential types does your app gate access on?
           </p>
           <div className="row" style={{ gap: "0.4rem", flexWrap: "wrap" }}>
             {VALID_CLAIM_TYPES.map((claim) => {

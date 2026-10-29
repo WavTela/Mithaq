@@ -24,7 +24,7 @@
  */
 
 import type { NextRequest } from "next/server";
-import { CREDENTIAL_TYPES, type ClaimParams, type IssuerClient } from "@stellarcred/issuer";
+import { CREDENTIAL_TYPES, type ClaimParams, type IssuerClient } from "@mithaq/issuer";
 import { fetchIssuerPubkey } from "@/lib/issuer-registry";
 import { equals } from "@/lib/crypto";
 import { env } from "@/lib/env";
@@ -131,7 +131,7 @@ export function normalizeIssueRequest(
     credentialTypes,
     holder: body.holder,
     issuerId: body.issuerId ?? tenant?.config.issuerId,
-    issuerName: body.issuerName ?? tenant?.config.issuerName ?? "StellarCred Authority",
+    issuerName: body.issuerName ?? tenant?.config.issuerName ?? "Mithaq Authority",
     expiry: body.expiry ?? "90 days",
     attributes,
     claimParams: body.claimParams,

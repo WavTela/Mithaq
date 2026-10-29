@@ -26,7 +26,7 @@ const push = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
   useSearchParams: () =>
-    // Mirrors the query string produced by @stellarcred/sdk's buildVerifyUrl({
+    // Mirrors the query string produced by @mithaq/sdk's buildVerifyUrl({
     //   returnUrl: "/callback", claim: "age",
     // }) — a relative return_url that resolves against this app's own origin.
     new URLSearchParams({ return_url: "/callback", claim: "age" }),
@@ -99,7 +99,7 @@ describe("verify -> issue -> redirect", () => {
       type: "age",
       title: "Age Verified",
       claim: "age >= 18",
-      issuer: "StellarCred Authority",
+      issuer: "Mithaq Authority",
       issuerId: TEST_ISSUER,
       holder: TEST_ADDRESS,
       value: "1995-06-15",

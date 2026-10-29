@@ -1,11 +1,11 @@
-# StellarCred TypeScript SDK Example
+# Mithaq TypeScript SDK Example
 
-A clean, type-safe reference example demonstrating how to integrate `@stellarcred/sdk` and `@stellar/stellar-sdk` in a modern TypeScript environment.
+A clean, type-safe reference example demonstrating how to integrate `@mithaq/sdk` and `@stellar/stellar-sdk` in a modern TypeScript environment.
 
 This example illustrates end-to-end credential gating and Stellar transaction construction:
 1. **SDK Initialization & Health Check**: Configure explicit RPC and registry parameters with typed health diagnostics.
 2. **On-Chain Credential Verification**: Query zero-knowledge credential proofs (`hasClaim`, `getClaimRecord`) directly against Soroban `ProofRegistry`.
-3. **Anti-Spoofing Wallet Challenge**: Generate replay-protected cryptographic challenges and verify wallet signatures atomically (`verifyWalletClaim`), mitigating wallet-spoofing risks ([Issue #543](https://github.com/ToluLabs/StellarCred/issues/543)).
+3. **Anti-Spoofing Wallet Challenge**: Generate replay-protected cryptographic challenges and verify wallet signatures atomically (`verifyWalletClaim`), mitigating wallet-spoofing risks ([Issue #543](https://github.com/ToluLabs/Mithaq/issues/543)).
 4. **Credential-Gated Stellar Transactions**: Build, gate, and sign Stellar payments (`createAndSignGatedPayment`) that enforce verified on-chain claims before signing.
 5. **Type-Safe Error Handling**: Catch and handle typed SDK error hierarchies (`RpcError`, `ContractError`, `TimeoutError`, `InvalidAddressError`).
 
@@ -61,13 +61,13 @@ The primary implementation is located in [`src/index.ts`](src/index.ts).
 ### 1. Configuration & Health Check
 
 ```typescript
-import { configure, healthCheck } from "@stellarcred/sdk";
+import { configure, healthCheck } from "@mithaq/sdk";
 import { Networks } from "@stellar/stellar-sdk";
 
 configure({
-  registryId: process.env.STELLARCRED_REGISTRY_ID ?? "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
-  rpcUrl: process.env.STELLARCRED_RPC_URL ?? "https://soroban-testnet.stellar.org",
-  networkPassphrase: process.env.STELLARCRED_NETWORK_PASSPHRASE ?? Networks.TESTNET,
+  registryId: process.env.MITHAQ_REGISTRY_ID ?? "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
+  rpcUrl: process.env.MITHAQ_RPC_URL ?? "https://soroban-testnet.stellar.org",
+  networkPassphrase: process.env.MITHAQ_NETWORK_PASSPHRASE ?? Networks.TESTNET,
   requestTimeoutMs: 10_000,
 });
 
@@ -80,7 +80,7 @@ if (!health.configured) {
 ### 2. Checking On-Chain Claims
 
 ```typescript
-import { hasClaim, getClaimRecord } from "@stellarcred/sdk";
+import { hasClaim, getClaimRecord } from "@mithaq/sdk";
 
 // Boolean check for verified claim
 const isVerified = await hasClaim(walletAddress, "kyc");
@@ -94,12 +94,12 @@ const record = await getClaimRecord(walletAddress, "kyc");
 Public keys and on-chain proofs are publicly observable on the ledger. Never grant authorization based solely on a claimed wallet address.
 
 ```typescript
-import { createWalletChallenge, verifyWalletClaim } from "@stellarcred/sdk";
+import { createWalletChallenge, verifyWalletClaim } from "@mithaq/sdk";
 import { Keypair } from "@stellar/stellar-sdk";
 
 // 1. Generate challenge with nonce and TTL
 const challenge = createWalletChallenge({
-  domain: "myapp.stellarcred.xyz",
+  domain: "myapp.mithaq.xyz",
   statement: "Sign to prove wallet control and access credential-gated transaction",
   ttlMs: 5 * 60 * 1000,
 });

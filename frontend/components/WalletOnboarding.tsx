@@ -181,7 +181,7 @@ export function WalletOnboarding() {
           style={{ fontSize: "0.85rem", lineHeight: 1.6, maxWidth: 400, margin: "0 auto" }}
         >
           A Stellar wallet stores your keys and signs transactions. Install one
-          of the wallets below, then connect it to start using StellarCred.
+          of the wallets below, then connect it to start using Mithaq.
         </p>
       </div>
 

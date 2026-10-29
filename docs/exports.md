@@ -1,6 +1,6 @@
 # Export API — Documentation & Contributor Guide
 
-This document covers the admin export pipeline introduced in issues [#783](https://github.com/ToluLabs/StellarCred/issues/783) and [#784](https://github.com/ToluLabs/StellarCred/issues/784): how to use it, how data is shaped, how security is enforced, and what contributors must know before modifying it.
+This document covers the admin export pipeline introduced in issues [#783](https://github.com/ToluLabs/Mithaq/issues/783) and [#784](https://github.com/ToluLabs/Mithaq/issues/784): how to use it, how data is shaped, how security is enforced, and what contributors must know before modifying it.
 
 ---
 

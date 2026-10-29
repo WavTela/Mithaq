@@ -28,20 +28,20 @@ describe("parseCorsOrigins", () => {
   });
 
   it("parses single origin", () => {
-    expect(parseCorsOrigins("https://app.stellarcred.xyz")).toEqual([
-      "https://app.stellarcred.xyz",
+    expect(parseCorsOrigins("https://app.mithaq.xyz")).toEqual([
+      "https://app.mithaq.xyz",
     ]);
   });
 
   it("parses comma-separated list of origins with trimming", () => {
     expect(
       parseCorsOrigins(
-        "http://localhost:3000, https://stellarcred.app , https://testnet.stellarcred.app"
+        "http://localhost:3000, https://mithaq.app , https://testnet.mithaq.app"
       )
     ).toEqual([
       "http://localhost:3000",
-      "https://stellarcred.app",
-      "https://testnet.stellarcred.app",
+      "https://mithaq.app",
+      "https://testnet.mithaq.app",
     ]);
   });
 
@@ -61,19 +61,19 @@ describe("createCorsMiddleware", () => {
   }
 
   it("attaches Access-Control-Allow-Origin for allowed origin", async () => {
-    const app = createTestApp(["https://app.stellarcred.xyz"]);
+    const app = createTestApp(["https://app.mithaq.xyz"]);
     const res = await request(app)
       .get("/test")
-      .set("Origin", "https://app.stellarcred.xyz");
+      .set("Origin", "https://app.mithaq.xyz");
 
     expect(res.status).toBe(200);
     expect(res.headers["access-control-allow-origin"]).toBe(
-      "https://app.stellarcred.xyz"
+      "https://app.mithaq.xyz"
     );
   });
 
   it("does not attach Access-Control-Allow-Origin for disallowed origin", async () => {
-    const app = createTestApp(["https://app.stellarcred.xyz"]);
+    const app = createTestApp(["https://app.mithaq.xyz"]);
     const res = await request(app)
       .get("/test")
       .set("Origin", "https://malicious.site");
@@ -83,7 +83,7 @@ describe("createCorsMiddleware", () => {
   });
 
   it("allows non-browser requests without Origin header", async () => {
-    const app = createTestApp(["https://app.stellarcred.xyz"]);
+    const app = createTestApp(["https://app.mithaq.xyz"]);
     const res = await request(app).get("/test");
 
     expect(res.status).toBe(200);
@@ -101,22 +101,22 @@ describe("createCorsMiddleware", () => {
   });
 
   it("handles OPTIONS preflight for allowed origin", async () => {
-    const app = createTestApp(["https://app.stellarcred.xyz"]);
+    const app = createTestApp(["https://app.mithaq.xyz"]);
     const res = await request(app)
       .options("/test")
-      .set("Origin", "https://app.stellarcred.xyz")
+      .set("Origin", "https://app.mithaq.xyz")
       .set("Access-Control-Request-Method", "GET");
 
     expect(res.status).toBe(204);
     expect(res.headers["access-control-allow-origin"]).toBe(
-      "https://app.stellarcred.xyz"
+      "https://app.mithaq.xyz"
     );
     expect(res.headers["access-control-allow-methods"]).toMatch(/GET/);
     expect(res.headers["access-control-max-age"]).toBe("86400");
   });
 
   it("does not allow OPTIONS preflight for disallowed origin", async () => {
-    const app = createTestApp(["https://app.stellarcred.xyz"]);
+    const app = createTestApp(["https://app.mithaq.xyz"]);
     const res = await request(app)
       .options("/test")
       .set("Origin", "https://unauthorized.com")
@@ -129,7 +129,7 @@ describe("createCorsMiddleware", () => {
     const app = createTestApp([]);
     const res = await request(app)
       .get("/test")
-      .set("Origin", "https://app.stellarcred.xyz");
+      .set("Origin", "https://app.mithaq.xyz");
 
     expect(res.status).toBe(200);
     expect(res.headers["access-control-allow-origin"]).toBeUndefined();

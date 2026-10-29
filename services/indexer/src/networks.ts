@@ -1,5 +1,5 @@
 /**
- * networks.ts — Canonical per-network presets for StellarCred.
+ * networks.ts — Canonical per-network presets for Mithaq.
  *
  * A single selector (`STELLAR_NETWORK` env var, values: testnet | mainnet |
  * futurenet) picks one of these presets, which supplies the Horizon URL,

@@ -51,7 +51,7 @@ assert_eq!(topics.1, symbol_short!("admin_rot"));  // ✅ Expects "admin_rot"
 ## How to Push (Execute These Commands)
 
 ```bash
-cd /path/to/StellarCred
+cd /path/to/Mithaq
 
 # Check status
 git status

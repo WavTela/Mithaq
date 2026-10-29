@@ -1,6 +1,6 @@
 # Limitations and Non-Goals
 
-StellarCred's privacy guarantee is scoped to the **contents** of a credential. The raw
+Mithaq's privacy guarantee is scoped to the **contents** of a credential. The raw
 attribute value and its random salt never leave the holder's device, and only the proof and
 its public inputs are written on-chain. That guarantee does not — and is not designed to —
 hide the *fact* of a verification, the wallet it belongs to, or the parties that necessarily
@@ -27,7 +27,7 @@ ledger, and stating them plainly is intentional (see
 | Which wallet holds which claim type is hidden | No | Public on-chain state. |
 | Submitting a proof is unlinkable to the wallet over time | No | The submission permanently links them in ledger history. |
 | The issuer is blind to the attribute at issuance | No | The issuer derives and signs the commitment and must know the value. |
-| Delegation grants are confidential | No | Grants are on-chain and publicly observable ([#554](https://github.com/ToluLabs/StellarCred/issues/554)). |
+| Delegation grants are confidential | No | Grants are on-chain and publicly observable ([#554](https://github.com/ToluLabs/Mithaq/issues/554)). |
 | Credentials can be recovered without a backup | No | They live only in one browser's `localStorage`. |
 | Verification status is private from protocols | No | `is_verified` / `check_claim` are public reads by design. |
 
@@ -62,7 +62,7 @@ disclosure is the *relationship* — that a specific holder named a specific ver
 claim's contents. This is a known and accepted trade-off of the design rather than something
 the contract layer can hide; see the "Delegated Verification" section of
 [THREAT_MODEL.md](THREAT_MODEL.md) and issue
-[#554](https://github.com/ToluLabs/StellarCred/issues/554).
+[#554](https://github.com/ToluLabs/Mithaq/issues/554).
 
 ### 4. The issuer sees the attribute at issuance
 
@@ -84,7 +84,7 @@ holder's on-chain activity with their verification, independent of what the proo
 ### 1. Credentials live in one browser and are lost without a backup
 
 Credentials — including the raw value and the random salt — are stored **only** in the
-browser's `localStorage` under `stellarcred:credentials`. There is no StellarCred account and
+browser's `localStorage` under `mithaq:credentials`. There is no Mithaq account and
 no server-side credential database, so nothing can be restored from a server:
 
 - Clearing site data, switching browsers or devices, or browsing privately erases them.
@@ -112,7 +112,7 @@ link from the ledger.
 
 ### 1. Hiding the fact of verification — only its contents
 
-StellarCred hides *what* the credential says, not *that* a wallet verified. Anyone reading the
+Mithaq hides *what* the credential says, not *that* a wallet verified. Anyone reading the
 chain learns the wallet, the credential type, the issuer, and the expiry. Do not treat
 submission as a private or off-the-record action.
 
@@ -161,7 +161,7 @@ cannot prevent.
 
 ## Non-goals
 
-- **Not a KYC or identity provider.** StellarCred relays to issuers and KYC providers; it does
+- **Not a KYC or identity provider.** Mithaq relays to issuers and KYC providers; it does
   not verify identity or hold identity documents.
 - **Not an anonymity system.** It does not hide the transaction graph, the wallet-to-claim
   link, or the holder-verifier relationship established by a delegation.
@@ -169,7 +169,7 @@ cannot prevent.
   recovery path other than a backup the holder made in advance.
 - **Not a confidential delegation channel.** On-chain grants are public by construction; hiding
   that a relationship exists requires off-chain infrastructure this design does not implement
-  ([#554](https://github.com/ToluLabs/StellarCred/issues/554)).
+  ([#554](https://github.com/ToluLabs/Mithaq/issues/554)).
 - **Not a trusted-issuer oracle.** A proof binds a credential to a registered issuer; it does
   not establish that the issuer's assertion is correct.
 - **Not a threshold-hiding system.** The queried bound and the satisfied bound are visible.

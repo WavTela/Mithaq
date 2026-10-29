@@ -29,21 +29,21 @@ export function VerifyQrScannerModal({ locked }: VerifyQrScannerModalProps) {
     try {
       dest = new URL(text, window.location.origin);
     } catch {
-      toast.error("That QR code isn't a valid StellarCred verify request.");
+      toast.error("That QR code isn't a valid Mithaq verify request.");
       return;
     }
 
     // A real verify request always has return_url — reject anything else
     // outright rather than treating an arbitrary scanned URL as trustworthy.
     if (dest.pathname !== "/verify" || !dest.searchParams.has("return_url")) {
-      toast.error("That QR code isn't a valid StellarCred verify request.");
+      toast.error("That QR code isn't a valid Mithaq verify request.");
       return;
     }
 
     if (dest.origin === window.location.origin) {
       // The scanned URL itself is same-origin, but its embedded return_url
       // is where the wallet address ends up after issuance — a QR can stay
-      // on stellarcred.xyz throughout and still smuggle in a cross-origin
+      // on mithaq.xyz throughout and still smuggle in a cross-origin
       // return_url, so that param needs the same confirmation the top-level
       // origin check gets below.
       const embeddedReturnUrl = dest.searchParams.get("return_url");
@@ -52,11 +52,11 @@ export function VerifyQrScannerModal({ locked }: VerifyQrScannerModalProps) {
         try {
           returnDest = new URL(embeddedReturnUrl);
         } catch {
-          toast.error("That QR code isn't a valid StellarCred verify request.");
+          toast.error("That QR code isn't a valid Mithaq verify request.");
           return;
         }
         if (returnDest.protocol !== "https:") {
-          toast.error("That QR code isn't a valid StellarCred verify request.");
+          toast.error("That QR code isn't a valid Mithaq verify request.");
           return;
         }
         if (returnDest.origin !== window.location.origin) {
@@ -84,7 +84,7 @@ export function VerifyQrScannerModal({ locked }: VerifyQrScannerModalProps) {
       }
       window.location.href = dest.toString();
     } else {
-      toast.error("That QR code isn't a valid StellarCred verify request.");
+      toast.error("That QR code isn't a valid Mithaq verify request.");
     }
   }
 

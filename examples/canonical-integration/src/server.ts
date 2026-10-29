@@ -1,5 +1,5 @@
 /**
- * StellarCred Canonical Integration Example Server
+ * Mithaq Canonical Integration Example Server
  *
  * Demonstrates the end-to-end integration pattern recommended for Stellar protocols:
  *  1. Redirect to verify (buildVerifyUrl)
@@ -24,7 +24,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import crypto from "node:crypto";
 
-import StellarCred, {
+import Mithaq, {
   configure,
   healthCheck,
   buildVerifyUrl,
@@ -35,7 +35,7 @@ import StellarCred, {
   type ClaimType,
   type ClaimOptions,
   type WalletChallenge,
-} from "@stellarcred/sdk";
+} from "@mithaq/sdk";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -43,15 +43,15 @@ const __dirname = dirname(__filename);
 // ── 1. Configure the SDK at Startup ──────────────────────────────────────────
 // Configure with environment variables or default testnet deployments
 const REGISTRY_ID =
-  process.env.STELLARCRED_REGISTRY_ID ??
+  process.env.MITHAQ_REGISTRY_ID ??
   "CBEXHUMCNS4TJWNYXRFJNIWCNUW62MHAXL4JOBT764CLMHAPNJKIRWXV";
 const RPC_URL =
-  process.env.STELLARCRED_RPC_URL ?? "https://soroban-testnet.stellar.org";
+  process.env.MITHAQ_RPC_URL ?? "https://soroban-testnet.stellar.org";
 const NETWORK_PASSPHRASE =
-  process.env.STELLARCRED_NETWORK_PASSPHRASE ??
+  process.env.MITHAQ_NETWORK_PASSPHRASE ??
   "Test SDF Network ; September 2015";
 const BASE_URL =
-  process.env.STELLARCRED_BASE_URL ?? "https://stellarcred.xyz";
+  process.env.MITHAQ_BASE_URL ?? "https://mithaq.xyz";
 const PORT = Number(process.env.PORT ?? 3000);
 const APP_DOMAIN = process.env.APP_DOMAIN ?? `localhost:${PORT}`;
 
@@ -66,7 +66,7 @@ configure({
 const health = healthCheck();
 if (!health.configured) {
   // eslint-disable-next-line no-console
-  console.warn("[StellarCred Example] Warning: SDK partially configured — missing:", health.missing);
+  console.warn("[Mithaq Example] Warning: SDK partially configured — missing:", health.missing);
 }
 
 // ── In-Memory Session Store ──────────────────────────────────────────────────
@@ -153,7 +153,7 @@ export function createRequestHandler() {
           return;
         }
         res.writeHead(200, { "Content-Type": "text/plain" });
-        res.end("StellarCred Canonical Integration Example running.");
+        res.end("Mithaq Canonical Integration Example running.");
         return;
       }
 
@@ -205,7 +205,7 @@ export function createRequestHandler() {
         return;
       }
 
-      // ── Step 2: Handle the Return Redirect from StellarCred ────────────────
+      // ── Step 2: Handle the Return Redirect from Mithaq ────────────────
       // GET /verify-return?sc_verified=true&sc_wallet=G...&sc_claims=kyc
       if (method === "GET" && pathname === "/verify-return") {
         const hint = parseReturnParams(url.searchParams);
@@ -214,7 +214,7 @@ export function createRequestHandler() {
         // Never grant access or create sessions solely from sc_verified / sc_wallet.
         sendJson(res, 200, {
           ok: true,
-          message: "User returned from StellarCred verification.",
+          message: "User returned from Mithaq verification.",
           warning:
             "CRITICAL SECURITY NOTICE: 'sc_verified' and 'sc_wallet' in the URL query string " +
             "are untrusted hints, NOT cryptographic proof of wallet control or valid credentials. " +
@@ -432,7 +432,7 @@ if (isDirectExecution && process.env.NODE_ENV !== "test") {
     // eslint-disable-next-line no-console
     console.log(`\n========================================================`);
     // eslint-disable-next-line no-console
-    console.log(`🚀 StellarCred Canonical Integration Example running at:`);
+    console.log(`🚀 Mithaq Canonical Integration Example running at:`);
     // eslint-disable-next-line no-console
     console.log(`   http://localhost:${PORT}`);
     // eslint-disable-next-line no-console

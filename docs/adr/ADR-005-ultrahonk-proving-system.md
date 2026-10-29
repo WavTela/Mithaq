@@ -8,7 +8,7 @@
 
 ## Context
 
-StellarCred generates ZK proofs in the browser and verifies them on the Stellar Soroban blockchain. The choice of proving system is not a simple preference — it determines proof size, verification cost, prover time, whether a trusted setup is required, and whether an efficient on-chain verifier exists for the target chain.
+Mithaq generates ZK proofs in the browser and verifies them on the Stellar Soroban blockchain. The choice of proving system is not a simple preference — it determines proof size, verification cost, prover time, whether a trusted setup is required, and whether an efficient on-chain verifier exists for the target chain.
 
 Soroban is a Wasm-based smart contract environment without a native elliptic-curve precompile. Any on-chain verifier must be compiled to Wasm and fit within Soroban's computational budget.
 
@@ -16,7 +16,7 @@ Soroban is a Wasm-based smart contract environment without a native elliptic-cur
 
 ## Decision
 
-StellarCred uses **UltraHonk** (the Honk proof system with UltraPlonk arithmetization), produced by Barretenberg (`bb`), with **keccak256 as the Fiat-Shamir oracle hash**. Proofs are verified on-chain by the `ultrahonk_soroban_verifier` crate, which is a Wasm-compatible Soroban contract library.
+Mithaq uses **UltraHonk** (the Honk proof system with UltraPlonk arithmetization), produced by Barretenberg (`bb`), with **keccak256 as the Fiat-Shamir oracle hash**. Proofs are verified on-chain by the `ultrahonk_soroban_verifier` crate, which is a Wasm-compatible Soroban contract library.
 
 ```rust
 // contracts/credential_verifier/src/lib.rs
@@ -33,7 +33,7 @@ Verification keys are deterministic given the circuit and the exact (`nargo`, `b
 
 Groth16 is the most widely deployed ZK proving system. It produces small proofs (≈192 bytes), has fast verification, and has well-audited toolchain support in `snarkjs`.
 
-**Why rejected — trusted setup.** Groth16 requires a circuit-specific trusted setup (a Powers of Tau ceremony plus a per-circuit phase 2). Every time a circuit is modified — adding a new credential type, fixing a constraint — a new trusted setup ceremony must be run. StellarCred expects to iterate on circuits (adding employment, accreditation, and other credential types). Running a trusted setup ceremony for each change is operationally expensive and creates a window during which the system must trust the setup participants. UltraHonk is a transparent proving system with no trusted setup.
+**Why rejected — trusted setup.** Groth16 requires a circuit-specific trusted setup (a Powers of Tau ceremony plus a per-circuit phase 2). Every time a circuit is modified — adding a new credential type, fixing a constraint — a new trusted setup ceremony must be run. Mithaq expects to iterate on circuits (adding employment, accreditation, and other credential types). Running a trusted setup ceremony for each change is operationally expensive and creates a window during which the system must trust the setup participants. UltraHonk is a transparent proving system with no trusted setup.
 
 **Why rejected — no Wasm verifier for Soroban.** At the time of this decision, there was no production-ready Groth16 verifier for Soroban/Wasm. Soroban lacks the elliptic-curve precompiles that Ethereum provides, so a BN254 pairing-based verifier must be implemented entirely in Wasm, which is computationally expensive. The `ultrahonk_soroban_verifier` crate provides a working, tested Wasm verifier specifically for UltraHonk on Soroban.
 

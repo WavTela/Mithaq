@@ -6,9 +6,9 @@ export interface DownloadTokenPayload {
   expiresAt: number;
 }
 
-const SIGNING_SECRET = process.env.DOWNLOAD_SIGNING_SECRET || 'stellarcred-secure-download-secret';
+const SIGNING_SECRET = process.env.DOWNLOAD_SIGNING_SECRET || 'mithaq-secure-download-secret';
 
-export function generateSecureDownloadUrl(artifactId: string, tenantId: string, expiresInSeconds: number = 300, baseUrl: string = 'https://api.stellarcred.io'): { url: string; token: string; expiresAt: number } {
+export function generateSecureDownloadUrl(artifactId: string, tenantId: string, expiresInSeconds: number = 300, baseUrl: string = 'https://api.mithaq.io'): { url: string; token: string; expiresAt: number } {
   const expiresAt = Date.now() + expiresInSeconds * 1000;
   const payload: DownloadTokenPayload = { artifactId, tenantId, expiresAt };
   

@@ -1,7 +1,7 @@
 // @vitest-environment node
 //
 // Runs under the node environment, not the workspace-default jsdom: jsdom
-// defines `window`, and @stellarcred/issuer refuses to load when `window`
+// defines `window`, and @mithaq/issuer refuses to load when `window`
 // exists (its server-only guard — see packages/issuer/src/index.ts).
 //
 // Coverage for POST /api/issue (frontend/app/api/issue/route.ts) — the most
@@ -77,7 +77,7 @@ function postRequest(body: unknown, headers: Record<string, string> = {}) {
 }
 
 describe("mock-mode fallback (no ISSUER_PRIVATE_KEY)", () => {
-  it('derives the demo issuer key deterministically from sha256("stellarcred-demo-issuer")', async () => {
+  it('derives the demo issuer key deterministically from sha256("mithaq-demo-issuer")', async () => {
     delete process.env.ISSUER_PRIVATE_KEY;
     const { POST } = await loadRoute();
 
@@ -86,7 +86,7 @@ describe("mock-mode fallback (no ISSUER_PRIVATE_KEY)", () => {
     const { credentials } = await res.json();
 
     const expectedSkHex = Buffer.from(
-      sha256(new TextEncoder().encode("stellarcred-demo-issuer")),
+      sha256(new TextEncoder().encode("mithaq-demo-issuer")),
     ).toString("hex");
     const expectedPub = secp256k1.getPublicKey(
       Uint8Array.from(Buffer.from(expectedSkHex, "hex")),
@@ -262,7 +262,7 @@ describe("validation", () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
     const { POST } = await loadRoute();
-    const { IssuerClient } = await import("@stellarcred/issuer");
+    const { IssuerClient } = await import("@mithaq/issuer");
     const issueSpy = vi.spyOn(IssuerClient.prototype, "issue");
 
     const res = await POST(
@@ -359,7 +359,7 @@ describe("idempotency", () => {
     delete process.env.ISSUER_PRIVATE_KEY;
     const { POST } = await loadRoute();
     const { idempotencyGet } = await import("@/lib/idempotency");
-    const { IssuerClient } = await import("@stellarcred/issuer");
+    const { IssuerClient } = await import("@mithaq/issuer");
     const issueSpy = vi.spyOn(IssuerClient.prototype, "issue");
     const key = "issue-redacted-replay";
     const body = {
@@ -436,7 +436,7 @@ describe("idempotency", () => {
   it("keeps simultaneous retries single-flight after a failed leader", async () => {
     delete process.env.ISSUER_PRIVATE_KEY;
     const { POST } = await loadRoute();
-    const { IssuerClient } = await import("@stellarcred/issuer");
+    const { IssuerClient } = await import("@mithaq/issuer");
     let signalFirstIssueStarted!: () => void;
     const firstIssueStarted = new Promise<void>((resolve) => {
       signalFirstIssueStarted = resolve;
@@ -545,7 +545,7 @@ describe("issuance audit log (hash-chained, PII-free)", () => {
     delete process.env.ISSUER_PRIVATE_KEY;
     process.env.AUDIT_LOG_PATH = path.join(
       os.tmpdir(),
-      `stellarcred-audit-${Date.now()}-${Math.random().toString(36).slice(2)}.jsonl`,
+      `mithaq-audit-${Date.now()}-${Math.random().toString(36).slice(2)}.jsonl`,
     );
 
     const { POST } = await loadRoute();
@@ -577,7 +577,7 @@ describe("issuance audit log (hash-chained, PII-free)", () => {
     delete process.env.ISSUER_PRIVATE_KEY;
     const auditFile = path.join(
       os.tmpdir(),
-      `stellarcred-audit-${Date.now()}-${Math.random().toString(36).slice(2)}.jsonl`,
+      `mithaq-audit-${Date.now()}-${Math.random().toString(36).slice(2)}.jsonl`,
     );
     process.env.AUDIT_LOG_PATH = auditFile;
 
@@ -635,7 +635,7 @@ describe("issuer-key mismatch", () => {
     process.env.NEXT_PUBLIC_ISSUER_REGISTRY_ID = "CREGISTRYCONTRACTIDTESTTESTTESTTESTTEST";
 
     const expectedSkHex = Buffer.from(
-      sha256(new TextEncoder().encode("stellarcred-demo-issuer")),
+      sha256(new TextEncoder().encode("mithaq-demo-issuer")),
     ).toString("hex");
     const expectedPub = secp256k1.getPublicKey(
       Uint8Array.from(Buffer.from(expectedSkHex, "hex")),

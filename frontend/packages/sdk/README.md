@@ -1,17 +1,17 @@
-# @stellarcred/sdk
+# @mithaq/sdk
 
-Read-only client for [StellarCred](https://github.com/Psalmuel01/StellarCred) — check zero-knowledge credential proofs on Stellar from any protocol, frontend, or backend.
+Read-only client for [Mithaq](https://github.com/Psalmuel01/Mithaq) — check zero-knowledge credential proofs on Stellar from any protocol, frontend, or backend.
 
 Protocols call one function. No API key, no backend, no personal data handling — the only thing you trust is the on-chain ProofRegistry.
 
 ## Install
 
 ```bash
-npm install @stellarcred/sdk
+npm install @mithaq/sdk
 ```
 
 > **Note on NPM Publication**:
-> Official `@stellarcred/sdk` releases are cut via git tags (e.g. `v0.1.1`).
+> Official `@mithaq/sdk` releases are cut via git tags (e.g. `v0.1.1`).
 > In local development environments or before an upstream npm publish token is configured, you can consume the SDK directly from this repository:
 >
 > ```bash
@@ -41,15 +41,15 @@ docs/api/
 ## Quick start
 
 ```ts
-import StellarCred from "@stellarcred/sdk";
+import Mithaq from "@mithaq/sdk";
 
 // Configure once at startup
-StellarCred.configure({
+Mithaq.configure({
   registryId: process.env.PROOF_REGISTRY_ID,
 });
 
 // Check a claim — returns true/false
-const eligible = await StellarCred.hasClaim(walletAddress, "kyc");
+const eligible = await Mithaq.hasClaim(walletAddress, "kyc");
 ```
 
 > **TypeScript example**: a minimal, CI-typechecked walkthrough — typed claim
@@ -63,11 +63,11 @@ const eligible = await StellarCred.hasClaim(walletAddress, "kyc");
 Call `configure()` once before any other call, or set environment variables — both approaches work in Node.js, Next.js, and edge runtimes.
 
 ```ts
-StellarCred.configure({
+Mithaq.configure({
   registryId: "C...", // ProofRegistry contract ID
   rpcUrl: "https://soroban-testnet.stellar.org", // defaults to testnet
   networkPassphrase: "Test SDF Network ; September 2015",
-  baseUrl: "https://stellarcred.xyz", // used by buildVerifyUrl
+  baseUrl: "https://mithaq.xyz", // used by buildVerifyUrl
   requestTimeoutMs: 10000, // max time for each RPC read
 });
 ```
@@ -83,14 +83,14 @@ behavior: it returns `false` or an empty result by default, and throws
 
 | Variable                         | Next.js alias                         |
 | -------------------------------- | ------------------------------------- |
-| `STELLARCRED_REGISTRY_ID`        | `NEXT_PUBLIC_PROOF_REGISTRY_ID`       |
-| `STELLARCRED_RPC_URL`            | `NEXT_PUBLIC_RPC_URL`                 |
-| `STELLARCRED_NETWORK_PASSPHRASE` | `NEXT_PUBLIC_NETWORK_PASSPHRASE`      |
-| `STELLARCRED_BASE_URL`           | `NEXT_PUBLIC_STELLARCRED_BASE_URL`    |
-| `STELLARCRED_INDEXER_URL`        | `NEXT_PUBLIC_INDEXER_URL`             |
-| `STELLARCRED_INDEXER_API_KEY`    | _(no browser alias — it is a secret)_ |
+| `MITHAQ_REGISTRY_ID`        | `NEXT_PUBLIC_PROOF_REGISTRY_ID`       |
+| `MITHAQ_RPC_URL`            | `NEXT_PUBLIC_RPC_URL`                 |
+| `MITHAQ_NETWORK_PASSPHRASE` | `NEXT_PUBLIC_NETWORK_PASSPHRASE`      |
+| `MITHAQ_BASE_URL`           | `NEXT_PUBLIC_MITHAQ_BASE_URL`    |
+| `MITHAQ_INDEXER_URL`        | `NEXT_PUBLIC_INDEXER_URL`             |
+| `MITHAQ_INDEXER_API_KEY`    | _(no browser alias — it is a secret)_ |
 
-Setting `STELLARCRED_INDEXER_URL` alone changes nothing: reads still go to the
+Setting `MITHAQ_INDEXER_URL` alone changes nothing: reads still go to the
 chain until you pass `source` explicitly. See
 [Indexer fast path](#indexer-fast-path-optional).
 
@@ -100,17 +100,17 @@ Calling `hasClaim` on every render sends one RPC simulation per render. Turn on
 the in-memory claim cache to answer repeated reads locally:
 
 ```ts
-StellarCred.configure({
+Mithaq.configure({
   claimCache: true, // off by default
   claimCacheTtlMs: 30_000, // default 30s
   claimCacheMaxEntries: 1000, // default; oldest entries are evicted first
 });
 
-await StellarCred.hasClaim(wallet, "kyc"); // RPC
-await StellarCred.hasClaim(wallet, "kyc"); // served from memory for 30s
+await Mithaq.hasClaim(wallet, "kyc"); // RPC
+await Mithaq.hasClaim(wallet, "kyc"); // served from memory for 30s
 
 // After a submission you know about, drop the stale answer:
-StellarCred.invalidate(wallet, "kyc"); // or invalidate(wallet) for every type
+Mithaq.invalidate(wallet, "kyc"); // or invalidate(wallet) for every type
 ```
 
 - Entries are keyed by wallet, credential type, `minThreshold`, the
@@ -122,7 +122,7 @@ StellarCred.invalidate(wallet, "kyc"); // or invalidate(wallet) for every type
   wallet to `false` for the TTL.
 - A cached `valid` answer never outlives the credential's on-chain expiry.
 - Pass `fresh: true` to skip the cache for one read (the result still refreshes
-  it). `watchClaim` polls and the `refetch` of `useStellarCred` and
+  it). `watchClaim` polls and the `refetch` of `useMithaq` and
   `createClaimGate` always read fresh.
 - `configure()` empties the cache; `clearClaimCache()` does so explicitly. A
   read already in flight when you call `invalidate` is not stored.
@@ -138,12 +138,12 @@ RPC URL, and ProofRegistry contract ID:
 
 ```ts
 // One-URL setup: fetch {base}/api/capabilities and apply it.
-await StellarCred.bootstrap({ descriptorUrl: "https://app.example.com/api/capabilities" });
+await Mithaq.bootstrap({ descriptorUrl: "https://app.example.com/api/capabilities" });
 
 // ...or rely on the configured/default baseUrl:
-await StellarCred.bootstrap(); // fetches {baseUrl}/api/capabilities
+await Mithaq.bootstrap(); // fetches {baseUrl}/api/capabilities
 
-const ok = await StellarCred.hasClaim(wallet, "kyc");
+const ok = await Mithaq.hasClaim(wallet, "kyc");
 ```
 
 `bootstrap()` throws `ConfigError` when the descriptor is unreachable,
@@ -157,7 +157,7 @@ raw descriptor without reconfiguring.
 
 ## Contract Deployments
 
-For the authoritative list of deployed StellarCred contract IDs, contract
+For the authoritative list of deployed Mithaq contract IDs, contract
 versions, WASM hashes, and deployment dates by network, see
 [`DEPLOYMENTS.md`](../../../DEPLOYMENTS.md).
 
@@ -175,25 +175,25 @@ For parameterised claims (age, income, funds), pass `minThreshold` to enforce th
 
 ```ts
 // Binary claims — no threshold needed
-const kycOk = await StellarCred.hasClaim(wallet, "kyc");
-const jurisOk = await StellarCred.hasClaim(wallet, "jurisdiction");
+const kycOk = await Mithaq.hasClaim(wallet, "kyc");
+const jurisOk = await Mithaq.hasClaim(wallet, "jurisdiction");
 
 // Threshold claims — enforced on-chain, fully trustless
-const ageOk = await StellarCred.hasClaim(wallet, "age", { minThreshold: 21 });
-const incOk = await StellarCred.hasClaim(wallet, "income", { minThreshold: 200000 });
-const fundsOk = await StellarCred.hasClaim(wallet, "funds", { minThreshold: 50000 });
+const ageOk = await Mithaq.hasClaim(wallet, "age", { minThreshold: 21 });
+const incOk = await Mithaq.hasClaim(wallet, "income", { minThreshold: 200000 });
+const fundsOk = await Mithaq.hasClaim(wallet, "funds", { minThreshold: 50000 });
 ```
 
 Pass `trustedIssuers` to restrict which issuer(s) a proof must come from — e.g. accept `kyc` only from Persona or Jumio, not a self-attested issuer. This is enforced on-chain by `ProofRegistry`; omit it (or leave it `undefined`) to accept a proof from any registered issuer, matching current behaviour. An empty array rejects every issuer.
 
 ```ts
-const kycOk = await StellarCred.hasClaim(wallet, "kyc", {
+const kycOk = await Mithaq.hasClaim(wallet, "kyc", {
   trustedIssuers: ["G...PERSONA_ISSUER", "G...JUMIO_ISSUER"],
   requestTimeoutMs: 5000,
 });
 
 // Combine with a threshold — both must hold
-const incomeOk = await StellarCred.hasClaim(wallet, "income", {
+const incomeOk = await Mithaq.hasClaim(wallet, "income", {
   minThreshold: 100000,
   trustedIssuers: ["G...PLAID_ISSUER"],
 });
@@ -204,13 +204,13 @@ const incomeOk = await StellarCred.hasClaim(wallet, "income", {
 Returns the full claim record with `verifiedAt` and `expiry` timestamps, or `null` if the wallet has no current proof of that type. Respects `trustedIssuers`.
 
 ```ts
-const claim = await StellarCred.getClaim(wallet, "kyc");
+const claim = await Mithaq.getClaim(wallet, "kyc");
 if (claim) {
   console.log(claim); // { valid: true, verifiedAt: 1719000000, expiry: 1726776000 }
 }
 
 // Restrict to a trusted issuer
-const trustedClaim = await StellarCred.getClaim(wallet, "kyc", {
+const trustedClaim = await Mithaq.getClaim(wallet, "kyc", {
   trustedIssuers: ["G...PERSONA_ISSUER"],
 });
 ```
@@ -220,7 +220,7 @@ const trustedClaim = await StellarCred.getClaim(wallet, "kyc", {
 Fetches the low-level on-chain `ProofRecord` containing `verifiedAt`, `expiry`, `threshold`, `revoked`, `issuer`, and `vkVersion`, or `null` if no record exists.
 
 ```ts
-const record = await StellarCred.getClaimRecord(wallet, "age");
+const record = await Mithaq.getClaimRecord(wallet, "age");
 if (record) {
   console.log(record.revoked); // false
   console.log(record.expiry); // 1780000000n
@@ -243,13 +243,13 @@ Possible statuses:
 - `"wrong_issuer"`: Record found, but issued by an entity outside `trustedIssuers`
 
 ```ts
-const result = await StellarCred.checkClaimStatus(wallet, "age", { minThreshold: 21 });
+const result = await Mithaq.checkClaimStatus(wallet, "age", { minThreshold: 21 });
 switch (result.status) {
   case "valid":
     console.log("Verified! Expires:", result.record?.expiry);
     break;
   case "expired":
-    console.warn("Credential has expired. Please re-prove at StellarCred.");
+    console.warn("Credential has expired. Please re-prove at Mithaq.");
     break;
   case "revoked":
     console.error("Credential was revoked.");
@@ -261,7 +261,7 @@ switch (result.status) {
     console.warn("Issuer not in trusted list:", result.record?.issuer);
     break;
   case "not_verified":
-    console.info("No record found. Please verify at StellarCred.");
+    console.info("No record found. Please verify at Mithaq.");
     break;
 }
 ```
@@ -277,10 +277,10 @@ By default `hasClaim` / `getClaims` are **fail-soft**: a missing `registryId` or
 | Holder not verified          | still returns `false` (not an error) |
 
 ```ts
-import StellarCred, { ConfigError, RpcError } from "@stellarcred/sdk";
+import Mithaq, { ConfigError, RpcError } from "@mithaq/sdk";
 
 try {
-  const ok = await StellarCred.hasClaim(wallet, "kyc", { throwOnError: true });
+  const ok = await Mithaq.hasClaim(wallet, "kyc", { throwOnError: true });
   // ok === false means "not verified"; ok === true means verified
 } catch (err) {
   if (err instanceof ConfigError) {
@@ -300,7 +300,7 @@ try {
 Returns all active claims a wallet has proved, across all known credential types.
 
 ```ts
-const claims = await StellarCred.getClaims(wallet);
+const claims = await Mithaq.getClaims(wallet);
 // {
 //   kyc:          { verified: true,  expiry: 1780000000 },
 //   age:          { verified: true,  threshold: 21, expiry: 1780000000 },
@@ -318,7 +318,7 @@ A polling helper that checks `hasClaim` on an interval. It either resolves a Pro
 
 ```ts
 try {
-  await StellarCred.watchClaim(wallet, "kyc", {
+  await Mithaq.watchClaim(wallet, "kyc", {
     pollMs: 3000,
     timeoutMs: 120_000,
   });
@@ -331,7 +331,7 @@ try {
 **Callback form** — fires `onChange` whenever the status changes. Returns a `stop()` function to cancel polling:
 
 ```ts
-const stop = StellarCred.watchClaim(wallet, "funds", {
+const stop = Mithaq.watchClaim(wallet, "funds", {
   minThreshold: 50000,
   pollMs: 3000,
   timeoutMs: 120_000,
@@ -356,12 +356,12 @@ It consumes the indexer HTTP API (`services/indexer`) rather than ProofRegistry 
 Expiry losses need no request at all: the indexer stores each proof's `expiry` timestamp, so a claim that lapses is reported as `lost` within one `pollMs` window. Event topic semantics match the on-chain `proof_reg.submitted` / `proof_reg.revoked` events documented in [docs/EVENTS.md](../../../docs/EVENTS.md); the subscription is eventually consistent with the indexer's configured `FINALITY_LAG` (≈30 s on defaults).
 
 ```ts
-import { subscribeClaims } from "@stellarcred/sdk/server";
+import { subscribeClaims } from "@mithaq/sdk/server";
 
 const stop = subscribeClaims({
   wallets: ["GABC…", "GDEF…"], // any number of wallets
   claims: ["kyc", "accreditation"], // defaults to all known claim types
-  // baseUrl: "https://indexer.yourdomain.xyz", // or configure({ indexerUrl }) / STELLARCRED_INDEXER_URL
+  // baseUrl: "https://indexer.yourdomain.xyz", // or configure({ indexerUrl }) / MITHAQ_INDEXER_URL
   pollMs: 10_000,
   onGained: (e) => grantAccess(e.wallet, e.claim),
   onLost: (e) => revokeAccess(e.wallet, e.claim, e.reason), // "revoked" | "expired"
@@ -378,13 +378,13 @@ Registering a webhook instead of (or in addition to) in-process callbacks lets a
 subscribeClaims({
   wallets: watchedWallets,
   webhook: {
-    url: "https://api.yourprotocol.xyz/hooks/stellarcred",
-    secret: process.env.STELLARCRED_WEBHOOK_SECRET, // sent as X-StellarCred-Webhook-Secret
+    url: "https://api.yourprotocol.xyz/hooks/mithaq",
+    secret: process.env.MITHAQ_WEBHOOK_SECRET, // sent as X-Mithaq-Webhook-Secret
   },
 });
 ```
 
-Each change is POSTed as JSON with headers `X-StellarCred-Event: claim_gained | claim_lost` and, when a `secret` is configured, `X-StellarCred-Webhook-Secret` — your receiver should reject requests that don't match it. Deliveries retry on non-2xx up to `webhook.retries` times and report exhaustion through `onError`. Payload shape:
+Each change is POSTed as JSON with headers `X-Mithaq-Event: claim_gained | claim_lost` and, when a `secret` is configured, `X-Mithaq-Webhook-Secret` — your receiver should reject requests that don't match it. Deliveries retry on non-2xx up to `webhook.retries` times and report exhaustion through `onError`. Payload shape:
 
 ```json
 {
@@ -402,20 +402,20 @@ Each change is POSTed as JSON with headers `X-StellarCred-Event: claim_gained | 
 }
 ```
 
-Options: `wallets` (required, validated as Stellar Ed25519 keys), `claims`, `baseUrl` (indexer origin; falls back to `configure({ indexerUrl })` / `STELLARCRED_INDEXER_URL` / the SDK `baseUrl`), `apiKey` (sent as `Authorization: Bearer` for indexers running with `API_KEY` set), `pollMs`, `resyncMs`, `emitInitialState` (also replay currently-active claims as `gained`), `requestTimeoutMs`, `onChange` / `onGained` / `onLost` / `onError`, `webhook`.
+Options: `wallets` (required, validated as Stellar Ed25519 keys), `claims`, `baseUrl` (indexer origin; falls back to `configure({ indexerUrl })` / `MITHAQ_INDEXER_URL` / the SDK `baseUrl`), `apiKey` (sent as `Authorization: Bearer` for indexers running with `API_KEY` set), `pollMs`, `resyncMs`, `emitInitialState` (also replay currently-active claims as `gained`), `requestTimeoutMs`, `onChange` / `onGained` / `onLost` / `onError`, `webhook`.
 
 Notes:
 
 - Sizing: each poll is one `/recent` call regardless of watch-list size; each resync is one `/claims` call per wallet. Keep `resyncMs` within your indexer's per-IP rate limit (`RATE_LIMIT_MAX`, default 120 req/60 s), or raise it there for large watch lists.
 - Holder self-revocation (`revoke_proof`) emits no contract event, so it surfaces as `lost (expired)` when the indexed proof expires; issuer revocations surface as `lost (revoked)` on the next resync.
-- Prefer `@stellarcred/sdk/server` — subscriptions belong in a backend process, and browser bundles cannot guard webhook secrets.
+- Prefer `@mithaq/sdk/server` — subscriptions belong in a backend process, and browser bundles cannot guard webhook secrets.
 
 ### `buildVerifyUrl(options)`
 
-Builds a StellarCred verification URL to redirect users to. `BuildVerifyUrlOptions` and `BuildVerifyUrlClaimParams` are exported from the package. After verifying, StellarCred returns the user to `returnUrl` with `?sc_verified=true&sc_wallet=<address>&sc_claims=<claim-types>` appended. `sc_claims` is a comma-separated list of the claim types issued in the current session (not all-time claims), allowing protocols to optimistically update their UI before an on-chain read completes.
+Builds a Mithaq verification URL to redirect users to. `BuildVerifyUrlOptions` and `BuildVerifyUrlClaimParams` are exported from the package. After verifying, Mithaq returns the user to `returnUrl` with `?sc_verified=true&sc_wallet=<address>&sc_claims=<claim-types>` appended. `sc_claims` is a comma-separated list of the claim types issued in the current session (not all-time claims), allowing protocols to optimistically update their UI before an on-chain read completes.
 
 ```ts
-import { buildVerifyUrl, type BuildVerifyUrlOptions } from "@stellarcred/sdk";
+import { buildVerifyUrl, type BuildVerifyUrlOptions } from "@mithaq/sdk";
 
 const options = {
   returnUrl: "https://yourapp.xyz/markets",
@@ -426,7 +426,7 @@ const options = {
 
 const url = buildVerifyUrl(options);
 ```
-Builds a strongly typed StellarCred verification URL to redirect users to. After verifying, StellarCred returns the user to `returnUrl` with `?sc_verified=true&sc_wallet=<address>&sc_claims=<claim-types>` appended. `sc_claims` is a comma-separated list of the claim types issued in the current session (not all-time claims), allowing protocols to optimistically update their UI before an on-chain read completes.
+Builds a strongly typed Mithaq verification URL to redirect users to. After verifying, Mithaq returns the user to `returnUrl` with `?sc_verified=true&sc_wallet=<address>&sc_claims=<claim-types>` appended. `sc_claims` is a comma-separated list of the claim types issued in the current session (not all-time claims), allowing protocols to optimistically update their UI before an on-chain read completes.
 
 ```ts
 import {
@@ -435,7 +435,7 @@ import {
   type AgeVerifyUrlOptions,
   type ThresholdVerifyUrlOptions,
   type JurisdictionVerifyUrlOptions,
-} from "@stellarcred/sdk";
+} from "@mithaq/sdk";
 
 // 1. Basic — redirect to verify KYC (absolute or relative returnUrl)
 const kycUrl = buildVerifyUrl({
@@ -512,7 +512,7 @@ a verification flow, and reports every problem at once with the offending field
 path.
 
 ```ts
-import { parseCredentialJson } from "@stellarcred/sdk";
+import { parseCredentialJson } from "@mithaq/sdk";
 
 const result = parseCredentialJson(pastedJson);
 if (!result.valid) {
@@ -539,7 +539,7 @@ ProofRegistry.
 
 The package exports its public types so you can type your own wrappers without
 duplicating the union. They appear in `dist/index.d.ts` after `pnpm build` and
-are available from `@stellarcred/sdk` directly.
+are available from `@mithaq/sdk` directly.
 
 ```ts
 import type {
@@ -547,19 +547,19 @@ import type {
   ClaimOptions,
   BuildVerifyUrlOptions,
   BuildVerifyUrlClaimParams,
-} from "@stellarcred/sdk";
+} from "@mithaq/sdk";
 
 // `ClaimType` is exactly the credential union published with the SDK.
 // `ClaimOptions.minThreshold` / `.trustedIssuers` are forwarded to `hasClaim`'s
 // on-chain `check_claim` / `is_verified` checks.
 function gate(wallet: string, claim: ClaimType, opts?: ClaimOptions) {
-  return StellarCred.hasClaim(wallet, claim, opts);
+  return Mithaq.hasClaim(wallet, claim, opts);
 }
 ```
 
 | Export         | Kind                                                                              | Description                                                                                                                                                                                                                                                                                                                                                                                |
 | -------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ClaimType`    | `"kyc" \| "age" \| "income" \| "jurisdiction" \| "funds" \| "accreditation"`      | The credential types StellarCred supports. Mirrors the on-chain `CLAIM_TYPES` constant.                                                                                                                                                                                                                                                                                                    |
+| `ClaimType`    | `"kyc" \| "age" \| "income" \| "jurisdiction" \| "funds" \| "accreditation"`      | The credential types Mithaq supports. Mirrors the on-chain `CLAIM_TYPES` constant.                                                                                                                                                                                                                                                                                                    |
 | `ClaimOptions` | `{ minThreshold?: number; trustedIssuers?: string[]; requestTimeoutMs?: number }` | Optional settings for `hasClaim`. `minThreshold` is forwarded to the on-chain `check_claim` for parameterised claim types and ignored for binary claims (`kyc`, `jurisdiction`). `trustedIssuers` restricts which issuer(s) the proof must come from, for any claim type — omit to accept any registered issuer. `requestTimeoutMs` bounds the individual read and defaults to 10 seconds. |
 | `Claim`        | `{ type: string; verifiedAt: number; expiry: number }`                            | Shape returned by `getClaims`.                                                                                                                                                                                                                                                                                                                                                             |
 | `CLAIM_TYPES`  | `readonly ClaimType[]`                                                            | The runtime constant. Use `as const` strings for compile-time narrowing.                                                                                                                                                                                                                                                                                                                   |
@@ -576,15 +576,15 @@ function gate(wallet: string, claim: ClaimType, opts?: ClaimOptions) {
 ## Full integration example
 
 ```ts
-import StellarCred from "@stellarcred/sdk";
+import Mithaq from "@mithaq/sdk";
 
-StellarCred.configure({ registryId: process.env.PROOF_REGISTRY_ID });
+Mithaq.configure({ registryId: process.env.PROOF_REGISTRY_ID });
 
 async function handleDeposit(wallet: string) {
   // Check all required claims
   const [kycOk, fundsOk] = await Promise.all([
-    StellarCred.hasClaim(wallet, "kyc"),
-    StellarCred.hasClaim(wallet, "funds", { minThreshold: 50000 }),
+    Mithaq.hasClaim(wallet, "kyc"),
+    Mithaq.hasClaim(wallet, "funds", { minThreshold: 50000 }),
   ]);
 
   if (!kycOk || !fundsOk) {
@@ -592,7 +592,7 @@ async function handleDeposit(wallet: string) {
     const missing = !kycOk ? "kyc" : "funds";
     const opts = missing === "funds" ? { claimParams: { threshold: "50000" } } : {};
     return redirect(
-      StellarCred.buildVerifyUrl({
+      Mithaq.buildVerifyUrl({
         returnUrl: "https://yourapp.xyz/deposit",
         claim: missing,
         ...opts,
@@ -626,7 +626,7 @@ config. Understanding this boundary prevents accidental secret leakage.
 | `registryId` (ProofRegistry contract ID) | ✅ Yes            | A public Stellar contract address — no secret |
 | `rpcUrl`                                 | ✅ Yes            | A public RPC endpoint — no secret             |
 | `networkPassphrase`                      | ✅ Yes            | A well-known network identifier — no secret   |
-| `baseUrl`                                | ✅ Yes            | The StellarCred public URL — no secret        |
+| `baseUrl`                                | ✅ Yes            | The Mithaq public URL — no secret        |
 
 Pass these via `NEXT_PUBLIC_*` (Next.js) or `VITE_*` (Vite) env vars so they
 are available in browser bundles:
@@ -642,14 +642,14 @@ NEXT_PUBLIC_RPC_URL=https://soroban-testnet.stellar.org
 | Config / Package              | Server-only?                      | Why                                                        |
 | ----------------------------- | --------------------------------- | ---------------------------------------------------------- |
 | `ISSUER_PRIVATE_KEY`          | ✅ Server-only                    | Signs credentials — exposure lets anyone forge credentials |
-| `@stellarcred/issuer`         | ✅ Server-only                    | Contains the signing key; throws if imported in a browser  |
+| `@mithaq/issuer`         | ✅ Server-only                    | Contains the signing key; throws if imported in a browser  |
 | Server-side `hasClaim` checks | ✅ Server-only for access control | Client-side checks are optimistic UI only (see below)      |
 
 Never use `NEXT_PUBLIC_` on `ISSUER_PRIVATE_KEY` or any other secret.
 
 ### Server-side re-verification is required
 
-Client-side claim checks (via `hasClaim` in the browser, `useStellarCred`,
+Client-side claim checks (via `hasClaim` in the browser, `useMithaq`,
 etc.) are optimistic UI only — they improve UX by providing immediate feedback
 but they **cannot be trusted for access control**:
 
@@ -662,29 +662,29 @@ param):
 
 ```ts
 // ✅ Server-side gate (API route, middleware, server component)
-import StellarCred from "@stellarcred/sdk/server";
+import Mithaq from "@mithaq/sdk/server";
 
-const ok = await StellarCred.hasClaim(authenticatedWallet, "kyc");
+const ok = await Mithaq.hasClaim(authenticatedWallet, "kyc");
 if (!ok) return res.status(403).json({ error: "KYC required" });
 ```
 
 ```ts
 // ⚠️  Client-side check — optimistic UI only, not a security gate
-import StellarCred from "@stellarcred/sdk";
+import Mithaq from "@mithaq/sdk";
 
-const ok = await StellarCred.hasClaim(wallet, "kyc");
+const ok = await Mithaq.hasClaim(wallet, "kyc");
 if (!ok) router.push("/verify"); // redirect to verify, but server will also check
 ```
 
-### Server entry point: `@stellarcred/sdk/server`
+### Server entry point: `@mithaq/sdk/server`
 
 When importing the SDK in server-side code (API routes, middleware, server
 components, Lambda handlers, etc.), use the dedicated server entry point:
 
 ```ts
 // ✅ Explicit server-side import
-import StellarCred from "@stellarcred/sdk/server";
-import { hasClaim, configure } from "@stellarcred/sdk/server";
+import Mithaq from "@mithaq/sdk/server";
+import { hasClaim, configure } from "@mithaq/sdk/server";
 ```
 
 This is a thin re-export of the same SDK — the API is identical. The separate
@@ -696,15 +696,15 @@ development-mode warning described below.
 In development (`NODE_ENV !== "production"`), the SDK emits a **one-time
 `console.warn`** when `configure()` is called from a browser context with
 values that appear to come from server-only environment variables (e.g.
-`STELLARCRED_REGISTRY_ID` or bare `PROOF_REGISTRY_ID` without a `NEXT_PUBLIC_`
+`MITHAQ_REGISTRY_ID` or bare `PROOF_REGISTRY_ID` without a `NEXT_PUBLIC_`
 prefix). This catches the common mistake:
 
 ```ts
 // ⚠️  Wrong — uses a server-only env var name
-StellarCred.configure({ registryId: process.env.PROOF_REGISTRY_ID });
+Mithaq.configure({ registryId: process.env.PROOF_REGISTRY_ID });
 
 // ✅ Right — uses the public Next.js alias
-StellarCred.configure({ registryId: process.env.NEXT_PUBLIC_PROOF_REGISTRY_ID });
+Mithaq.configure({ registryId: process.env.NEXT_PUBLIC_PROOF_REGISTRY_ID });
 ```
 
 The warning only fires once per page load, only in development (when `NODE_ENV`
@@ -712,7 +712,7 @@ is not `"production"`), and only in a browser context. It is silent in
 production, in Node.js, and when no suspicious indicators are present.
 
 To silence the warning permanently for server-side code, import from
-`@stellarcred/sdk/server` — the warning is only relevant for browser bundles.
+`@mithaq/sdk/server` — the warning is only relevant for browser bundles.
 
 ## Indexer fast path (optional)
 
@@ -722,7 +722,7 @@ it costs a round trip to a Soroban RPC node per credential type, and the chain
 cannot answer questions like "what has this issuer ever issued?" or "what
 happened recently?".
 
-A StellarCred [indexer](../../../services/indexer) answers those faster. The SDK
+A Mithaq [indexer](../../../services/indexer) answers those faster. The SDK
 can read from one, **off by default and only when you ask for it per call**.
 
 > ### ⚠️ Read this before you gate anything on it
@@ -739,30 +739,30 @@ can read from one, **off by default and only when you ask for it per call**.
 ### The three sources
 
 ```ts
-import StellarCred from "@stellarcred/sdk";
+import Mithaq from "@mithaq/sdk";
 
-StellarCred.configure({
+Mithaq.configure({
   registryId: process.env.PROOF_REGISTRY_ID,
-  indexerUrl: process.env.STELLARCRED_INDEXER_URL,
-  // indexerApiKey: process.env.STELLARCRED_INDEXER_API_KEY,  // only if the indexer gates /claims
+  indexerUrl: process.env.MITHAQ_INDEXER_URL,
+  // indexerApiKey: process.env.MITHAQ_INDEXER_API_KEY,  // only if the indexer gates /claims
 });
 
 // 1. Default — trust-minimised. Use this for gating.
-const ok = await StellarCred.hasClaim(wallet, "kyc");
+const ok = await Mithaq.hasClaim(wallet, "kyc");
 
 // 2. Fast path — trusts the indexer operator. Not for security decisions.
-const preview = await StellarCred.hasClaim(wallet, "kyc", { source: "indexer" });
+const preview = await Mithaq.hasClaim(wallet, "kyc", { source: "indexer" });
 
 // 3. Trust anchor — reads the indexer, then confirms on-chain and returns the
 //    CHAIN's answer. Use when you want drift detection alongside the read.
-const gated = await StellarCred.hasClaim(wallet, "kyc", {
+const gated = await Mithaq.hasClaim(wallet, "kyc", {
   source: "indexer-verified",
 });
 ```
 
 `source` is accepted by `hasClaim`, `getClaim`, `hasClaims`, `getClaims`,
 `verifyPreset`, and `watchClaim`, and is inherited by `createClaimGate` and
-`useStellarCred` through the options they forward.
+`useMithaq` through the options they forward.
 
 **`"indexer-verified"` is not faster than `"chain"`.** It still performs a chain
 read, because the chain is what makes the answer trustworthy. Its value is that
@@ -770,7 +770,7 @@ a disagreement between the two is logged, which tells you your indexer has
 drifted before your users are affected by it:
 
 ```
-[StellarCred] Indexer disagreed with the chain for claim "kyc": indexer said
+[Mithaq] Indexer disagreed with the chain for claim "kyc": indexer said
 true, ProofRegistry said false. The chain result was used. …
 ```
 
@@ -840,7 +840,7 @@ through a browser preflight, which is why the SDK uses `Authorization`.
 
 ## How it works
 
-StellarCred stores ZK proofs on Stellar. A holder proves a claim once (in their browser, using UltraHonk / Barretenberg); the result is cached in the `ProofRegistry` contract. Your protocol reads it with a single free simulation — no wallet connection, no fee, no personal data.
+Mithaq stores ZK proofs on Stellar. A holder proves a claim once (in their browser, using UltraHonk / Barretenberg); the result is cached in the `ProofRegistry` contract. Your protocol reads it with a single free simulation — no wallet connection, no fee, no personal data.
 
 The `minThreshold` check calls `ProofRegistry.check_claim` on-chain, which compares the threshold stored in the proof's public inputs against your required minimum. It is not a frontend check — the contract enforces it.
 
@@ -852,12 +852,12 @@ For backend indexers, analytics services, or event-driven integrations monitorin
 
 MIT
 
-## Using StellarCred outside React
+## Using Mithaq outside React
 
 The SDK exports a framework-agnostic `createClaimGate` core that exposes a subscribe/unsubscribe API. Use it anywhere — Vue, Svelte, vanilla JS, or any other framework.
 
 ```ts
-import { createClaimGate } from "@stellarcred/sdk";
+import { createClaimGate } from "@mithaq/sdk";
 
 const gate = createClaimGate({ wallet: "G…" });
 gate.subscribe((state) => {
@@ -889,17 +889,17 @@ createClaimGate(config: ClaimGateConfig): ClaimGate
 ### TypeScript
 
 ```ts
-import type { ClaimGate, ClaimGateState, ClaimGateConfig } from "@stellarcred/sdk";
+import type { ClaimGate, ClaimGateState, ClaimGateConfig } from "@mithaq/sdk";
 ```
 
 ### React
 
-The existing `useStellarCred` React hook is a React wrapper around the batched `hasClaims` read. It is a separate implementation from `createClaimGate` (the framework-agnostic per-claim gate) — both expose the same claim status, so pick whichever fits your framework.
+The existing `useMithaq` React hook is a React wrapper around the batched `hasClaims` read. It is a separate implementation from `createClaimGate` (the framework-agnostic per-claim gate) — both expose the same claim status, so pick whichever fits your framework.
 
 ```ts
-import { useStellarCred } from "@stellarcred/sdk";
+import { useMithaq } from "@mithaq/sdk";
 // Works exactly as before
-const { claims, loading, error, refetch } = useStellarCred(walletAddress);
+const { claims, loading, error, refetch } = useMithaq(walletAddress);
 ```
 
 ### Vue example
@@ -908,7 +908,7 @@ See [`examples/vue-gate/ClaimGate.vue`](./examples/vue-gate/ClaimGate.vue) for a
 
 ```vue
 <script setup lang="ts">
-import { createClaimGate } from "@stellarcred/sdk";
+import { createClaimGate } from "@mithaq/sdk";
 import { ref, onMounted, onUnmounted } from "vue";
 
 const props = defineProps<{ wallet: string }>();
@@ -931,7 +931,7 @@ See [`examples/svelte-gate/ClaimGate.svelte`](./examples/svelte-gate/ClaimGate.s
 
 ```svelte
 <script lang="ts">
-  import { createClaimGate } from "@stellarcred/sdk";
+  import { createClaimGate } from "@mithaq/sdk";
   import { onMount, onDestroy } from "svelte";
 
   export let wallet: string;
@@ -966,7 +966,7 @@ See [`examples/svelte-gate/ClaimGate.svelte`](./examples/svelte-gate/ClaimGate.s
 ### 1. Issue a Challenge (Server)
 
 ```ts
-import { createWalletChallenge } from "@stellarcred/sdk";
+import { createWalletChallenge } from "@mithaq/sdk";
 
 // In your GET /api/auth/challenge endpoint:
 const challenge = createWalletChallenge({
@@ -992,7 +992,7 @@ const signature = await signMessage(challenge.message);
 ### 3. Verify Wallet Control & On-Chain Claim in One Call (Server)
 
 ```ts
-import { verifyWalletClaim } from "@stellarcred/sdk";
+import { verifyWalletClaim } from "@mithaq/sdk";
 
 // In your POST /api/auth/verify endpoint:
 const result = await verifyWalletClaim({
@@ -1043,19 +1043,19 @@ The SDK follows [Semantic Versioning](https://semver.org/). Releases are fully a
    - Runs `pnpm build` to compile the dual CJS/ESM distribution bundles with TypeScript definitions.
    - Generates release notes from conventional commit messages.
    - Creates an official GitHub Release with release artifacts.
-   - Publishes `@stellarcred/sdk` with public access to the npm registry using `NPM_TOKEN`.
+   - Publishes `@mithaq/sdk` with public access to the npm registry using `NPM_TOKEN`.
 
 
 ## Credential version compatibility
 
-StellarCred stamps every issued credential with the deployment and circuit version it was issued against. When a ZK circuit is upgraded, the verifying key changes — a proof generated by the old circuit cannot be verified on-chain. The version helpers let you detect stale credentials before the holder starts the proof flow.
+Mithaq stamps every issued credential with the deployment and circuit version it was issued against. When a ZK circuit is upgraded, the verifying key changes — a proof generated by the old circuit cannot be verified on-chain. The version helpers let you detect stale credentials before the holder starts the proof flow.
 
 ### `getDeploymentCircuitVersion(network, proofRegistryId)`
 
 Returns the circuit version for a deployment, without needing a credential.
 
 ```ts
-import { getDeploymentCircuitVersion } from "@stellarcred/sdk";
+import { getDeploymentCircuitVersion } from "@mithaq/sdk";
 
 const current = getDeploymentCircuitVersion(
   "testnet",
@@ -1069,7 +1069,7 @@ const current = getDeploymentCircuitVersion(
 Extracts the circuit version that was active when a credential was issued.
 
 ```ts
-import { getCredentialCircuitVersion } from "@stellarcred/sdk";
+import { getCredentialCircuitVersion } from "@mithaq/sdk";
 
 const info = getCredentialCircuitVersion(credential);
 // {
@@ -1085,7 +1085,7 @@ const info = getCredentialCircuitVersion(credential);
 Returns `true` when a credential's circuit version matches the current deployment.
 
 ```ts
-import { isCompatibleCredential, getDeploymentCircuitVersion } from "@stellarcred/sdk";
+import { isCompatibleCredential, getDeploymentCircuitVersion } from "@mithaq/sdk";
 
 const current = getDeploymentCircuitVersion("testnet", registryId) ?? "";
 if (!isCompatibleCredential(credential, current)) {
@@ -1106,10 +1106,10 @@ Returns a typed discriminant for richer UI handling:
 | `"unknown"` | Deployment recognised but not in the version registry |
 
 ```ts
-import { StellarCred, getDeploymentCircuitVersion } from "@stellarcred/sdk";
+import { Mithaq, getDeploymentCircuitVersion } from "@mithaq/sdk";
 
 const current = getDeploymentCircuitVersion("testnet", registryId) ?? "";
-const status = StellarCred.getCredentialVersionStatus(credential, current);
+const status = Mithaq.getCredentialVersionStatus(credential, current);
 
 switch (status) {
   case "compatible":    startProofFlow(credential); break;
@@ -1131,12 +1131,12 @@ switch (status) {
 
 ## Tree-Shaking & Bundle Optimization
 
-`@stellarcred/sdk` is designed for minimal bundle overhead across both browser and server applications:
+`@mithaq/sdk` is designed for minimal bundle overhead across both browser and server applications:
 
 - **`sideEffects: false`**: Configured in `package.json` to enable full dead-code elimination in modern bundlers (Webpack, Vite, Rollup, Next.js).
 - **Subpath entrypoints**:
-  - `import StellarCred from "@stellarcred/sdk"`: Primary client entrypoint.
-  - `import StellarCred from "@stellarcred/sdk/server"`: Node.js and Edge backend runtimes.
+  - `import Mithaq from "@mithaq/sdk"`: Primary client entrypoint.
+  - `import Mithaq from "@mithaq/sdk/server"`: Node.js and Edge backend runtimes.
 - **Dynamic On-Demand Module Loading**:
   - Heavy RPC modules and Soroban contract bindings (`@stellar/stellar-sdk` and `proof-registry`) are loaded on-demand via dynamic `import()` only when on-chain contract queries (`hasClaim`, `getClaim`) are executed.
   - Offline helpers like `buildVerifyUrl()`, `buildBadgeUrl()`, `buildBadgeEmbedCode()`, `CLAIM_TYPES`, `TimeoutError`, and `createClaimGate()` execute with zero network overhead and without loading heavy Soroban dependencies.

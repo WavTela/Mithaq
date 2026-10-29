@@ -2,7 +2,7 @@
 
 ## Overview
 
-StellarCred's frontend handles zero-knowledge proving in the browser via WebAssembly (`@aztec/bb.js`) and compiled Noir circuit artifacts (`public/circuits/*.json`). Because WASM proving assets and ZK circuits are naturally large, a strict **bundle-size budget** and automated **CI regression check** are configured to ensure performance and prevent unexpected bundle size growth.
+Mithaq's frontend handles zero-knowledge proving in the browser via WebAssembly (`@aztec/bb.js`) and compiled Noir circuit artifacts (`public/circuits/*.json`). Because WASM proving assets and ZK circuits are naturally large, a strict **bundle-size budget** and automated **CI regression check** are configured to ensure performance and prevent unexpected bundle size growth.
 
 ---
 

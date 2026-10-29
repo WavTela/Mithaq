@@ -4,7 +4,7 @@ if (typeof window !== "undefined") {
 }
 
 import { createHmac, timingSafeEqual } from "node:crypto";
-import type { Credential, CredentialType, ClaimParams } from "@stellarcred/issuer";
+import type { Credential, CredentialType, ClaimParams } from "@mithaq/issuer";
 import { stripPiiKeys } from "./pii";
 
 // ---------------------------------------------------------------------------

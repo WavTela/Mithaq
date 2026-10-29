@@ -1,7 +1,7 @@
 "use client";
 
 // Error taxonomy, fee estimation helpers, and simulation mapping for the
-// StellarCred ProofRegistry contract.
+// Mithaq ProofRegistry contract.
 //
 // This is the single source of truth for contract error codes — shared with
 // both the client-side interaction layer (contracts.ts) and the SDK's typed
@@ -54,7 +54,7 @@ export interface ContractError {
  * 
  * This is a frontend-specific wrapper that maintains backward compatibility
  * with existing UI code. For new code, prefer importing ContractError from
- * the SDK (@stellarcred/sdk) which provides typed error codes and helper
+ * the SDK (@mithaq/sdk) which provides typed error codes and helper
  * methods like isRetryable() and isTerminal().
  *
  * Handles:

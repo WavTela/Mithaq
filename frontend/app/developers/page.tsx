@@ -4,8 +4,8 @@ import CopyButton from "@/components/CopyButton";
 import SDKPlayground from "@/components/SDKPlaygroundLazy";
 
 export const metadata: Metadata = {
-  title: "StellarCred — Developers",
-  description: "Integrate StellarCred in minutes — one contract call, no backend.",
+  title: "Mithaq — Developers",
+  description: "Integrate Mithaq in minutes — one contract call, no backend.",
 };
 
 function Code({ children }: { children: string }) {
@@ -76,7 +76,7 @@ export default function DevelopersPage() {
   return (
     <div style={{ maxWidth: 760, margin: "0 auto" }}>
       <span className="eyebrow">Developers</span>
-      <h1 style={{ fontSize: "2rem", marginTop: "0.35rem" }}>Integrate StellarCred</h1>
+      <h1 style={{ fontSize: "2rem", marginTop: "0.35rem" }}>Integrate Mithaq</h1>
       {/* <p className="muted" style={{ marginTop: "0.5rem", fontSize: "0.95rem", lineHeight: 1.6 }}>
         One contract call. No API keys. No data handling.{" "}
         <span style={{ color: "var(--accent)" }}>Verify once, trusted everywhere.</span>
@@ -84,7 +84,7 @@ export default function DevelopersPage() {
 
       <Section title="How it works">
         <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.7 }}>
-          StellarCred stores zero-knowledge proofs on Stellar. Your protocol
+          Mithaq stores zero-knowledge proofs on Stellar. Your protocol
           reads them with one contract call. No API keys, no backend, no data
           handling — the only thing you trust is the on-chain{" "}
           <span className="mono">ProofRegistry</span>.
@@ -92,7 +92,7 @@ export default function DevelopersPage() {
       </Section>
 
       <Section title="Installation">
-        <Code>{`npm install @stellarcred/sdk`}</Code>
+        <Code>{`npm install @mithaq/sdk`}</Code>
       </Section>
 
       <Section title="Checking a claim">
@@ -102,25 +102,25 @@ export default function DevelopersPage() {
           claims (age, income, funds), pass <span className="mono">minThreshold</span> to
           enforce the threshold on-chain — trustlessly.
         </p>
-        <Code>{`import { StellarCred } from "@stellarcred/sdk";
+        <Code>{`import { Mithaq } from "@mithaq/sdk";
 
 // Binary claim (kyc, jurisdiction) — no threshold
-const kycOk = await StellarCred.hasClaim(wallet, "kyc");
+const kycOk = await Mithaq.hasClaim(wallet, "kyc");
 
 // Age gate — proof must have been generated with threshold_years >= 21
-const ageOk = await StellarCred.hasClaim(wallet, "age", { minThreshold: 21 });
+const ageOk = await Mithaq.hasClaim(wallet, "age", { minThreshold: 21 });
 
 // Funds gate — proof must certify balance >= $50,000
-const fundsOk = await StellarCred.hasClaim(wallet, "funds", { minThreshold: 50000 });`}</Code>
+const fundsOk = await Mithaq.hasClaim(wallet, "funds", { minThreshold: 50000 });`}</Code>
       </Section>
 
       <Section title="Fetching all claims">
         <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.7 }}>
           Protocols that gate on multiple claims simultaneously benefit from fetching everything at once rather than making N separate <span className="mono">hasClaim</span> calls.
         </p>
-        <Code>{`import { StellarCred } from "@stellarcred/sdk";
+        <Code>{`import { Mithaq } from "@mithaq/sdk";
 
-const claims = await StellarCred.getClaims(wallet);
+const claims = await Mithaq.getClaims(wallet);
 // {
 //   kyc:          { verified: true,  expiry: 1780000000 },
 //   age:          { verified: true,  threshold: 21, expiry: 1780000000 },
@@ -138,18 +138,18 @@ const canAccess = claims.kyc.verified && claims.age.verified;`}</Code>
           Call <span className="mono">configure()</span> once at startup, or set env vars.
           Both approaches work in Node.js, Next.js, and edge runtimes.
         </p>
-        <Code>{`import { StellarCred } from "@stellarcred/sdk";
+        <Code>{`import { Mithaq } from "@mithaq/sdk";
 
 // Option A — explicit (recommended for servers / edge)
-StellarCred.configure({
+Mithaq.configure({
   registryId: process.env.PROOF_REGISTRY_ID,
   rpcUrl: "https://soroban-testnet.stellar.org",
   networkPassphrase: "Test SDF Network ; September 2015",
 });
 
 // Option B — env vars (auto-read at import time)
-// STELLARCRED_REGISTRY_ID=C...
-// STELLARCRED_RPC_URL=https://soroban-testnet.stellar.org
+// MITHAQ_REGISTRY_ID=C...
+// MITHAQ_RPC_URL=https://soroban-testnet.stellar.org
 // (also reads NEXT_PUBLIC_PROOF_REGISTRY_ID / NEXT_PUBLIC_RPC_URL)`}</Code>
         <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.7, marginTop: "1rem" }}>
           A missing <span className="mono">registryId</span> doesn&rsquo;t throw &mdash;
@@ -160,37 +160,37 @@ StellarCred.configure({
           Use <span className="mono">healthCheck()</span> to diagnose it directly (a dev-only
           console warning also fires automatically the first time this happens).
         </p>
-        <Code>{`const health = StellarCred.healthCheck();
+        <Code>{`const health = Mithaq.healthCheck();
 // { configured: false, registryId: false, rpcUrl: true, networkPassphrase: true,
 //   missing: ["registryId"] }
-if (!health.configured) console.error("StellarCred misconfigured:", health.missing);
+if (!health.configured) console.error("Mithaq misconfigured:", health.missing);
 
-// Or just: StellarCred.isConfigured() // boolean`}</Code>
+// Or just: Mithaq.isConfigured() // boolean`}</Code>
       </Section>
 
       <Section title="Redirecting users to verify">
         <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.7 }}>
-          If a user hasn&rsquo;t verified yet, send them to StellarCred and get
+          If a user hasn&rsquo;t verified yet, send them to Mithaq and get
           them back automatically. Use <span className="mono">claimParams</span> to
           customise thresholds.
         </p>
-        <Code>{`import { StellarCred } from "@stellarcred/sdk";
+        <Code>{`import { Mithaq } from "@mithaq/sdk";
 
 // KYC gate — basic redirect
-const kycUrl = StellarCred.buildVerifyUrl({
+const kycUrl = Mithaq.buildVerifyUrl({
   returnUrl: 'https://yourapp.xyz/deposit',
   claim: 'kyc',
 });
 
 // Age gate — require 21+
-const ageUrl = StellarCred.buildVerifyUrl({
+const ageUrl = Mithaq.buildVerifyUrl({
   returnUrl: 'https://yourapp.xyz/markets',
   claim: 'age',
   claimParams: { threshold_years: '21' },
 });
 
 // Funds gate — require balance ≥ $50,000
-const fundsUrl = StellarCred.buildVerifyUrl({
+const fundsUrl = Mithaq.buildVerifyUrl({
   returnUrl: 'https://yourapp.xyz/vault',
   claim: 'funds',
   claimParams: { threshold: '50000' },
@@ -198,7 +198,7 @@ const fundsUrl = StellarCred.buildVerifyUrl({
 
 // The return URL includes sc_verified=true, sc_wallet=<address>, and sc_claims=<types>
 // sc_claims contains only the claim types issued in the current session.
-const verified = await StellarCred.hasClaim(wallet, "kyc");`}</Code>
+const verified = await Mithaq.hasClaim(wallet, "kyc");`}</Code>
         <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.7, marginTop: "1rem" }}>
           <strong>The return URL params are untrusted hints, not a proof.</strong>{" "}
           Nothing binds this redirect to your session &mdash; anyone can craft a
@@ -211,7 +211,7 @@ const verified = await StellarCred.hasClaim(wallet, "kyc");`}</Code>
         <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.7, marginTop: "0.75rem", borderLeft: "3px solid #f59e0b", paddingLeft: "0.75rem" }}>
           <strong>⚠️ Wallet spoofing pitfall:</strong> Calling <span className="mono">hasClaim(wallet)</span> alone on your backend only proves that <em>someone</em> owns credentials for that address &mdash; not that the current caller actually controls that private key. For secure access gating, have the user sign a challenge and call <span className="mono">verifyWalletClaim</span>.
         </p>
-        <Code>{`import { StellarCred, createWalletChallenge, verifyWalletClaim } from "@stellarcred/sdk";
+        <Code>{`import { Mithaq, createWalletChallenge, verifyWalletClaim } from "@mithaq/sdk";
 
 // 1. Issue a replay-protected challenge from your backend:
 const challenge = createWalletChallenge({
@@ -241,7 +241,7 @@ if (!result.ok) {
           Looking for a complete, runnable reference application demonstrating the full integration pattern end to end?
           See{" "}
           <a
-            href="https://github.com/ToluLabs/StellarCred/tree/main/examples/canonical-integration"
+            href="https://github.com/ToluLabs/Mithaq/tree/main/examples/canonical-integration"
             target="_blank"
             rel="noreferrer"
             style={{ color: "var(--accent)" }}
@@ -304,7 +304,7 @@ if (!result.ok) {
 
       <Section title="Contract addresses">
         <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.7 }}>
-          The deployed StellarCred contracts on{" "}
+          The deployed Mithaq contracts on{" "}
           <span className="mono">{process.env.NEXT_PUBLIC_STELLAR_NETWORK ?? "testnet"}</span>.
         </p>
          <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.7, marginTop: "0.75rem" }}>
@@ -368,14 +368,14 @@ require!(kyc_ok, Error::KycRequired);`}</Code>
 
       <Section title="Credential version compatibility">
         <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.7 }}>
-          StellarCred stamps every credential with the deployment and circuit version
+          Mithaq stamps every credential with the deployment and circuit version
           it was issued against. When a circuit is upgraded the verifying key changes,
           so a proof generated by an old circuit cannot be verified on-chain. Use the
           version helpers to detect stale credentials before the holder starts the proof
           flow and prompt them to re-verify early.
         </p>
-        <Code>{`import { StellarCred } from "@stellarcred/sdk";
-import { getDeploymentCircuitVersion } from "@stellarcred/sdk";
+        <Code>{`import { Mithaq } from "@mithaq/sdk";
+import { getDeploymentCircuitVersion } from "@mithaq/sdk";
 
 // 1. Get the circuit version the current deployment expects.
 //    Pass your ProofRegistry contract ID and network name.
@@ -385,7 +385,7 @@ const currentVersion = getDeploymentCircuitVersion(
 );
 
 // 2. Check compatibility before starting the proof flow.
-const status = StellarCred.getCredentialVersionStatus(credential, currentVersion);
+const status = Mithaq.getCredentialVersionStatus(credential, currentVersion);
 
 switch (status) {
   case "compatible":
@@ -413,7 +413,7 @@ switch (status) {
     break;
 
   case "unknown":
-    // Deployment not recognised — likely a different StellarCred instance.
+    // Deployment not recognised — likely a different Mithaq instance.
     showBanner("This credential is from an unrecognised deployment and cannot be used here.");
     break;
 }`}</Code>
@@ -421,7 +421,7 @@ switch (status) {
           You can also inspect the raw version info without making a compatibility
           decision:
         </p>
-        <Code>{`import { getCredentialCircuitVersion } from "@stellarcred/sdk";
+        <Code>{`import { getCredentialCircuitVersion } from "@mithaq/sdk";
 
 const info = getCredentialCircuitVersion(credential);
 // {

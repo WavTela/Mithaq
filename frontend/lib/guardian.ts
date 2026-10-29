@@ -447,7 +447,7 @@ export function downloadGuardianBackup(
 ): void {
   const name =
     filename ||
-    `stellarcred-guardian-backup-${backup.recoveryId}-${new Date().toISOString().slice(0, 10)}.json`;
+    `mithaq-guardian-backup-${backup.recoveryId}-${new Date().toISOString().slice(0, 10)}.json`;
   const blob = new Blob([JSON.stringify(backup, null, 2)], {
     type: "application/json",
   });
@@ -471,7 +471,7 @@ export function downloadGuardianShare(
     : "";
   const name =
     filename ||
-    `stellarcred-guardian-share-${share.guardianIndex}-of-${share.totalShares}${safeLabel}.json`;
+    `mithaq-guardian-share-${share.guardianIndex}-of-${share.totalShares}${safeLabel}.json`;
   const blob = new Blob([JSON.stringify(share, null, 2)], {
     type: "application/json",
   });
@@ -492,7 +492,7 @@ export function downloadRecoveryKit(
 ): void {
   const name =
     filename ||
-    `stellarcred-recovery-kit-${kit.recoveryId}-${new Date().toISOString().slice(0, 10)}.json`;
+    `mithaq-recovery-kit-${kit.recoveryId}-${new Date().toISOString().slice(0, 10)}.json`;
   const blob = new Blob([JSON.stringify(kit, null, 2)], {
     type: "application/json",
   });

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * demo-issue.mjs — Mock credential issuance for the StellarCred demo.
+ * demo-issue.mjs — Mock credential issuance for the Mithaq demo.
  *
  * Replicates the mock-mode logic of /api/issue: derives the demo issuer key from
- * sha256("stellarcred-demo-issuer"), generates random credential preimages,
+ * sha256("mithaq-demo-issuer"), generates random credential preimages,
  * computes Poseidon2 commitments, and signs each with secp256k1.
  *
  * Outputs a JSON array of credentials to stdout, one per requested type.
@@ -26,7 +26,7 @@ import { sha256 } from "@noble/hashes/sha2";
 // Demo issuer key — deterministic, never changes.
 // Public key (x || y) must match what deploy.sh registers.
 // ---------------------------------------------------------------------------
-const DEMO_SK = sha256(new TextEncoder().encode("stellarcred-demo-issuer"));
+const DEMO_SK = sha256(new TextEncoder().encode("mithaq-demo-issuer"));
 const DEMO_PK = secp256k1.getPublicKey(DEMO_SK, false); // 0x04 || x || y
 const ISSUER_X = Array.from(DEMO_PK.slice(1, 33));
 const ISSUER_Y = Array.from(DEMO_PK.slice(33, 65));
@@ -145,7 +145,7 @@ async function main() {
       type,
       title: typeTitle(type),
       claim: buildClaimLabel(type),
-      issuer: "StellarCred Demo Authority",
+      issuer: "Mithaq Demo Authority",
       issuerId,
       holder,
       value,

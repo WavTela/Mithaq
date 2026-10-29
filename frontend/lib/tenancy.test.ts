@@ -21,7 +21,7 @@ describe("lib/tenancy", () => {
     config: {
       issuerId: "GALPHA000000000000000000000000000000000000000000000000000",
       issuerName: "Alpha Authority",
-      signingKeySecretRef: "stellarcred/tenants/alpha/signing-key",
+      signingKeySecretRef: "mithaq/tenants/alpha/signing-key",
       allowedCredentialTypes: ["kyc", "age"],
     },
     createdAt: "2026-01-01T00:00:00Z",
@@ -36,7 +36,7 @@ describe("lib/tenancy", () => {
     config: {
       issuerId: "GBETA0000000000000000000000000000000000000000000000000000",
       issuerName: "Beta Authority",
-      signingKeySecretRef: "stellarcred/tenants/beta/signing-key",
+      signingKeySecretRef: "mithaq/tenants/beta/signing-key",
       allowedCredentialTypes: ["funds", "income"],
     },
     createdAt: "2026-01-01T00:00:00Z",
@@ -51,7 +51,7 @@ describe("lib/tenancy", () => {
     config: {
       issuerId: "GSUSPENDED000000000000000000000000000000000000000000000000",
       issuerName: "Suspended Authority",
-      signingKeySecretRef: "stellarcred/tenants/suspended/signing-key",
+      signingKeySecretRef: "mithaq/tenants/suspended/signing-key",
       allowedCredentialTypes: ["kyc"],
     },
     createdAt: "2026-01-01T00:00:00Z",
@@ -66,7 +66,7 @@ describe("lib/tenancy", () => {
     config: {
       issuerId: "GREVOKED00000000000000000000000000000000000000000000000000",
       issuerName: "Revoked Authority",
-      signingKeySecretRef: "stellarcred/tenants/revoked/signing-key",
+      signingKeySecretRef: "mithaq/tenants/revoked/signing-key",
       allowedCredentialTypes: ["kyc"],
     },
     createdAt: "2026-01-01T00:00:00Z",

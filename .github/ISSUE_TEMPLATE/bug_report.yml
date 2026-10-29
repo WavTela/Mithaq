@@ -15,7 +15,7 @@ body:
         - Contracts (Soroban / Rust)
         - Circuits (Noir / ZK proofs)
         - Frontend (Next.js app)
-        - SDK (@stellarcred/sdk)
+        - SDK (@mithaq/sdk)
         - Deploy scripts
         - Other
     validations:

@@ -1,5 +1,5 @@
 {
-  "name": "stellarcred-frontend",
+  "name": "mithaq-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -35,7 +35,7 @@
     "@noble/hashes": "^2.2.0",
     "@noir-lang/noir_js": "1.0.0-beta.9",
     "@stellar/stellar-sdk": "^13.1.0",
-    "@stellarcred/issuer": "workspace:*",
+    "@mithaq/issuer": "workspace:*",
     "@tabler/icons-react": "^3.21.0",
     "blakejs": "^1.2.1",
     "buffer": "^6.0.3",

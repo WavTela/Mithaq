@@ -53,7 +53,7 @@ describe("export visibility preferences", () => {
 
   it("includes opted-in PII fields in credential JSON exports by default", async () => {
     const item = credential("commitment-1", "sensitive-value", "holder-1");
-    localStorage.setItem("stellarcred:credentials", JSON.stringify([item]));
+    localStorage.setItem("mithaq:credentials", JSON.stringify([item]));
 
     const exported = JSON.parse(await exportCredentials()) as Record<string, unknown>[];
     expect(exported[0]).toHaveProperty("value", item.value);
@@ -73,7 +73,7 @@ describe("export visibility preferences", () => {
       credential("commitment-1", "sensitive-value-1", "holder-1"),
       credential("commitment-2", "sensitive-value-2", "holder-2"),
     ];
-    localStorage.setItem("stellarcred:credentials", JSON.stringify(credentials));
+    localStorage.setItem("mithaq:credentials", JSON.stringify(credentials));
     saveExportVisibilityPreferences({ value: false, holder: true });
 
     const exported = JSON.parse(await exportCredentials()) as Record<string, unknown>[];
@@ -90,7 +90,7 @@ describe("export visibility preferences", () => {
     const url = await buildTransferUrl(
       credential("commitment-1", "sensitive-value", "holder-1"),
       PASSPHRASE,
-      "https://stellarcred.test",
+      "https://mithaq.test",
     );
     const payload = new URL(url).searchParams.get("import");
     expect(payload).toBeTruthy();

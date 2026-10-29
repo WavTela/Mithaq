@@ -13,7 +13,7 @@ import {
   finishInquiryProcessing,
   alpha2ToNumeric,
 } from "@/lib/persona-webhook";
-import type { CredentialType } from "@stellarcred/issuer";
+import type { CredentialType } from "@mithaq/issuer";
 
 const PERSONA_BASE = "https://withpersona.com/api/v1";
 const PERSONA_VERSION = "2023-01-05";
@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
       pending?.issuerId ??
       env.NEXT_PUBLIC_ISSUER_ADDRESS ??
       "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
-    const issuerName = pending?.issuerName ?? "StellarCred Authority";
+    const issuerName = pending?.issuerName ?? "Mithaq Authority";
     const expiry = pending?.expiry ?? "90 days";
     const claimParams = pending?.claimParams;
 

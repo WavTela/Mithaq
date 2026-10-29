@@ -3,7 +3,7 @@
 /**
  * DataWipePanel — holder-controlled full local data wipe (#558).
  * 
- * A settings panel that lets holders remove all StellarCred state from this
+ * A settings panel that lets holders remove all Mithaq state from this
  * browser in one action: credentials, proof cache, timeline, onboarding, and
  * preferences. Prompts for backup export before wiping, and shows a clear
  * confirmation dialog explaining that credentials are unrecoverable without
@@ -59,7 +59,7 @@ export function DataWipePanel() {
           Data Management
         </h3>
         <p style={{ fontSize: "0.875rem", color: "var(--faint)", lineHeight: 1.6 }}>
-          Remove all StellarCred data from this browser. This includes your credentials, proof
+          Remove all Mithaq data from this browser. This includes your credentials, proof
           cache, timeline history, onboarding state, wallet connection, and preferences.
         </p>
       </div>
@@ -131,7 +131,7 @@ export function DataWipePanel() {
 
       {!hasData && (
         <p style={{ fontSize: "0.8rem", color: "var(--faint)", fontStyle: "italic" }}>
-          No StellarCred data found in this browser.
+          No Mithaq data found in this browser.
         </p>
       )}
 
@@ -212,7 +212,7 @@ export function DataWipePanel() {
                 </h3>
                 <div style={{ fontSize: "0.875rem", color: "var(--faint)", lineHeight: 1.6 }}>
                   <p style={{ margin: "0 0 0.75rem" }}>
-                    This will permanently remove all StellarCred data from this browser:
+                    This will permanently remove all Mithaq data from this browser:
                   </p>
                   <ul style={{ margin: "0 0 0.75rem", paddingLeft: "1.25rem" }}>
                     <li>Your encrypted credentials (unrecoverable without a backup)</li>

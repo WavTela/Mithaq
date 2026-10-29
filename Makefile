@@ -1,5 +1,5 @@
 # ==============================================================================
-# StellarCred Unified Workspace Makefile
+# Mithaq Unified Workspace Makefile
 # ==============================================================================
 # Provides a unified entry point across Rust contracts (cargo), Noir circuits
 # (nargo/bb), Next.js frontend/SDK (pnpm), and indexer service (npm).
@@ -32,7 +32,7 @@ PNPM_MAJOR      := 9
 
 ## help: Display this help message with available targets
 help:
-	@echo "StellarCred Development Commands"
+	@echo "Mithaq Development Commands"
 	@echo "================================"
 	@echo "Usage: make [target]"
 	@echo ""
@@ -57,7 +57,7 @@ help:
 	@echo "  make build-frontend  - Build Next.js frontend web app"
 	@echo "  make test-frontend   - Run frontend and SDK unit tests"
 	@echo "  make lint-frontend   - Run ESLint on frontend code"
-	@echo "  make test-sdk        - Run standalone @stellarcred/sdk integration tests"
+	@echo "  make test-sdk        - Run standalone @mithaq/sdk integration tests"
 	@echo "  make test-example    - Run canonical integration example typecheck & tests"
 	@echo "  make test-a11y       - Run axe-core accessibility tests (requires Playwright)"
 	@echo "  make build-indexer   - Compile TypeScript indexer service"
@@ -110,7 +110,7 @@ _RESET  := $(shell tput sgr0    2>/dev/null || true)
 # Exits non-zero if any check fails so `make doctor && make build` short-circuits.
 doctor:
 	@echo ""
-	@echo "StellarCred environment check"
+	@echo "Mithaq environment check"
 	@echo "=============================="
 	@PASS=true; \
 	\
@@ -258,7 +258,7 @@ build-frontend:
 
 ## test-frontend: Run frontend SDK and theme tests
 test-frontend:
-	cd frontend && pnpm test && pnpm test:theme && pnpm --filter @stellarcred/issuer test
+	cd frontend && pnpm test && pnpm test:theme && pnpm --filter @mithaq/issuer test
 
 ## lint-frontend: Run frontend ESLint and typecheck
 lint-frontend:

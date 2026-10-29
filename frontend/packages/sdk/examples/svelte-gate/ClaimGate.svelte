@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createClaimGate, type ClaimGate } from '@stellarcred/sdk';
+  import { createClaimGate, type ClaimGate } from '@mithaq/sdk';
   import { onMount, onDestroy } from 'svelte';
   import { writable } from 'svelte/store';
 

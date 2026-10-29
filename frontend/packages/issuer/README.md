@@ -1,25 +1,25 @@
-# @stellarcred/issuer
+# @mithaq/issuer
 
-Server-only issuance client for [StellarCred](https://github.com/Psalmuel01/StellarCred) — turns a verified attribute (date of birth, income, balance, …) into a signed ZK credential a holder can prove claims against.
+Server-only issuance client for [Mithaq](https://github.com/Psalmuel01/Mithaq) — turns a verified attribute (date of birth, income, balance, …) into a signed ZK credential a holder can prove claims against.
 
 ## ⚠️ Server-side only
 
 This package signs credentials with a private key. It must **never** run in a browser.
 
 - Set `ISSUER_PRIVATE_KEY` as a plain server-side environment variable — **never** prefix it `NEXT_PUBLIC_` (or any other client-exposed prefix). A `NEXT_PUBLIC_`-prefixed env var is inlined into the browser bundle at build time; doing that with an issuer private key hands out the ability to mint arbitrary credentials.
-- `package.json`'s `exports` field only defines a `node` condition — bundlers that respect package exports (webpack 5+, Vite, esbuild) will fail to resolve `@stellarcred/issuer` for a browser target. The module also throws immediately if it ever detects a `window` global, as defense-in-depth for older tooling.
+- `package.json`'s `exports` field only defines a `node` condition — bundlers that respect package exports (webpack 5+, Vite, esbuild) will fail to resolve `@mithaq/issuer` for a browser target. The module also throws immediately if it ever detects a `window` global, as defense-in-depth for older tooling.
 - Only call this package from a server context: a Next.js Route Handler / API route, a standalone Node.js server, a serverless function, etc.
 
 ## Install
 
 ```bash
-npm install @stellarcred/issuer
+npm install @mithaq/issuer
 ```
 
 ## Quick start
 
 ```ts
-import { IssuerClient } from "@stellarcred/issuer";
+import { IssuerClient } from "@mithaq/issuer";
 
 const issuer = new IssuerClient({
   privateKey: process.env.ISSUER_PRIVATE_KEY!, // 64-char hex secp256k1 private key, server-side only
@@ -101,4 +101,4 @@ Returns the uncompressed public key (32-byte `x`/`y`) for the configured private
 
 - **`prehash: false` is not configurable.** Noir circuits consume the raw 32-byte commitment as the signing digest directly — no SHA-256 pre-hash. This package always signs with `prehash: false` to match; changing this would make every issued credential unprovable against the on-chain verifier.
 - **No logging, no persistence.** This package never calls `console.*` and never writes to disk or a database — attribute values (date of birth, income, balance, …) exist only for the duration of the `issue()` call. Any audit logging you need is your responsibility, and should log metadata (issuer ID, credential type, outcome) rather than raw attribute values.
-- The Poseidon2 commitment scheme and the compiled circuit shipped inside this package are the same ones used by every StellarCred proof circuit and the on-chain verifier — see the [main repo](https://github.com/Psalmuel01/StellarCred) for the full architecture.
+- The Poseidon2 commitment scheme and the compiled circuit shipped inside this package are the same ones used by every Mithaq proof circuit and the on-chain verifier — see the [main repo](https://github.com/Psalmuel01/Mithaq) for the full architecture.

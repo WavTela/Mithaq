@@ -1,6 +1,6 @@
 # Contract Storage TTL & State Archival Strategy
 
-This document defines the storage lifetime model, Time-To-Live (TTL) configuration, rent management, and state archival behavior across all StellarCred Soroban smart contracts.
+This document defines the storage lifetime model, Time-To-Live (TTL) configuration, rent management, and state archival behavior across all Mithaq Soroban smart contracts.
 
 ---
 

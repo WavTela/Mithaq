@@ -94,7 +94,7 @@ describe('End-to-End Deployment Verification Script (#verify-deployment)', () =>
         encoding: 'utf8',
       },
     );
-    assert.ok(res.stdout.includes('StellarCred End-to-End Deployment Verification'));
+    assert.ok(res.stdout.includes('Mithaq End-to-End Deployment Verification'));
     assert.ok(res.stdout.includes('--- Step 1: Contract IDs from DEPLOYMENTS.md ---'));
     assert.ok(res.stdout.includes('CDYPCHIFRXAAJFUA7MBH4FAWYLNG7XMAH7QRGVF437V2PGDBXZ2VK2DZ'));
     assert.ok(res.stdout.includes('CCUUSDWSCSML3DFXVNEXQN7OFYXY2PGBOLKJR5R4Q5JPK47V4TYPQUKJ'));

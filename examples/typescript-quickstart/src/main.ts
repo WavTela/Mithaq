@@ -1,5 +1,5 @@
 /**
- * Minimal TypeScript integration for `@stellarcred/sdk` (issue #751).
+ * Minimal TypeScript integration for `@mithaq/sdk` (issue #751).
  *
  * This file is typechecked (`npm run typecheck`) and executed (`npm start`) in
  * CI, so every snippet in `docs/SDK_TYPESCRIPT_EXAMPLE.md` is known to compile.
@@ -26,7 +26,7 @@ import {
   TransactionBuilder,
   type Transaction,
 } from "@stellar/stellar-sdk";
-import StellarCred, {
+import Mithaq, {
   buildVerifyUrl,
   parseReturnParams,
   verifyWalletSignature,
@@ -38,18 +38,18 @@ import StellarCred, {
   type UntrustedReturnParams,
   type VerifyWalletClaimResult,
   type WalletChallenge,
-} from "@stellarcred/sdk";
+} from "@mithaq/sdk";
 
 // Canonical testnet deployment of ProofRegistry (see DEPLOYMENTS.md).
 const DEFAULT_REGISTRY_ID = "CBEXHUMCNS4TJWNYXRFJNIWCNUW62MHAXL4JOBT764CLMHAPNJKIRWXV";
-const RPC_URL = process.env.STELLARCRED_RPC_URL ?? "https://soroban-testnet.stellar.org";
+const RPC_URL = process.env.MITHAQ_RPC_URL ?? "https://soroban-testnet.stellar.org";
 
 // ---------------------------------------------------------------------------
 // 1. Configure once at startup. An explicit `registryId` wins over the
-//    STELLARCRED_REGISTRY_ID environment variable the SDK reads on import.
+//    MITHAQ_REGISTRY_ID environment variable the SDK reads on import.
 // ---------------------------------------------------------------------------
-StellarCred.configure({
-  registryId: process.env.STELLARCRED_REGISTRY_ID ?? DEFAULT_REGISTRY_ID,
+Mithaq.configure({
+  registryId: process.env.MITHAQ_REGISTRY_ID ?? DEFAULT_REGISTRY_ID,
   rpcUrl: RPC_URL,
   networkPassphrase: Networks.TESTNET,
 });
@@ -64,7 +64,7 @@ export async function hasVerifiedClaim(
   claim: ClaimType,
   options: ClaimOptions = {},
 ): Promise<boolean> {
-  return StellarCred.hasClaim(wallet, claim, { ...options, throwOnError: true });
+  return Mithaq.hasClaim(wallet, claim, { ...options, throwOnError: true });
 }
 
 /**
@@ -76,18 +76,18 @@ export async function readClaim(
   wallet: string,
   claim: ClaimType,
 ): Promise<CredentialStatusResult> {
-  return StellarCred.checkClaimStatus(wallet, claim, { throwOnError: true });
+  return Mithaq.checkClaimStatus(wallet, claim, { throwOnError: true });
 }
 
 /** All claims a wallet currently holds, typed as `Claim[]`. */
 export async function readAllClaims(wallet: string): Promise<Claim[]> {
-  return StellarCred.getClaims(wallet, { throwOnError: true });
+  return Mithaq.getClaims(wallet, { throwOnError: true });
 }
 
 // ---------------------------------------------------------------------------
 // 2. Create and sign a transaction.
 //
-// StellarCred does not submit transactions, but most integrations already sign
+// Mithaq does not submit transactions, but most integrations already sign
 // one (a payment, a contract call, a session-authorising transfer). Building it
 // needs only the peer dependency the SDK already requires, and the signature it
 // produces is a normal Ed25519 signature that the SDK can verify.
@@ -132,7 +132,7 @@ export function verifyTransactionSignature(wallet: string, transaction: Transact
 //    to the caller.
 // ---------------------------------------------------------------------------
 export function issueChallenge(domain: string): WalletChallenge {
-  return StellarCred.createWalletChallenge({
+  return Mithaq.createWalletChallenge({
     domain,
     statement: "Sign in to verify your credential",
     ttlMs: 5 * 60 * 1000,
@@ -150,7 +150,7 @@ export async function authenticate(params: {
   claim?: ClaimType;
   claimOptions?: ClaimOptions;
 }): Promise<VerifyWalletClaimResult> {
-  return StellarCred.verifyWalletClaim({
+  return Mithaq.verifyWalletClaim({
     wallet: params.wallet,
     challenge: params.challenge,
     signature: params.signature,
@@ -199,7 +199,7 @@ export async function handleVerificationReturn(params: {
     return { ok: false, wallet: null, error: "Verification was not completed" };
   }
 
-  const verification: VerifyWalletClaimResult = await StellarCred.verifyWalletClaim({
+  const verification: VerifyWalletClaimResult = await Mithaq.verifyWalletClaim({
     wallet: hints.wallet,
     challenge: params.challenge,
     signature: params.signature,
@@ -229,7 +229,7 @@ async function main(): Promise<void> {
 
   const challenge = issueChallenge("localhost:3000");
   const challengeSignature = payer.sign(Buffer.from(challenge.message, "utf8"));
-  const challengeValid = StellarCred.verifyWalletSignature(
+  const challengeValid = Mithaq.verifyWalletSignature(
     payer.publicKey(),
     challenge.message,
     challengeSignature,

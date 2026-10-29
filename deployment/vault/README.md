@@ -1,19 +1,19 @@
-# HashiCorp Vault Secrets Management for StellarCred
+# HashiCorp Vault Secrets Management for Mithaq
 
-This directory contains configuration, policies, and operational runbooks for integrating HashiCorp Vault as the enterprise secrets manager for StellarCred and its multi-tenant credential issuance engine.
+This directory contains configuration, policies, and operational runbooks for integrating HashiCorp Vault as the enterprise secrets manager for Mithaq and its multi-tenant credential issuance engine.
 
 ---
 
 ## 1. Architecture Overview
 
-StellarCred delegates all sensitive cryptographic key management—including tenant issuer signing keys and system credentials—to HashiCorp Vault.
+Mithaq delegates all sensitive cryptographic key management—including tenant issuer signing keys and system credentials—to HashiCorp Vault.
 
 ```
 ┌──────────────────────────┐             ┌───────────────────────────┐
-│     StellarCred API      │             │      HashiCorp Vault      │
+│     Mithaq API      │             │      HashiCorp Vault      │
 │ (Tenant Resolution +     │   HTTPS     │       (KV v2 Engine)      │
 │  Issuance Handler)       │────────────▶│                           │
-│                          │  X-Vault-   │ secret/data/stellarcred/  │
+│                          │  X-Vault-   │ secret/data/mithaq/  │
 │  frontend/lib/           │   Token     │   ├── default/issuer-key  │
 │  secrets-vault.ts        │             │   └── tenants/<tenant-id>/│
 └──────────────────────────┘             └───────────────────────────┘
@@ -45,7 +45,7 @@ vault secrets list
 Secret paths follow standard hierarchical conventions:
 
 ```text
-secret/data/stellarcred/
+secret/data/mithaq/
   ├── default/
   │     └── issuer-key                 # Default deployment-wide issuer key
   └── tenants/
@@ -74,18 +74,18 @@ The provider automatically resolves `.privateKey`, `.signingKey`, or `.value` fi
 
 ## 3. Access Control & Least-Privilege Policies
 
-### 3.1 StellarCred App Server Policy (`stellarcred-service.hcl`)
+### 3.1 Mithaq App Server Policy (`mithaq-service.hcl`)
 
 The main service needs read access to tenant signing keys and the default issuer key:
 
 ```hcl
 # Read default issuer key
-path "secret/data/stellarcred/default/*" {
+path "secret/data/mithaq/default/*" {
   capabilities = ["read"]
 }
 
 # Read tenant signing keys
-path "secret/data/stellarcred/tenants/*" {
+path "secret/data/mithaq/tenants/*" {
   capabilities = ["read"]
 }
 
@@ -98,7 +98,7 @@ path "sys/health" {
 Apply the policy:
 
 ```bash
-vault policy write stellarcred-service deployment/vault/policies/stellarcred-service.hcl
+vault policy write mithaq-service deployment/vault/policies/mithaq-service.hcl
 ```
 
 ### 3.2 Tenant Isolation Policy Template
@@ -107,11 +107,11 @@ For multi-tenant setups where tenants administer their own keys via Vault AppRol
 
 ```hcl
 # Restrict tenant administrators strictly to their own path prefix
-path "secret/data/stellarcred/tenants/{{identity.entity.metadata.tenant_id}}/*" {
+path "secret/data/mithaq/tenants/{{identity.entity.metadata.tenant_id}}/*" {
   capabilities = ["create", "read", "update", "delete", "list"]
 }
 
-path "secret/metadata/stellarcred/tenants/{{identity.entity.metadata.tenant_id}}/*" {
+path "secret/metadata/mithaq/tenants/{{identity.entity.metadata.tenant_id}}/*" {
   capabilities = ["list", "read", "delete"]
 }
 ```
@@ -126,18 +126,18 @@ For production deployments, configure AppRole authentication:
 # 1. Enable AppRole auth
 vault auth enable approle
 
-# 2. Configure the stellarcred app role
-vault write auth/approle/role/stellarcred \
-    token_policies="stellarcred-service" \
+# 2. Configure the mithaq app role
+vault write auth/approle/role/mithaq \
+    token_policies="mithaq-service" \
     token_ttl=1h \
     token_max_ttl=4h \
     secret_id_num_uses=0
 
 # 3. Retrieve Role ID
-vault read auth/approle/role/stellarcred/role-id
+vault read auth/approle/role/mithaq/role-id
 
 # 4. Generate Secret ID
-vault write -f auth/approle/role/stellarcred/secret-id
+vault write -f auth/approle/role/mithaq/secret-id
 ```
 
 The service retrieves a token at boot using the role and secret IDs:
@@ -174,7 +174,7 @@ When rotating an issuer signing key:
 3. **Write New Version to Vault:**
    Update the secret in Vault KV v2:
    ```bash
-   vault kv put secret/stellarcred/tenants/org_acme/signing-key \
+   vault kv put secret/mithaq/tenants/org_acme/signing-key \
        privateKey="<NEW_64_CHAR_HEX_KEY>" \
        issuerId="<TENANT_ISSUER_ADDRESS>"
    ```

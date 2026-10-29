@@ -1,6 +1,6 @@
 // On-chain contract version reads (issue #639).
 //
-// Every StellarCred contract exposes `version() -> u32`, encoding
+// Every Mithaq contract exposes `version() -> u32`, encoding
 // (major * 1_000_000) + (minor * 1_000) + patch. The descriptor at
 // /api/capabilities reports the version the chain actually has, so a live
 // deployment can never disagree with the DEPLOYMENTS.md registry even after

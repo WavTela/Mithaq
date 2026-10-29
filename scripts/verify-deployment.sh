@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# verify-deployment.sh — Verify a StellarCred deployment end-to-end.
+# verify-deployment.sh — Verify a Mithaq deployment end-to-end.
 #
 # Verifies the whole chain for a network:
 #   1. Fetches deployed contract IDs from DEPLOYMENTS.md.
@@ -313,7 +313,7 @@ get_cargo_version() {
 # Banner
 # ---------------------------------------------------------------------------
 echo "================================================================================"
-echo -e "${BOLD}StellarCred End-to-End Deployment Verification${NC}"
+echo -e "${BOLD}Mithaq End-to-End Deployment Verification${NC}"
 echo "================================================================================"
 info "Network:      $NETWORK"
 info "RPC URL:      $RPC_URL"
@@ -440,11 +440,11 @@ else
 
   if [[ "$USE_DOCKER" -eq 1 ]]; then
     info "Rebuilding WASM inside pinned reproducible container (docker/Dockerfile.reproducible)..."
-    if docker build -f docker/Dockerfile.reproducible -t stellarcred-build:verify . >/dev/null 2>&1; then
+    if docker build -f docker/Dockerfile.reproducible -t mithaq-build:verify . >/dev/null 2>&1; then
       if docker run --rm \
           -v "$WASM_OUTPUT_DIR:/out" \
           --env SOURCE_DATE_EPOCH=0 \
-          stellarcred-build:verify >/dev/null 2>&1; then
+          mithaq-build:verify >/dev/null 2>&1; then
         ok "Docker reproducible build succeeded."
       else
         bad "Docker reproducible container run failed."

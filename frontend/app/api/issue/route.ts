@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { previewCredential, type CredentialType } from "@stellarcred/issuer";
+import { previewCredential, type CredentialType } from "@mithaq/issuer";
 import { bodyErrorResponse } from "@/lib/request-limits";
 import { logger, stripSensitiveFields, resolveRequestId } from "@/lib/logger";
 import { recordIssuance } from "@/lib/metrics";

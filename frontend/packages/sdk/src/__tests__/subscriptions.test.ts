@@ -247,7 +247,7 @@ describe("subscribeClaims (#392)", () => {
   it("POSTs events to a registered webhook with the shared secret header", async () => {
     const state: MockIndexer = { recent: [], claims: {} };
     const fetchMock = installIndexerMock(state);
-    const webhookUrl = "https://protocol.test/hooks/stellarcred";
+    const webhookUrl = "https://protocol.test/hooks/mithaq";
     const postResponses: { ok: boolean; status: number }[] = [];
     fetchMock.mockImplementation(async (input: unknown, init?: RequestInit) => {
       const url = String(input);
@@ -278,8 +278,8 @@ describe("subscribeClaims (#392)", () => {
     expect(post).toBeDefined();
     const init = post![1] as RequestInit;
     const headers = init.headers as Record<string, string>;
-    expect(headers["X-StellarCred-Webhook-Secret"]).toBe("s3cret");
-    expect(headers["X-StellarCred-Event"]).toBe("claim_gained");
+    expect(headers["X-Mithaq-Webhook-Secret"]).toBe("s3cret");
+    expect(headers["X-Mithaq-Event"]).toBe("claim_gained");
     const payload = JSON.parse(String(init.body));
     expect(payload).toMatchObject({
       event: "claim_gained",

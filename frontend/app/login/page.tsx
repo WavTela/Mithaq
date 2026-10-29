@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { LoginPageClient } from "./LoginPageClient";
 
 export const metadata: Metadata = {
-  title: "Login - StellarCred",
+  title: "Login - Mithaq",
   description:
-    "Sign in to StellarCred with your Stellar wallet or credentials. Secure, decentralized, and zero-knowledge.",
+    "Sign in to Mithaq with your Stellar wallet or credentials. Secure, decentralized, and zero-knowledge.",
 };
 
 export default function LoginPage() {

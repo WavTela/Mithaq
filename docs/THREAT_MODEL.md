@@ -1,6 +1,6 @@
 # Threat Model
 
-This document records the assets StellarCred protects, the trust boundaries it crosses, the adversaries it must resist, and the mitigations the implementation relies on. It is intended to be read together with [SECURITY.md](../SECURITY.md) and the repository PR checklist.
+This document records the assets Mithaq protects, the trust boundaries it crosses, the adversaries it must resist, and the mitigations the implementation relies on. It is intended to be read together with [SECURITY.md](../SECURITY.md) and the repository PR checklist.
 
 ## Assets
 

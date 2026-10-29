@@ -22,7 +22,7 @@ import type { IngesterHealth } from "./ingester";
 export const ERROR_THRESHOLD = 3;
 
 /** Stable service identifier reported in every health response. */
-export const SERVICE_NAME = "stellarcred-indexer";
+export const SERVICE_NAME = "mithaq-indexer";
 
 export type HealthStatus = "ok" | "degraded" | "error";
 

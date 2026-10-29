@@ -30,7 +30,7 @@ function VerifierInner() {
   const { address } = useWallet();
   const searchParams = useSearchParams();
 
-  // When StellarCred redirects the user back after verification it appends
+  // When Mithaq redirects the user back after verification it appends
   // sc_verified=true and sc_wallet=<address>. We trust the wallet param only to
   // decide *which* address to read on-chain status for - the actual access
   // decision still comes from ProofRegistry, never from the URL.
@@ -113,7 +113,7 @@ function VerifierInner() {
           <IconCheck size={18} color="var(--accent)" stroke={2.5} />
           <span>
             <strong>Verification complete - access granted.</strong>{" "}
-            <span className="muted">You were returned here from StellarCred automatically.</span>
+            <span className="muted">You were returned here from Mithaq automatically.</span>
           </span>
         </div>
       )}
@@ -191,7 +191,7 @@ function VerifierInner() {
             </p>
           )}
 
-          {/* Demonstrates the full protocol → StellarCred → protocol loop without
+          {/* Demonstrates the full protocol → Mithaq → protocol loop without
               needing a separate app: redirect to /verify, then bounce back. */}
           <Link
             href="/verify?return_url=/apps&claim=kyc"

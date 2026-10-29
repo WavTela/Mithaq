@@ -303,7 +303,7 @@ export default function DocsPageClient() {
           Documentation
         </span>
         <h1 style={{ marginBottom: "0.6rem", fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)" }}>
-          About StellarCred
+          About Mithaq
         </h1>
         <p className="lead" style={{ fontSize: "0.95rem" }}>
           Zero-knowledge credential infrastructure on Stellar. Prove facts about
@@ -478,7 +478,7 @@ export default function DocsPageClient() {
               Overview
             </SectionHeading>
             <P>
-              StellarCred is a zero-knowledge credential system built on Stellar. It lets a
+              Mithaq is a zero-knowledge credential system built on Stellar. It lets a
               trusted issuer sign claims about a holder — KYC status, age, income, jurisdiction
               — and lets that holder later prove those claims on-chain without revealing the
               underlying data.
@@ -660,7 +660,7 @@ export default function DocsPageClient() {
             </SectionHeading>
             <SubHeading id="ultrahonk">UltraHonk</SubHeading>
             <P>
-              StellarCred uses the <strong style={{color:"var(--text)"}}>UltraHonk</strong> proving
+              Mithaq uses the <strong style={{color:"var(--text)"}}>UltraHonk</strong> proving
               system from the Aztec Barretenberg library. UltraHonk is a PLONK-family
               argument over the BN254 elliptic curve with a Keccak transcript, matching the
               on-chain verifier exposed as a Soroban host function in Stellar Protocol 22.
@@ -849,7 +849,7 @@ fields 33–64  issuer_y   (secp256k1 Y, one byte per field in low byte)`}</Code
               Your credentials — including the raw attribute value (date of birth, income,
               balance…) and its random salt — are stored <strong style={{color:"var(--text)"}}>only in
               this browser&apos;s <Code>localStorage</Code></strong>, under the key{" "}
-              <Code>stellarcred:credentials</Code>. There is no StellarCred account and no
+              <Code>mithaq:credentials</Code>. There is no Mithaq account and no
               server-side credential database: the credential JSON exists only on the device
               that received it.
             </P>
@@ -892,7 +892,7 @@ fields 33–64  issuer_y   (secp256k1 Y, one byte per field in low byte)`}</Code
             <SubHeading>Credentials belong to the deployment that issued them</SubHeading>
             <P>
               Every credential records the network and contract IDs of the
-              StellarCred deployment that issued it. A credential is only ever
+              Mithaq deployment that issued it. A credential is only ever
               valid inside that deployment: its issuer is registered in{" "}
               <em>that</em> deployment&apos;s IssuerRegistry, and proofs are
               submitted to <em>its</em> ProofRegistry. Cross-deployment import
@@ -995,7 +995,7 @@ fields 33–64  issuer_y   (secp256k1 Y, one byte per field in low byte)`}</Code
             </div>
             <P>
               One nuance: while <em>stored</em> credentials never leave your device, generating a
-              proof sends your credential inputs to <Code>POST /api/witness</Code> (StellarCred&apos;s
+              proof sends your credential inputs to <Code>POST /api/witness</Code> (Mithaq&apos;s
               own server), which executes the Noir circuit and returns the witness bytes; the
               proof itself is then computed in your browser. That route is rate-limited, never
               logs the sensitive fields, and does not persist the credential — the values exist
@@ -1081,7 +1081,7 @@ SOURCE=deployer ./scripts/deploy.sh
               Get started
             </SectionHeading>
             <P>
-              The fastest way to see StellarCred in action on testnet — no local build needed:
+              The fastest way to see Mithaq in action on testnet — no local build needed:
             </P>
             <ol
               style={{

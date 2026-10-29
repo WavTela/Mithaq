@@ -158,7 +158,7 @@ Your commit is now at the top of main and has been pushed to origin/main ✅
 ### Manual Verification (If Needed)
 ```bash
 # On any system with Rust installed:
-cd /path/to/StellarCred
+cd /path/to/Mithaq
 cargo test --locked
 cargo build --release --target wasm32v1-none --locked
 cargo clippy --all-targets -- -D warnings
@@ -250,10 +250,10 @@ The following documentation files were created during implementation (available 
 
 ## 📍 Commit Location
 
-**Repository:** ToluLabs/StellarCred
+**Repository:** ToluLabs/Mithaq
 **Branch:** main
 **Commit:** 35fdd554819492fa960159b689177cb3f86ab01c
-**URL:** https://github.com/ToluLabs/StellarCred/commit/35fdd55
+**URL:** https://github.com/ToluLabs/Mithaq/commit/35fdd55
 
 ---
 

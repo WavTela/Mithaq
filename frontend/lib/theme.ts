@@ -1,5 +1,5 @@
 /**
- * Theme helpers for StellarCred.
+ * Theme helpers for Mithaq.
  *
  * Storage contract:
  * - `localStorage.theme` ∈ { "light", "dark" }  → explicit user preference (wins forever until cleared)

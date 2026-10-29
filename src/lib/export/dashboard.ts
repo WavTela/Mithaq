@@ -149,7 +149,7 @@ export class ExportDashboardService {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StellarCred - Export Observability Dashboard</title>
+  <title>Mithaq - Export Observability Dashboard</title>
   <style>
     :root {
       --bg: #090d16;

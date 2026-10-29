@@ -9,7 +9,7 @@ When smart contracts (ProofRegistry or IssuerRegistry) are updated with new entr
 # Run client code generator
 npm run codegen:clients
 # 1. Navigate to repository and stash uncommitted changes safely
-cd ~/StellarCred
+cd ~/Mithaq
 git stash
 
 # 2. Switch to feature branch

@@ -1,6 +1,6 @@
-# StellarCred Contract Deployments
+# Mithaq Contract Deployments
 
-This document maintains the record of deployed StellarCred smart contract IDs
+This document maintains the record of deployed Mithaq smart contract IDs
 on each Stellar network, the exact source commit each deployment was built from,
 and the SHA-256 hashes of the WASM artifacts. The hashes are the anchor for
 independent verification: anyone can rebuild from the recorded commit and check
@@ -38,15 +38,15 @@ If you wish to reproduce each step manually:
 
 ```bash
 # 1. Check out the exact commit the deployment was built from.
-git clone https://github.com/ToluLabs/StellarCred
-cd StellarCred
+git clone https://github.com/ToluLabs/Mithaq
+cd Mithaq
 git checkout <COMMIT_SHA>          # see "Source commit" in the table below
 
 # 2. Build inside the pinned container.
-docker build -f docker/Dockerfile.reproducible -t stellarcred-build .
+docker build -f docker/Dockerfile.reproducible -t mithaq-build .
 mkdir -p out
 docker run --rm -v "$(pwd)/out:/out" --env SOURCE_DATE_EPOCH=0 \
-  stellarcred-build \
+  mithaq-build \
   sh -c "cargo build --release --target wasm32v1-none --locked --offline \
          && cp target/wasm32v1-none/release/*.wasm /out/"
 
@@ -75,7 +75,7 @@ not just twice on the same machine.
 |---|---|
 | **Network** | Stellar Testnet |
 | **Deployed at** | 2024-08-30T12:00:00Z |
-| **Source commit** | `f9250a5c` — see [full SHA on GitHub](https://github.com/ToluLabs/StellarCred/commit/f9250a5c) |
+| **Source commit** | `f9250a5c` — see [full SHA on GitHub](https://github.com/ToluLabs/Mithaq/commit/f9250a5c) |
 | **Rust toolchain** | `1.93.1` (see `rust-toolchain.toml`) |
 | **Verification** | `git checkout f9250a5c && docker build -f docker/Dockerfile.reproducible -t sc . && docker run --rm -v $(pwd)/out:/out --env SOURCE_DATE_EPOCH=0 sc sh -c "cargo build --release --target wasm32v1-none --locked --offline && cp target/wasm32v1-none/release/*.wasm /out/" && sha256sum out/*.wasm` |
 
@@ -128,7 +128,7 @@ the same value that:
 Alternatively, search the Contract ID on a Stellar block explorer (like [Stellar.expert](https://stellar.expert)) and verify that the deployed WASM hash matches your locally computed hash.
 # Contract Deployments
 
-This file is the authoritative registry of deployed StellarCred contracts.
+This file is the authoritative registry of deployed Mithaq contracts.
 
 Integrators should use the contract IDs recorded here rather than relying on
 environment variable examples, local configuration, or undocumented values.
@@ -174,9 +174,9 @@ Every deployment also serves its live configuration as a machine-readable
 capability descriptor at `GET /api/capabilities` (issue #639): network,
 contract IDs with their **on-chain** `version()` values, supported credential
 types, a registered-issuer summary, the public indexer URL (when configured),
-whether sponsored submission is available, and the `@stellarcred/sdk` version
+whether sponsored submission is available, and the `@mithaq/sdk` version
 range known to work. Integrators — and the SDK itself, via
-`StellarCred.bootstrap()` — use that single URL instead of copy-pasting
+`Mithaq.bootstrap()` — use that single URL instead of copy-pasting
 contract IDs.
 
 The descriptor and this registry must agree: the descriptor reads contract

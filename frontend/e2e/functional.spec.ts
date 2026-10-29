@@ -12,7 +12,7 @@ function createMockCredentials() {
       type: "age",
       title: "Age Verified",
       claim: "age ≥ 18",
-      issuer: "StellarCred Authority",
+      issuer: "Mithaq Authority",
       issuerId: TEST_ISSUER,
       holder: TEST_WALLET,
       value: "1995-06-15",
@@ -31,7 +31,7 @@ function createMockCredentials() {
       type: "funds",
       title: "Proof of Funds",
       claim: "balance > $10,000",
-      issuer: "StellarCred Authority",
+      issuer: "Mithaq Authority",
       issuerId: TEST_ISSUER,
       holder: TEST_WALLET,
       value: "50000",
@@ -50,7 +50,7 @@ function createMockCredentials() {
       type: "income",
       title: "Accredited (Income)",
       claim: "income > $200,000",
-      issuer: "StellarCred Authority",
+      issuer: "Mithaq Authority",
       issuerId: TEST_ISSUER,
       holder: TEST_WALLET,
       value: "250000",
@@ -71,10 +71,10 @@ function createMockCredentials() {
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem(
-      "stellarcred:onboarding",
+      "mithaq:onboarding",
       JSON.stringify({ step: 4, dismissed: true, completed: true })
     );
-    localStorage.setItem("stellarcred_onboarding_seen", "1");
+    localStorage.setItem("mithaq_onboarding_seen", "1");
   });
 });
 
@@ -89,7 +89,7 @@ test.describe("Verify Flow", () => {
           connect: async () => ({ publicKey: walletAddress }),
           sign: async (xdr: string) => ({ xdr }),
         };
-        localStorage.setItem("stellarcred:wallet-id", "rabet");
+        localStorage.setItem("mithaq:wallet-id", "rabet");
       },
       { walletAddress: TEST_WALLET }
     );
@@ -106,7 +106,7 @@ test.describe("Verify Flow", () => {
               type: postData.credential_types?.[0] || "age",
               title: "Age Verified",
               claim: "age ≥ 18",
-              issuer: "StellarCred Authority",
+              issuer: "Mithaq Authority",
               issuerId: TEST_ISSUER,
               holder: postData.holder || TEST_WALLET,
               value: "1995-06-15",
@@ -157,8 +157,8 @@ test.describe("Holder Page", () => {
           connect: async () => ({ publicKey: walletAddress }),
           sign: async (xdr: string) => ({ xdr }),
         };
-        localStorage.setItem("stellarcred:wallet-id", "rabet");
-        localStorage.setItem("stellarcred:credentials", JSON.stringify(credentials));
+        localStorage.setItem("mithaq:wallet-id", "rabet");
+        localStorage.setItem("mithaq:credentials", JSON.stringify(credentials));
       },
       { walletAddress: TEST_WALLET, credentials: createMockCredentials() }
     );
@@ -231,7 +231,7 @@ test.describe("Apps Gating", () => {
     // Verification banner is visible
     await expect(page.getByText(/Verification complete/i)).toBeVisible();
     await expect(
-      page.getByText(/You were returned here from StellarCred automatically/i)
+      page.getByText(/You were returned here from Mithaq automatically/i)
     ).toBeVisible();
   });
 });
@@ -242,17 +242,17 @@ test.describe("Badge and Verify-Preset Pages", () => {
   }) => {
     // Invalid params: missing wallet
     await page.goto("/badge");
-    await expect(page.locator("a[href='https://stellarcred.xyz']")).toBeVisible();
+    await expect(page.locator("a[href='https://mithaq.xyz']")).toBeVisible();
     await expect(page.getByText("Not verified")).toBeVisible();
 
     // Valid params with wallet and claim
     await page.goto(`/badge?wallet=${TEST_WALLET}&claim=age`);
-    await expect(page.locator("a[href='https://stellarcred.xyz']")).toBeVisible();
+    await expect(page.locator("a[href='https://mithaq.xyz']")).toBeVisible();
     await expect(page.getByText("Age 18+")).toBeVisible();
 
     // Valid params with custom claim
     await page.goto(`/badge?wallet=${TEST_WALLET}&claim=income`);
-    await expect(page.locator("a[href='https://stellarcred.xyz']")).toBeVisible();
+    await expect(page.locator("a[href='https://mithaq.xyz']")).toBeVisible();
     await expect(page.getByText("Income")).toBeVisible();
   });
 

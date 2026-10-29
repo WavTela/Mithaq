@@ -38,7 +38,7 @@ importers:
       '@stellar/stellar-sdk':
         specifier: ^13.1.0
         version: 13.3.0
-      '@stellarcred/issuer':
+      '@mithaq/issuer':
         specifier: workspace:*
         version: link:packages/issuer
       '@tabler/icons-react':

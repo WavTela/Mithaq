@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
 
     const format = artifact.format || job.format || 'json';
     const contentType = format === 'json' ? 'application/json' : 'text/csv';
-    const filename = `stellarcred-export-${job.scope}-${job.id.slice(0, 10)}.${format}`;
+    const filename = `mithaq-export-${job.scope}-${job.id.slice(0, 10)}.${format}`;
 
     return new NextResponse(artifact.content, {
       status: 200,

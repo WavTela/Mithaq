@@ -5,7 +5,7 @@ export interface SubmissionRecord {
   status: "confirmed" | "pending" | "failed";
 }
 
-const STORAGE_KEY = "stellarcred_submissions";
+const STORAGE_KEY = "mithaq_submissions";
 
 export function saveSubmission(record: SubmissionRecord): void {
   if (typeof window === "undefined") return;

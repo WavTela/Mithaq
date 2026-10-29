@@ -62,7 +62,7 @@ export function LoginPageClient() {
           <div className="login-icon-badge" aria-hidden="true">
             <IconShieldCheck size={28} color="var(--accent)" stroke={1.8} />
           </div>
-          <h1 className="login-title">Sign in to StellarCred</h1>
+          <h1 className="login-title">Sign in to Mithaq</h1>
           <p className="login-subtitle muted">
             Authenticate to manage zero-knowledge credentials and verify on-chain claims.
           </p>

@@ -1,4 +1,4 @@
-# StellarCred API Logging
+# Mithaq API Logging
 
 This document describes the structured logging implementation for API routes and the optional error reporting configuration.
 

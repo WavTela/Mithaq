@@ -1,8 +1,8 @@
-# TypeScript example for `@stellarcred/sdk`
+# TypeScript example for `@mithaq/sdk`
 
-**Audience:** a developer adding StellarCred to a TypeScript service or dapp.
+**Audience:** a developer adding Mithaq to a TypeScript service or dapp.
 
-`@stellarcred/sdk` ships its own typings, so a TypeScript integration needs no
+`@mithaq/sdk` ships its own typings, so a TypeScript integration needs no
 `@types` package and no generated client. This page is a complete, minimal
 example — the same code lives in
 [`examples/typescript-quickstart`](../examples/typescript-quickstart) and is
@@ -33,19 +33,19 @@ typechecked in CI, so it always compiles against the published API.
 ## 1. Install
 
 ```bash
-npm install @stellarcred/sdk @stellar/stellar-sdk
+npm install @mithaq/sdk @stellar/stellar-sdk
 npm install --save-dev typescript tsx @types/node
 ```
 
 | Package                | Role                                                                      |
 | ---------------------- | ------------------------------------------------------------------------- |
-| `@stellarcred/sdk`     | claim reads, `createWalletChallenge`, `verifyWalletClaim`, branded errors |
+| `@mithaq/sdk`     | claim reads, `createWalletChallenge`, `verifyWalletClaim`, branded errors |
 | `@stellar/stellar-sdk` | required peer dependency; `TransactionBuilder`, `Keypair`, `Networks`     |
 | `typescript`           | typechecking (`tsc --noEmit`)                                             |
 | `tsx`                  | run the `.ts` example without a build step                                |
 | `@types/node`          | `process.env`, `Buffer`                                                   |
 
-`@stellarcred/sdk` resolves through its `exports` map with `types` pointing at
+`@mithaq/sdk` resolves through its `exports` map with `types` pointing at
 `dist/index.d.ts`, so `moduleResolution: "node16"`, `"bundler"` (used below), or
 `"nodenext"` all pick up the declarations automatically.
 
@@ -79,18 +79,18 @@ typecheck your dependencies' `.d.ts` files.
 ## 3. Configure with types
 
 `configure()` accepts `SDKConfig`; every field is optional and an explicit value
-wins over the matching `STELLARCRED_*` environment variable.
+wins over the matching `MITHAQ_*` environment variable.
 
 ```ts
 import { Networks } from "@stellar/stellar-sdk";
-import StellarCred from "@stellarcred/sdk";
+import Mithaq from "@mithaq/sdk";
 
-StellarCred.configure({
+Mithaq.configure({
   // Canonical testnet ProofRegistry (see DEPLOYMENTS.md).
   registryId:
-    process.env.STELLARCRED_REGISTRY_ID ??
+    process.env.MITHAQ_REGISTRY_ID ??
     "CBEXHUMCNS4TJWNYXRFJNIWCNUW62MHAXL4JOBT764CLMHAPNJKIRWXV",
-  rpcUrl: process.env.STELLARCRED_RPC_URL ?? "https://soroban-testnet.stellar.org",
+  rpcUrl: process.env.MITHAQ_RPC_URL ?? "https://soroban-testnet.stellar.org",
   networkPassphrase: Networks.TESTNET,
 });
 ```
@@ -105,12 +105,12 @@ passing someone else's address — see [§7](#7-recommended-challenge--claim).
 `string`. Pass typed values and let the compiler keep you honest.
 
 ```ts
-import StellarCred, {
+import Mithaq, {
   type Claim,
   type ClaimOptions,
   type ClaimType,
   type CredentialStatusResult,
-} from "@stellarcred/sdk";
+} from "@mithaq/sdk";
 
 /** true only when the wallet holds a valid, unexpired proof of `claim`. */
 export async function hasVerifiedClaim(
@@ -120,17 +120,17 @@ export async function hasVerifiedClaim(
 ): Promise<boolean> {
   // throwOnError turns a transport/RPC failure into a typed error instead of
   // a silently-false result — use it when "unknown" must not look like "no".
-  return StellarCred.hasClaim(wallet, claim, { ...options, throwOnError: true });
+  return Mithaq.hasClaim(wallet, claim, { ...options, throwOnError: true });
 }
 
 /** Validity window and failure reason, without exposing personal data. */
 export async function readClaim(wallet: string, claim: ClaimType): Promise<CredentialStatusResult> {
-  return StellarCred.checkClaimStatus(wallet, claim, { throwOnError: true });
+  return Mithaq.checkClaimStatus(wallet, claim, { throwOnError: true });
 }
 
 /** Every claim the wallet currently holds. */
 export async function readAllClaims(wallet: string): Promise<Claim[]> {
-  return StellarCred.getClaims(wallet, { throwOnError: true });
+  return Mithaq.getClaims(wallet, { throwOnError: true });
 }
 ```
 
@@ -138,7 +138,7 @@ Threshold claims are enforced on-chain — pass `minThreshold` and the registry
 checks `stored >= required`:
 
 ```ts
-const canTrade = await StellarCred.hasClaim(wallet, "age", { minThreshold: 21 });
+const canTrade = await Mithaq.hasClaim(wallet, "age", { minThreshold: 21 });
 ```
 
 Build a typed verification link when the claim has not yet been established.
@@ -146,7 +146,7 @@ Build a typed verification link when the claim has not yet been established.
 parameters, and an optional return URL:
 
 ```ts
-import { buildVerifyUrl, parseReturnParams, type BuildVerifyUrlOptions } from "@stellarcred/sdk";
+import { buildVerifyUrl, parseReturnParams, type BuildVerifyUrlOptions } from "@mithaq/sdk";
 
 const verifyOptions = {
   returnUrl: "https://yourapp.xyz/markets",
@@ -220,7 +220,7 @@ over a string or raw bytes, so a transaction hash works exactly like a challenge
 string. It returns `false` instead of throwing on malformed input.
 
 ```ts
-import { verifyWalletSignature } from "@stellarcred/sdk";
+import { verifyWalletSignature } from "@mithaq/sdk";
 
 export function verifyTransactionSignature(wallet: string, transaction: Transaction): boolean {
   const signature = transaction.signatures[0]?.signature();
@@ -241,10 +241,10 @@ Issue a replay-protected challenge, have the wallet sign the challenge message,
 then verify signature **and** claim in one call.
 
 ```ts
-import type { VerifyWalletClaimResult, WalletChallenge } from "@stellarcred/sdk";
+import type { VerifyWalletClaimResult, WalletChallenge } from "@mithaq/sdk";
 
 export function issueChallenge(domain: string): WalletChallenge {
-  return StellarCred.createWalletChallenge({
+  return Mithaq.createWalletChallenge({
     domain,
     statement: "Sign in to verify your credential",
     ttlMs: 5 * 60 * 1000, // single-use nonce expires with the challenge
@@ -258,7 +258,7 @@ export async function authenticate(params: {
   claim?: ClaimType;
   claimOptions?: ClaimOptions;
 }): Promise<VerifyWalletClaimResult> {
-  return StellarCred.verifyWalletClaim({
+  return Mithaq.verifyWalletClaim({
     wallet: params.wallet,
     challenge: params.challenge,
     signature: params.signature,
@@ -275,13 +275,13 @@ The result is fully discriminated: `ok` is true only when both checks pass, and
 
 ## 8. Verification redirect and response handling (`buildVerifyUrl`)
 
-When an unverified holder needs to prove a credential (e.g. KYC, minimum age, or balance threshold), redirect them to StellarCred with `buildVerifyUrl`. Once verification completes, StellarCred returns the holder to your `returnUrl` with verification hints in query parameters (`sc_verified`, `sc_wallet`, `sc_claims`, `sc_state`).
+When an unverified holder needs to prove a credential (e.g. KYC, minimum age, or balance threshold), redirect them to Mithaq with `buildVerifyUrl`. Once verification completes, Mithaq returns the holder to your `returnUrl` with verification hints in query parameters (`sc_verified`, `sc_wallet`, `sc_claims`, `sc_state`).
 
 > ⚠️ **Security Notice (Issue #543):**
 > Query parameters in the return URL are **untrusted hints** that anyone can construct. Never grant session access solely from `sc_verified=true` or `sc_wallet`. Always require the holder to sign a challenge via `verifyWalletClaim` to prove wallet control and confirm the on-chain claim.
 
 ```ts
-import StellarCred, {
+import Mithaq, {
   buildVerifyUrl,
   parseReturnParams,
   type BuildVerifyUrlOptions,
@@ -289,7 +289,7 @@ import StellarCred, {
   type UntrustedReturnParams,
   type VerifyWalletClaimResult,
   type WalletChallenge,
-} from "@stellarcred/sdk";
+} from "@mithaq/sdk";
 
 /**
  * Builds a strongly typed verification redirect URL.
@@ -337,7 +337,7 @@ export async function handleVerificationReturn(params: {
   }
 
   // 2. Authoritative check: verify wallet signature over challenge AND on-chain claim
-  const verification: VerifyWalletClaimResult = await StellarCred.verifyWalletClaim({
+  const verification: VerifyWalletClaimResult = await Mithaq.verifyWalletClaim({
     wallet: hints.wallet,
     challenge: params.challenge,
     signature: params.signature,
@@ -391,5 +391,5 @@ builds the SDK distribution and then runs, for this example:
 ```
 
 That means a breaking change to a signature, an export, or a type in
-`@stellarcred/sdk` fails CI here instead of in a user's project.
+`@mithaq/sdk` fails CI here instead of in a user's project.
 

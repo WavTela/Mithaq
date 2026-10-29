@@ -56,7 +56,7 @@ describe("buildCapabilitiesDescriptor", () => {
     const descriptor = await buildCapabilitiesDescriptor();
 
     expect(descriptor.descriptor_version).toBe(CAPABILITIES_DESCRIPTOR_VERSION);
-    expect(descriptor.sdk.package).toBe("@stellarcred/sdk");
+    expect(descriptor.sdk.package).toBe("@mithaq/sdk");
     expect(descriptor.sdk.version_range).toMatch(/^>=/);
   });
 

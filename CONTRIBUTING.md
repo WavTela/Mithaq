@@ -1,6 +1,6 @@
-# Contributing to StellarCred
+# Contributing to Mithaq
 
-Thanks for your interest in contributing. StellarCred is a ZK credential layer for Stellar — contributions that improve correctness, security, or developer experience are especially welcome.
+Thanks for your interest in contributing. Mithaq is a ZK credential layer for Stellar — contributions that improve correctness, security, or developer experience are especially welcome.
 
 **First time in this repo?** Work through
 [START_HERE.md](START_HERE.md) — one linear path from `git clone` to the same
@@ -14,7 +14,7 @@ collected in [docs/CONTRIBUTOR_CHECKLIST.md](docs/CONTRIBUTOR_CHECKLIST.md).
 ```
 contracts/    Soroban workspace (Rust, soroban-sdk 26)
 circuits/     Noir circuits (UltraHonk · Noir 1.0.0-beta.9 / bb 0.87.0)
-frontend/     Next.js 14 app + @stellarcred/sdk
+frontend/     Next.js 14 app + @mithaq/sdk
 services/     Indexer & off-chain services (see services/indexer/README.md)
 scripts/      deploy.sh — wires all contracts on testnet
 fixtures/     real vk / proof / public_inputs used by contract tests
@@ -47,7 +47,7 @@ Two rules follow. The first is the one whose absence produced the duplicated
 
 ### Export pipeline
 
-The admin export system (issues [#783](https://github.com/ToluLabs/StellarCred/issues/783), [#784](https://github.com/ToluLabs/StellarCred/issues/784), and [#788](https://github.com/ToluLabs/StellarCred/issues/788)) lives under:
+The admin export system (issues [#783](https://github.com/ToluLabs/Mithaq/issues/783), [#784](https://github.com/ToluLabs/Mithaq/issues/784), and [#788](https://github.com/ToluLabs/Mithaq/issues/788)) lives under:
 
 ```
 frontend/lib/export-store.ts          ExportRecord store (create/list/get/revoke)
@@ -169,18 +169,18 @@ on your host. It has no `docker compose` service, so build and run it directly,
 mounting the repo at `/workspace`:
 
 ```bash
-docker build -f docker/Dockerfile.dev -t stellarcred-dev .
+docker build -f docker/Dockerfile.dev -t mithaq-dev .
 
 # Contract tests / WASM build
-docker run --rm -v "$PWD":/workspace -w /workspace stellarcred-dev \
+docker run --rm -v "$PWD":/workspace -w /workspace mithaq-dev \
   bash -lc "cargo test --locked && cargo build --release --target wasm32v1-none --locked"
 
 # Circuits
-docker run --rm -v "$PWD":/workspace -w /workspace stellarcred-dev \
+docker run --rm -v "$PWD":/workspace -w /workspace mithaq-dev \
   bash -lc "bash ./circuits/scripts/build.sh"
 
 # Frontend
-docker run --rm -v "$PWD":/workspace -w /workspace stellarcred-dev \
+docker run --rm -v "$PWD":/workspace -w /workspace mithaq-dev \
   bash -lc "cd frontend && pnpm install && pnpm build"
 ```
 
@@ -250,8 +250,8 @@ A CI guard (`scripts/check-page-client-size.sh`) enforces a hard line-count
 ceiling on the page-client shells — `HolderPageClient.tsx`, `VerifyPageClient.tsx`
 and `DocsPageClient.tsx`. Caps are pinned at their current sizes and only go down,
 so adding inline feature code fails CI. The guard was added in
-[#606](https://github.com/ToluLabs/StellarCred/issues/606) and extended in
-[#685](https://github.com/ToluLabs/StellarCred/issues/685).
+[#606](https://github.com/ToluLabs/Mithaq/issues/606) and extended in
+[#685](https://github.com/ToluLabs/Mithaq/issues/685).
 
 ## Development workflow
 
@@ -327,7 +327,7 @@ From `frontend/`:
 pnpm test               # vitest unit suites
 pnpm test:coverage      # same suites with coverage (CI uploads the report)
 pnpm test:theme         # theme helpers via node:test
-pnpm --filter @stellarcred/issuer test    # issuer package, incl. cross-boundary circuit test
+pnpm --filter @mithaq/issuer test    # issuer package, incl. cross-boundary circuit test
 pnpm exec tsc --noEmit  # zero errors required
 pnpm lint
 ```
@@ -338,7 +338,7 @@ One command for the common set: `make test-frontend`.
 
 Two SDKs live in this repo, and both are tested:
 
-- **`frontend/packages/sdk` (`@stellarcred/sdk`)** — the browser package.
+- **`frontend/packages/sdk` (`@mithaq/sdk`)** — the browser package.
   `make test-sdk` runs `pnpm typecheck && pnpm test:integration` there; CI also
   checks the barrel exports (`pnpm test:barrel`). The integration suite talks to
   testnet and skips gracefully when credentials are absent.
@@ -410,7 +410,7 @@ The `CI` workflow contains these jobs — **all must pass before merge**:
 
 Two jobs are environment-dependent and may not run on your PR: the SDK
 integration job only starts when the repository variables it needs
-(`SC_TEST_WALLET`, `STELLARCRED_REGISTRY_ID`) are set — fork PRs cannot see
+(`SC_TEST_WALLET`, `MITHAQ_REGISTRY_ID`) are set — fork PRs cannot see
 maintainer secrets, which is by design — and the ephemeral-testnet E2E lives in
 its own scheduled workflow. Neither is a reason to skip local testing of the
 code you changed.
@@ -447,7 +447,7 @@ pick work that matches both your comfort level and the risk the area carries.
 
 ### Which issues are safe to pick up
 
-Issues tagged [`good first issue`](https://github.com/ToluLabs/StellarCred/labels/good%20first%20issue)
+Issues tagged [`good first issue`](https://github.com/ToluLabs/Mithaq/labels/good%20first%20issue)
 are curated by maintainers to be **self-contained and unable to break a trust property**.
 An issue only earns that label when every box below is true:
 
@@ -684,7 +684,7 @@ follow-up over a bulk reformat, and never silence a rule repo-wide to get green.
 
 ## Commit messages
 
-StellarCred uses [Conventional Commits](https://www.conventionalcommits.org/). Every commit message must have a structured prefix so the changelog and release notes are generated automatically.
+Mithaq uses [Conventional Commits](https://www.conventionalcommits.org/). Every commit message must have a structured prefix so the changelog and release notes are generated automatically.
 
 | Prefix | When to use |
 |--------|-------------|
@@ -733,7 +733,7 @@ Releases are tag-driven. The GitHub Actions release workflow fires on any tag ma
 1. Regenerates `CHANGELOG.md` from the full conventional commit history.
 2. Commits the updated changelog back to `main`.
 3. Creates a GitHub Release with the changelog section for that version as the body.
-4. Builds and publishes `@stellarcred/sdk` to npm.
+4. Builds and publishes `@mithaq/sdk` to npm.
 
 ### Cutting a release
 
@@ -750,7 +750,7 @@ The workflow handles everything else.
 ### Required secret
 
 The repository must have an `NPM_TOKEN` secret set under **Settings → Secrets and variables → Actions**.
-Generate the token at [npmjs.com](https://www.npmjs.com) with **Automation** type and **Read and write** scope for the `@stellarcred` scope (or the package name).
+Generate the token at [npmjs.com](https://www.npmjs.com) with **Automation** type and **Read and write** scope for the `@mithaq` scope (or the package name).
 Never commit the token value.
 
 ## License

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * demo-witness.mjs — Witness generation for the StellarCred demo.
+ * demo-witness.mjs — Witness generation for the Mithaq demo.
  *
  * Takes a credential JSON file (produced by demo-issue.mjs) and a credential
  * type, runs the Noir circuit to produce a witness, and writes the gzipped

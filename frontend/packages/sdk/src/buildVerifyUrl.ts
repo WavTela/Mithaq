@@ -38,8 +38,8 @@ export interface BuildVerifyUrlClaimParams {
  */
 export interface BuildVerifyUrlOptions {
   /**
-   * Target URL where StellarCred will redirect the holder after the verification session completes.
-   * StellarCred will append verification query parameters (`sc_verified`, `sc_wallet`, `sc_claims`, `sc_state`).
+   * Target URL where Mithaq will redirect the holder after the verification session completes.
+   * Mithaq will append verification query parameters (`sc_verified`, `sc_wallet`, `sc_claims`, `sc_state`).
    *
    * Required. Can be an absolute URL (e.g. `"https://yourapp.xyz/callback"`) or relative path (e.g. `"/deposit"`).
    */
@@ -66,8 +66,8 @@ export interface BuildVerifyUrlOptions {
   state?: string;
 
   /**
-   * Base URL of the StellarCred web application.
-   * Defaults to configured SDK `baseUrl` or `"https://stellarcred.xyz"`.
+   * Base URL of the Mithaq web application.
+   * Defaults to configured SDK `baseUrl` or `"https://mithaq.xyz"`.
    */
   baseUrl?: string;
 
@@ -133,10 +133,10 @@ export type JurisdictionVerifyUrlOptions = Omit<BuildVerifyUrlOptions, "claim" |
 };
 
 /**
- * Builds a strongly typed StellarCred verification redirect URL.
+ * Builds a strongly typed Mithaq verification redirect URL.
  *
- * Redirecting an unverified user to this URL opens the StellarCred verification flow.
- * After verifying (or cancelling), StellarCred redirects back to `returnUrl` with
+ * Redirecting an unverified user to this URL opens the Mithaq verification flow.
+ * After verifying (or cancelling), Mithaq redirects back to `returnUrl` with
  * query parameters:
  * - `sc_verified`: `"true"` if verification succeeded
  * - `sc_wallet`: The holder's wallet address
@@ -215,9 +215,9 @@ export function buildVerifyUrl(opts: BuildVerifyUrlOptions): string {
         ? (process.env as Record<string, string | undefined>)
         : undefined;
     base =
-      proc?.STELLARCRED_BASE_URL ||
-      proc?.NEXT_PUBLIC_STELLARCRED_BASE_URL ||
-      "https://stellarcred.xyz";
+      proc?.MITHAQ_BASE_URL ||
+      proc?.NEXT_PUBLIC_MITHAQ_BASE_URL ||
+      "https://mithaq.xyz";
   }
 
   const url = new URL("/verify", base);

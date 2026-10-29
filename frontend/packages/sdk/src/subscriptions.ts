@@ -1,4 +1,4 @@
-// @stellarcred/sdk — real-time claim subscriptions (#392)
+// @mithaq/sdk — real-time claim subscriptions (#392)
 //
 // Push-style notifications when a watched wallet gains or loses a claim,
 // backed by the indexer HTTP API (services/indexer) instead of per-wallet
@@ -54,7 +54,7 @@ export interface ClaimWebhookOptions {
   /** URL to POST each change event to. */
   url: string;
   /**
-   * Shared secret sent as the `X-StellarCred-Webhook-Secret` header on every
+   * Shared secret sent as the `X-Mithaq-Webhook-Secret` header on every
    * delivery so the receiver can reject forged requests.
    */
   secret?: string;
@@ -71,7 +71,7 @@ export interface SubscribeClaimsOptions {
   claims?: readonly ClaimType[];
   /**
    * Indexer base URL. Resolution order: this option →
-   * `configure({ indexerUrl })` / `STELLARCRED_INDEXER_URL` →
+   * `configure({ indexerUrl })` / `MITHAQ_INDEXER_URL` →
    * the SDK `baseUrl`.
    */
   baseUrl?: string;
@@ -169,7 +169,7 @@ export function subscribeClaims(opts: SubscribeClaimsOptions): Unsubscribe {
   if (!baseUrl) {
     throw new ConfigError(
       "subscribeClaims: no indexer URL — pass { baseUrl }, call configure({ indexerUrl }), " +
-        "or set STELLARCRED_INDEXER_URL",
+        "or set MITHAQ_INDEXER_URL",
     );
   }
   assertHttpUrl(baseUrl, "indexer baseUrl");
@@ -236,10 +236,10 @@ export function subscribeClaims(opts: SubscribeClaimsOptions): Unsubscribe {
     });
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      "X-StellarCred-Event": event.kind === "gained" ? "claim_gained" : "claim_lost",
+      "X-Mithaq-Event": event.kind === "gained" ? "claim_gained" : "claim_lost",
       ...(webhook.headers ?? {}),
     };
-    if (webhook.secret) headers["X-StellarCred-Webhook-Secret"] = webhook.secret;
+    if (webhook.secret) headers["X-Mithaq-Webhook-Secret"] = webhook.secret;
     try {
       await withRetry(
         async () => {

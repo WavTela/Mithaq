@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import SubmitAppPageClient from "./SubmitAppPageClient";
 
 export const metadata: Metadata = {
-  title: "StellarCred — Submit an App",
+  title: "Mithaq — Submit an App",
   description:
-    "Submit your StellarCred integration for review and listing in the Apps gallery.",
+    "Submit your Mithaq integration for review and listing in the Apps gallery.",
 };
 
 export default function Page() {

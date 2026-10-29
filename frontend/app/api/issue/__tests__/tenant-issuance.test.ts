@@ -35,7 +35,7 @@ describe("POST /api/issue - Tenant-Aware Issuance & Vault Integration", () => {
     config: {
       issuerId: "GALPHA000000000000000000000000000000000000000000000000000",
       issuerName: "Alpha Financial Authority",
-      signingKeySecretRef: "secret/data/stellarcred/tenants/alpha/signing-key",
+      signingKeySecretRef: "secret/data/mithaq/tenants/alpha/signing-key",
       allowedCredentialTypes: ["kyc", "age"],
     },
     createdAt: "2026-01-01T00:00:00Z",
@@ -50,7 +50,7 @@ describe("POST /api/issue - Tenant-Aware Issuance & Vault Integration", () => {
     config: {
       issuerId: "GBETA0000000000000000000000000000000000000000000000000000",
       issuerName: "Beta Banking Authority",
-      signingKeySecretRef: "secret/data/stellarcred/tenants/beta/signing-key",
+      signingKeySecretRef: "secret/data/mithaq/tenants/beta/signing-key",
       allowedCredentialTypes: ["funds", "income"],
     },
     createdAt: "2026-01-01T00:00:00Z",
@@ -83,8 +83,8 @@ describe("POST /api/issue - Tenant-Aware Issuance & Vault Integration", () => {
     const { setTenantStore, InMemoryTenantStore } = await import("@/lib/tenancy");
 
     const mockSecrets = new MockSecretsProvider({
-      "secret/data/stellarcred/tenants/alpha/signing-key": TENANT_A_KEY,
-      "secret/data/stellarcred/tenants/beta/signing-key": TENANT_B_KEY,
+      "secret/data/mithaq/tenants/alpha/signing-key": TENANT_A_KEY,
+      "secret/data/mithaq/tenants/beta/signing-key": TENANT_B_KEY,
     });
     setSecretsProvider(mockSecrets);
 

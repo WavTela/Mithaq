@@ -1,9 +1,9 @@
 groups:
-  - name: stellarcred_alerts
+  - name: mithaq_alerts
     rules:
       # 1. Indexer Lag Alert
       - alert: IndexerLagHigh
-        expr: stellarcred_indexer_ledgers_behind > 10
+        expr: mithaq_indexer_ledgers_behind > 10
         for: 5m
         labels:
           severity: critical
@@ -13,7 +13,7 @@ groups:
 
       # 2. Issuance Failure Rate Alert
       - alert: HighIssuanceFailureRate
-        expr: (sum(rate(stellarcred_issuance_failures_total[5m])) / sum(rate(stellarcred_issuance_attempts_total[5m]))) > 0.05
+        expr: (sum(rate(mithaq_issuance_failures_total[5m])) / sum(rate(mithaq_issuance_attempts_total[5m]))) > 0.05
         for: 5m
         labels:
           severity: critical
@@ -23,17 +23,17 @@ groups:
 
       # 3. API Readiness Failure Alert
       - alert: APIReadyFailing
-        expr: stellarcred_api_ready_status == 0
+        expr: mithaq_api_ready_status == 0
         for: 1m
         labels:
           severity: critical
         annotations:
-          summary: "StellarCred API readiness check failing"
+          summary: "Mithaq API readiness check failing"
           description: "The /api/ready endpoint has returned non-200 or unhealthy status for > 1 minute."
 
       # 4. Security Violation Alert: Demo Key in Production
       - alert: DemoIssuerKeyActiveInProduction
-        expr: stellarcred_demo_issuer_mode{env="production"} == 1
+        expr: mithaq_demo_issuer_mode{env="production"} == 1
         for: 0m
         labels:
           severity: critical

@@ -1,8 +1,8 @@
-# StellarCred Version Compatibility Matrix
+# Mithaq Version Compatibility Matrix
 
 ## Overview
 
-This document defines compatibility between StellarCred components across versions. Use this matrix when upgrading to ensure all components work together correctly.
+This document defines compatibility between Mithaq components across versions. Use this matrix when upgrading to ensure all components work together correctly.
 
 For support windows, deprecation timelines, and the VK pruning rule, see
 [SUPPORT_POLICY.md](SUPPORT_POLICY.md).
@@ -25,8 +25,8 @@ For support windows, deprecation timelines, and the VK pruning rule, see
 | issuer_registry | 1.0.0 | 1.0.0 | Issuer management |
 | gated_pool | 1.0.0 | 1.0.0 | Demo DeFi gating |
 | **Frontend** | | | |
-| App (StellarCred) | 1.0.0 | 1.0.0 | Next.js UI, credential issuance |
-| SDK (@stellarcred/sdk) | 0.1.1 | 0.1.1 | Read-only client library |
+| App (Mithaq) | 1.0.0 | 1.0.0 | Next.js UI, credential issuance |
+| SDK (@mithaq/sdk) | 0.1.1 | 0.1.1 | Read-only client library |
 
 ---
 
@@ -81,10 +81,10 @@ The SDK is a read-only client that queries deployed contracts. Compatibility dep
 **Action Required:**
 ```bash
 # Before upgrade
-npm install @stellarcred/sdk@0.1.1
+npm install @mithaq/sdk@0.1.1
 
 # After upgrade to ProofRegistry 1.1.0
-npm install @stellarcred/sdk@0.2.0
+npm install @mithaq/sdk@0.2.0
 ```
 
 ### CredentialVerifier 1.0.0 → 2.0.0 (Hypothetical Breaking Change)
@@ -130,7 +130,7 @@ npm install @stellarcred/sdk@0.2.0
    npm test
    
    # If breaking change, update SDK and re-test
-   npm install @stellarcred/sdk@new-version
+   npm install @mithaq/sdk@new-version
    npm test
    ```
 
@@ -153,7 +153,7 @@ npm install @stellarcred/sdk@0.2.0
 1. **Check Contract Support**
    ```bash
    # Read SDK changelog
-   cat node_modules/@stellarcred/sdk/CHANGELOG.md | head -50
+   cat node_modules/@mithaq/sdk/CHANGELOG.md | head -50
    ```
 
 2. **Review API Changes**
@@ -163,7 +163,7 @@ npm install @stellarcred/sdk@0.2.0
 
 3. **Update Incrementally**
    ```bash
-   npm install @stellarcred/sdk@latest
+   npm install @mithaq/sdk@latest
    npm run build  # Check for type errors
    npm test
    ```
@@ -186,7 +186,7 @@ stability status of each component.
 | proof_registry | Production | Ad-hoc (when schema changes) | See SUPPORT_POLICY.md |
 | issuer_registry | Production | Ad-hoc (issuer management) | See SUPPORT_POLICY.md |
 | gated_pool | Demo | Actively developed | N/A |
-| App (StellarCred) | Beta | Monthly releases | See SUPPORT_POLICY.md |
+| App (Mithaq) | Beta | Monthly releases | See SUPPORT_POLICY.md |
 | SDK | Beta | Quarterly releases | See SUPPORT_POLICY.md |
 
 ---
@@ -238,7 +238,7 @@ pub fn prune_version(env: Env, credential_type: Symbol, version: u32) {
 
 ```typescript
 // Using SDK (requires SDK 0.2.0+)
-import { ProofRegistry } from "@stellarcred/sdk";
+import { ProofRegistry } from "@mithaq/sdk";
 
 const registry = new ProofRegistry(contractAddress, client);
 const version = await registry.version();
@@ -312,7 +312,7 @@ curl https://app.example.com/api/ready | jq '{
 
 **Fix:** Update app and SDK
 ```bash
-npm install @stellarcred/sdk@0.2.0
+npm install @mithaq/sdk@0.2.0
 ```
 
 ### Scenario 2: New App + Old Contracts
@@ -391,7 +391,7 @@ Error: Cannot assign ProofRecord to ProofRecordV2
 **Cause:** SDK type definitions don't match contract serialization
 
 **Solution:**
-1. Update SDK: `npm install @stellarcred/sdk@latest`
+1. Update SDK: `npm install @mithaq/sdk@latest`
 2. Clear build cache: `rm -rf dist node_modules/.cache`
 3. Rebuild: `npm run build`
 

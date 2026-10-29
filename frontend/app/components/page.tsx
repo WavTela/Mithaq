@@ -474,7 +474,7 @@ export function CredCard({ c }) {
           Back to docs
         </Link>
         <Text variant="sm" color="faint">
-          StellarCred Design System · v1.0
+          Mithaq Design System · v1.0
         </Text>
       </div>
     </>

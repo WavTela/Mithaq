@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-This directory contains Architecture Decision Records (ADRs) for the load-bearing design choices in StellarCred's trust model.
+This directory contains Architecture Decision Records (ADRs) for the load-bearing design choices in Mithaq's trust model.
 
 An ADR captures a decision that is non-obvious to a newcomer, records the alternatives that were considered, and explains the consequences — including what would have to change if the decision were revisited.
 

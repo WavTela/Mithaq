@@ -127,7 +127,7 @@ export async function mergeCredentials(imported: Credential[]): Promise<Credenti
 
 export function downloadBackup(
   backup: EncryptedBackup,
-  filename = "stellarcred-backup.json"
+  filename = "mithaq-backup.json"
 ) {
   const blob = new Blob([JSON.stringify(backup, null, 2)], {
     type: "application/json",

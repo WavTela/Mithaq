@@ -10,8 +10,8 @@ export const dynamic = "force-dynamic";
 /**
  * GET /api/capabilities — machine-readable capability descriptor (issue #639).
  *
- * A single well-known URL an integrator (or @stellarcred/sdk's
- * `StellarCred.bootstrap()`) can fetch to configure itself: network, contract
+ * A single well-known URL an integrator (or @mithaq/sdk's
+ * `Mithaq.bootstrap()`) can fetch to configure itself: network, contract
  * IDs and on-chain versions, supported credential types, registered-issuer
  * summary, public indexer URL (when configured), sponsored-submission
  * availability, and the SDK version range known to work.

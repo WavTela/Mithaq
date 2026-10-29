@@ -104,7 +104,7 @@ describe("Accessibility Pass - Components ARIA Semantics", () => {
           type: "age",
           title: "Age Over 18",
           claim: "18+",
-          issuer: "StellarCred Demo Issuer",
+          issuer: "Mithaq Demo Issuer",
           issuerId: "GBBB",
           holder: "GAAA",
           value: "20",

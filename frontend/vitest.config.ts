@@ -18,9 +18,9 @@ export default defineConfig({
       // Next.js resolves this via tsconfig.json's own "paths" entry; vitest
       // doesn't read tsconfig paths automatically, so it needs the same
       // mapping mirrored here (#386's presets.ts is the first lib module to
-      // import @stellarcred/sdk from outside the sdk package's own tests).
-      "@stellarcred/sdk": path.resolve(__dirname, "packages/sdk/src/index.ts"),
-      "@stellarcred/issuer": path.resolve(__dirname, "packages/issuer/src/index.ts"),
+      // import @mithaq/sdk from outside the sdk package's own tests).
+      "@mithaq/sdk": path.resolve(__dirname, "packages/sdk/src/index.ts"),
+      "@mithaq/issuer": path.resolve(__dirname, "packages/issuer/src/index.ts"),
       // lib/proof.ts loads bb.js at runtime via a native, non-bundled
       // `import("/bb/index.js")` (see the comments there) that only the
       // browser ever resolves, against /public/bb/index.js. Vite refuses to

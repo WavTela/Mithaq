@@ -125,10 +125,10 @@ describe("entry-point parity (issue #609 / #522)", () => {
     });
   }
 
-  // ── StellarCred namespace holds same references ────────────────────────────
+  // ── Mithaq namespace holds same references ────────────────────────────
 
-  it("StellarCred namespace members are the same references as claims.ts exports", () => {
-    const ns = fromIndex.StellarCred;
+  it("Mithaq namespace members are the same references as claims.ts exports", () => {
+    const ns = fromIndex.Mithaq;
 
     expect(ns.configure).toBe(fromClaims.configure);
     expect(ns.healthCheck).toBe(fromClaims.healthCheck);
@@ -152,16 +152,16 @@ describe("entry-point parity (issue #609 / #522)", () => {
     expect(ns.IndexerError).toBe(fromClaims.IndexerError);
   });
 
-  it("StellarCred namespace members are the same references as challenge.ts exports", () => {
-    const ns = fromIndex.StellarCred;
+  it("Mithaq namespace members are the same references as challenge.ts exports", () => {
+    const ns = fromIndex.Mithaq;
 
     expect(ns.createWalletChallenge).toBe(fromChallenge.createWalletChallenge);
     expect(ns.verifyWalletSignature).toBe(fromChallenge.verifyWalletSignature);
     expect(ns.verifyWalletClaim).toBe(fromChallenge.verifyWalletClaim);
   });
 
-  it("StellarCred namespace members are the same references as errors.ts exports", () => {
-    const ns = fromIndex.StellarCred;
+  it("Mithaq namespace members are the same references as errors.ts exports", () => {
+    const ns = fromIndex.Mithaq;
 
     expect(ns.RpcError).toBe(fromErrors.RpcError);
     expect(ns.ContractError).toBe(fromErrors.ContractError);
@@ -169,8 +169,8 @@ describe("entry-point parity (issue #609 / #522)", () => {
     expect(ns.parseContractError).toBe(fromErrors.parseContractError);
   });
 
-  it("StellarCred namespace members are the same references as capabilities.ts exports", () => {
-    const ns = fromIndex.StellarCred;
+  it("Mithaq namespace members are the same references as capabilities.ts exports", () => {
+    const ns = fromIndex.Mithaq;
 
     expect(ns.bootstrap).toBe(fromCapabilities.bootstrap);
     expect(ns.fetchCapabilities).toBe(fromCapabilities.fetchCapabilities);
@@ -179,8 +179,8 @@ describe("entry-point parity (issue #609 / #522)", () => {
     );
   });
 
-  it("default export equals the StellarCred named export", () => {
-    expect(fromIndex.default).toBe(fromIndex.StellarCred);
+  it("default export equals the Mithaq named export", () => {
+    expect(fromIndex.default).toBe(fromIndex.Mithaq);
   });
 
   it("configure() call propagates to getConfig() — single config object", () => {

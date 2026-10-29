@@ -1,6 +1,6 @@
-// @stellarcred/sdk — optional indexer read path (issue #613)
+// @mithaq/sdk — optional indexer read path (issue #613)
 //
-// Transport and evaluation logic for reading claim data from a StellarCred
+// Transport and evaluation logic for reading claim data from a Mithaq
 // indexer instead of simulating against ProofRegistry.
 //
 // TRUST MODEL: the indexer is an off-chain cache of public chain data run by
@@ -64,7 +64,7 @@ export class IndexerError extends Error {
   status?: number;
 
   constructor(
-    message = "StellarCred indexer request failed",
+    message = "Mithaq indexer request failed",
     options?: { cause?: unknown; status?: number },
   ) {
     super(message);

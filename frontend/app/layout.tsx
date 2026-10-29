@@ -54,7 +54,7 @@ const mono = localFont({
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "StellarCred — Prove anything. Reveal nothing.",
+  title: "Mithaq — Prove anything. Reveal nothing.",
   description:
     "Zero-knowledge credentials on Stellar. Prove facts about yourself without the data ever touching the chain.",
 };

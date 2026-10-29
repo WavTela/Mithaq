@@ -1,6 +1,6 @@
 # Reproducible Builds & Deployment Verification
 
-This document explains how to verify that the StellarCred contracts deployed
+This document explains how to verify that the Mithaq contracts deployed
 on-chain were compiled from this repository at a specific commit — and nothing
 else.
 
@@ -114,8 +114,8 @@ the CI check.
 ### 1. Check out the deployed commit
 
 ```bash
-git clone https://github.com/ToluLabs/StellarCred
-cd StellarCred
+git clone https://github.com/ToluLabs/Mithaq
+cd Mithaq
 # Replace <COMMIT> with the "Source commit" recorded in DEPLOYMENTS.md for
 # the deployment you want to verify.
 git checkout <COMMIT>
@@ -126,7 +126,7 @@ git checkout <COMMIT>
 ```bash
 docker build \
   -f docker/Dockerfile.reproducible \
-  -t stellarcred-build \
+  -t mithaq-build \
   .
 ```
 
@@ -137,7 +137,7 @@ mkdir -p out
 docker run --rm \
   -v "$(pwd)/out:/out" \
   --env SOURCE_DATE_EPOCH=0 \
-  stellarcred-build \
+  mithaq-build \
   sh -c "cargo build \
            --release \
            --target wasm32v1-none \

@@ -580,7 +580,7 @@ jobs:
         run: pnpm test:theme
 
       - name: Run issuer tests (incl. cross-boundary circuit test)
-        run: pnpm --filter @stellarcred/issuer test
+        run: pnpm --filter @mithaq/issuer test
 
       - name: Build SDK distribution
         working-directory: frontend/packages/sdk
@@ -739,7 +739,7 @@ jobs:
     # Needs the testnet fixture wallet and the deployed ProofRegistry ID as
     # repo variables. Skipped entirely on forks where they are not configured
     # (the suite also skips gracefully if they are unset at runtime).
-    if: vars.SC_TEST_WALLET != '' && vars.STELLARCRED_REGISTRY_ID != ''
+    if: vars.SC_TEST_WALLET != '' && vars.MITHAQ_REGISTRY_ID != ''
     permissions:
       contents: read
       pull-requests: write
@@ -764,7 +764,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # @stellarcred/sdk is a standalone publish-only package — it is NOT part
+      # @mithaq/sdk is a standalone publish-only package — it is NOT part
       # of the frontend pnpm workspace (pnpm-workspace.yaml), so it cannot be
       # addressed with pnpm --filter. Its scripts are run from its own
       # directory; pnpm resolves the shared toolchain from the workspace root.
@@ -781,8 +781,8 @@ jobs:
         run: pnpm test:integration
         env:
           SC_TEST_WALLET: ${{ vars.SC_TEST_WALLET }}
-          STELLARCRED_REGISTRY_ID: ${{ vars.STELLARCRED_REGISTRY_ID }}
-          STELLARCRED_RPC_URL: ${{ vars.STELLARCRED_RPC_URL || 'https://soroban-testnet.stellar.org' }}
+          MITHAQ_REGISTRY_ID: ${{ vars.MITHAQ_REGISTRY_ID }}
+          MITHAQ_RPC_URL: ${{ vars.MITHAQ_RPC_URL || 'https://soroban-testnet.stellar.org' }}
 
       - name: Upload SDK coverage report
         uses: actions/upload-artifact@v4

@@ -1,6 +1,6 @@
 // @vitest-environment node
 //
-// Node environment, not the workspace-default jsdom: `@stellarcred/issuer`
+// Node environment, not the workspace-default jsdom: `@mithaq/issuer`
 // refuses to load when `window` exists, and the flow's request/credential
 // types come from it.
 //
@@ -59,7 +59,7 @@ function request(overrides: Partial<IssueRequest> = {}): IssueRequest {
     credentialTypes: ["kyc"],
     holder: HOLDER,
     issuerId: ISSUER_ID,
-    issuerName: "StellarCred Authority",
+    issuerName: "Mithaq Authority",
     expiry: "90 days",
     attributes: {},
     ...overrides,
@@ -78,7 +78,7 @@ function credential(type: string, value = "ok") {
     issuedAt: 1_700_000_000,
     holder: HOLDER,
     issuerId: ISSUER_ID,
-    issuerName: "StellarCred Authority",
+    issuerName: "Mithaq Authority",
     expiry: "90 days",
     salt: "42",
   };
@@ -97,7 +97,7 @@ function captureLogs() {
 beforeEach(() => {
   delete mockEnv.PERSONA_API_KEY;
   delete mockEnv.PERSONA_KYC_TEMPLATE_ID;
-  delete mockEnv.NEXT_PUBLIC_STELLARCRED_BASE_URL;
+  delete mockEnv.NEXT_PUBLIC_MITHAQ_BASE_URL;
   vi.mocked(createPersonaInquiry).mockReset();
   vi.mocked(resolvePersonaKYC).mockReset();
   vi.mocked(registerPendingInquiry).mockReset();
@@ -149,7 +149,7 @@ describe("Persona gate", () => {
     expect(registerPendingInquiry).toHaveBeenCalledWith(INQUIRY_ID, {
       holder: HOLDER,
       issuerId: ISSUER_ID,
-      issuerName: "StellarCred Authority",
+      issuerName: "Mithaq Authority",
       expiry: "90 days",
       credentialTypes: ["kyc"],
       claimParams: { nested: { a: 1 } },
@@ -176,7 +176,7 @@ describe("Persona gate", () => {
   it("prefers the configured base URL over the request origin", async () => {
     mockEnv.PERSONA_API_KEY = "test-persona-key";
     mockEnv.PERSONA_KYC_TEMPLATE_ID = TEMPLATE_ID;
-    mockEnv.NEXT_PUBLIC_STELLARCRED_BASE_URL = "https://issuer.example";
+    mockEnv.NEXT_PUBLIC_MITHAQ_BASE_URL = "https://issuer.example";
     vi.mocked(createPersonaInquiry).mockResolvedValue({
       url: "https://withpersona.com/verify?inquiry-id=inq_test_0001",
       id: INQUIRY_ID,

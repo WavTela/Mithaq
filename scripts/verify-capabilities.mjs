@@ -89,7 +89,7 @@ try {
 
 if (typeof descriptor.descriptor_version !== "number" || !descriptor.network) {
   fail(
-    `${descriptorUrl} did not return a capability descriptor (missing descriptor_version/network). Is this a StellarCred deployment?`,
+    `${descriptorUrl} did not return a capability descriptor (missing descriptor_version/network). Is this a Mithaq deployment?`,
   );
 }
 
