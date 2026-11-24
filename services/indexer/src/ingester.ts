@@ -85,6 +85,12 @@ export interface IngesterHealth {
   fetchAttempts: number;
   /** Total failed fetch attempts (all retries exhausted) since start. */
   fetchFailures: number;
+  /** Ledger sequence from the durable ingestion checkpoint. */
+  checkpointLedger?: number;
+  /** Opaque Horizon paging token from the durable ingestion checkpoint. */
+  checkpointPagingToken?: string | null;
+  /** Timestamp (ms) of the last checkpoint write. */
+  checkpointUpdatedAt?: number;
   unresolvedLedgerRange?: UnresolvedLedgerRange;
 }
 

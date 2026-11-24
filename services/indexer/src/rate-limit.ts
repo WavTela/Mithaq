@@ -107,14 +107,26 @@ export class RateLimiter {
     };
   }
 
-  public middleware(): RequestHandler {
+  public middleware(
+    onResult?: (result: RateLimitResult, enabled: boolean) => void,
+  ): RequestHandler {
     return (req: Request, res: Response, next: NextFunction) => {
       if (!this.enabled) {
+        onResult?.(
+          {
+            allowed: true,
+            limit: this.max,
+            remaining: this.max,
+            resetSeconds: Math.ceil(this.windowMs / 1000),
+          },
+          false,
+        );
         return next();
       }
 
       const ip = this.extractIp(req);
       const result = this.check(ip);
+      onResult?.(result, true);
 
       res.setHeader("RateLimit-Limit", result.limit);
       res.setHeader("RateLimit-Remaining", result.remaining);

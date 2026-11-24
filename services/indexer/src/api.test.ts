@@ -15,6 +15,7 @@ import type { ChainClaimState, ContractReader } from "./integrity";
 import type { Config } from "./config";
 import type { Ingester, IngesterHealth, IngesterMetrics } from "./ingester";
 import { Keypair } from "@stellar/stellar-sdk";
+import { recordRpcFailure, resetRpcDiagnostics } from "./rpc-diagnostics";
 
 import os from "os";
 import path from "path";
@@ -140,6 +141,108 @@ describe("GET /health", () => {
   });
 });
 
+// ── /ready ──────────────────────────────────────────────────────────────────
+
+describe("GET /ready", () => {
+  it("returns 200 when the selected database can execute a lightweight query", async () => {
+    const res = await request(app).get("/ready");
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      status: "ready",
+      ready: true,
+      service: "mithaq-indexer",
+      checks: [{ name: "database", status: "ok" }],
+    });
+    expect(typeof res.body.checks[0].latencyMs).toBe("number");
+    expect(Number.isNaN(Date.parse(res.body.timestamp))).toBe(false);
+  });
+
+  it("returns 503 with a sanitized per-dependency failure when the database is down", async () => {
+    const failingDb = {
+      ...db,
+      ping: jest.fn(async () => {
+        throw new Error("connect failed postgres://indexer:secret@db:5432/app");
+      }),
+    } as unknown as Db;
+    const failingApp = buildApp(failingDb, makeIngester());
+
+    const res = await request(failingApp).get("/ready");
+    expect(res.status).toBe(503);
+    expect(res.body.ready).toBe(false);
+    expect(res.body.status).toBe("not_ready");
+    expect(res.body.checks[0].status).toBe("error");
+    expect(res.body.checks[0].error).not.toContain("indexer:secret");
+  });
+
+  it("keeps liveness independent of a database outage", async () => {
+    const failingDb = {
+      ...db,
+      getLastLedger: jest.fn(async () => {
+        throw new Error("database unavailable");
+      }),
+      ping: jest.fn(async () => {
+        throw new Error("database unavailable");
+      }),
+    } as unknown as Db;
+    const failingApp = buildApp(failingDb, makeIngester({ lastSuccessLedger: 77 }));
+
+    const liveness = await request(failingApp).get("/health");
+    expect(liveness.status).toBe(200);
+    expect(liveness.body.status).toBe("ok");
+    expect(liveness.body.lastLedger).toBe(77);
+
+    const readiness = await request(failingApp).get("/ready");
+    expect(readiness.status).toBe(503);
+  });
+});
+
+// ── /diagnostics/rpc ────────────────────────────────────────────────────────
+
+describe("GET /diagnostics/rpc", () => {
+  beforeEach(() => resetRpcDiagnostics());
+
+  it("is not exposed unless API_KEY is configured", async () => {
+    const res = await request(app).get("/diagnostics/rpc");
+    expect(res.status).toBe(503);
+    expect(res.body.code).toBe("SERVICE_UNAVAILABLE");
+  });
+
+  it("requires the configured API key", async () => {
+    const guardedApp = buildApp(db, makeIngester(), { apiKey: "operator-key" });
+    const res = await request(guardedApp).get("/diagnostics/rpc");
+    expect(res.status).toBe(401);
+  });
+
+  it("returns sanitized recent RPC failures to an authorized operator", async () => {
+    const guardedApp = buildApp(db, makeIngester(), { apiKey: "operator-key" });
+    recordRpcFailure({
+      time: 1_700_000_000_000,
+      kind: "transient",
+      endpoint: "https://rpc.example.com/<redacted>",
+      message: "timeout posting to https://user:pass@rpc.example.com?token=secret",
+    });
+
+    const res = await request(guardedApp)
+      .get("/diagnostics/rpc")
+      .set("Authorization", "Bearer operator-key");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      service: "mithaq-indexer",
+      recoveryStatus: "failing",
+      failureCount: 1,
+      recentFailureCount: 1,
+      latestFailureAt: 1_700_000_000_000,
+      consecutiveFailures: 1,
+      recentFailures: [
+        { time: 1_700_000_000_000, kind: "transient" },
+      ],
+    });
+    expect(JSON.stringify(res.body)).not.toContain("user:pass");
+    expect(JSON.stringify(res.body)).not.toContain("token=secret");
+  });
+});
+
 // ── /claims ──────────────────────────────────────────────────────────────────
 
 describe("GET /claims", () => {
@@ -215,11 +318,13 @@ describe("GET /claims", () => {
 
   it("filters by credential type, issuer, and derived lifecycle state", async () => {
     const now = Math.floor(Date.now() / 1000);
+    // A wallet has at most one claim per credential type (the DB upserts on
+    // that pair), so each state/issuer case gets its own credential type.
+    const otherIssuerKey = Keypair.random().publicKey();
     await insertClaim("kyc", validIssuer, now + 1000);
-    await insertClaim("age", validIssuer, now + 1000);
-    await insertClaim("kyc", Keypair.random().publicKey(), now + 1000);
-    await insertClaim("kyc", validIssuer, now - 1);
-    await insertClaim("kyc", validIssuer, now + 1000, 1);
+    await insertClaim("age", validIssuer, now - 1);
+    await insertClaim("income", otherIssuerKey, now + 1000);
+    await insertClaim("employment", validIssuer, now + 1000, 1);
 
     const active = await request(app)
       .get(`/claims?wallet=GALICE&credential_type=kyc&issuer=${validIssuer}&state=active`);
@@ -231,12 +336,17 @@ describe("GET /claims", () => {
       .get(`/claims?wallet=GALICE&state=expired&issuer=${validIssuer}`);
     expect(expired.status).toBe(200);
     expect(expired.body.claims).toHaveLength(1);
-    expect(expired.body.claims[0].state).toBe("expired");
+    expect(expired.body.claims[0]).toMatchObject({ credential_type: "age", state: "expired" });
 
     const revoked = await request(app).get("/claims?wallet=GALICE&state=revoked");
     expect(revoked.status).toBe(200);
     expect(revoked.body.claims).toHaveLength(1);
-    expect(revoked.body.claims[0].state).toBe("revoked");
+    expect(revoked.body.claims[0]).toMatchObject({ credential_type: "employment", state: "revoked" });
+
+    const otherIssuer = await request(app)
+      .get(`/claims?wallet=GALICE&issuer=${otherIssuerKey}`);
+    expect(otherIssuer.body.claims).toHaveLength(1);
+    expect(otherIssuer.body.claims[0].credential_type).toBe("income");
   });
 
   it.each([
@@ -425,7 +535,8 @@ describe("GET /recent", () => {
   it("rejects a malformed cursor with 400", async () => {
     const res = await request(app).get("/recent?cursor=not-a-real-cursor");
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe("invalid cursor");
+    expect(res.body.code).toBe("UNSUPPORTED_CURSOR");
+    expect(res.body.reason).toBe("unsupported");
   });
 });
 
@@ -617,6 +728,41 @@ describe("CORS & Rate Limiting integration in API", () => {
       .get("/stats")
       .set("X-Forwarded-For", "203.0.113.99");
     expect(otherIpRes.status).toBe(200);
+  });
+});
+
+// ── API traffic metrics (API-16) ────────────────────────────────────────────
+
+describe("GET /metrics API traffic series", () => {
+  it("labels requests with bounded route/method/status-class values", async () => {
+    // A user-supplied wallet value must never become a label.
+    await request(app)
+      .get("/claims?wallet=GSECRETWALLETVALUE&state=pending")
+      .expect(400);
+    // Let the response finish listener record the series.
+    await new Promise((resolve) => setImmediate(resolve));
+
+    const res = await request(app).get("/metrics");
+    expect(res.status).toBe(200);
+    expect(res.text).toContain(
+      'indexer_api_requests_total{method="GET",route="/claims",status_class="4xx"} 1'
+    );
+    expect(res.text).toContain(
+      'indexer_api_request_duration_seconds_count{method="GET",route="/claims",status_class="4xx"} 1'
+    );
+    expect(res.text).toContain('indexer_api_rate_limit_total{outcome="allowed"}');
+    expect(res.text).not.toContain("GSECRETWALLETVALUE");
+  });
+
+  it("labels unmatched traffic as unmatched instead of echoing the path", async () => {
+    await request(app).get("/not-a-route/GSECRETWALLETVALUE").expect(404);
+    await new Promise((resolve) => setImmediate(resolve));
+
+    const res = await request(app).get("/metrics");
+    expect(res.text).toContain(
+      'indexer_api_requests_total{method="GET",route="unmatched",status_class="4xx"} 1'
+    );
+    expect(res.text).not.toContain("GSECRETWALLETVALUE");
   });
 });
 

@@ -18,6 +18,11 @@
 
 import type { IngesterHealth } from "./ingester";
 import { getRpcDiagnostics, type RpcDiagnostics } from "./rpc-client";
+import {
+  DEFAULT_LAG_SLO_LEDGERS,
+  evaluateLagSlo,
+  type LagSloSnapshot,
+} from "./lag-slo";
 
 /** Consecutive fetch failures at or above which status becomes "error". */
 export const ERROR_THRESHOLD = 3;
@@ -37,6 +42,8 @@ export interface IndexerHealthResponse {
   lastLedger: number;
   headLedger: number;
   lag: number;
+  /** Machine-readable lag budget status for alerting (API-13). */
+  lagSlo: LagSloSnapshot;
   lastSuccessLedger: number;
   lastError: string | null;
   lastErrorTime: number | null;
@@ -67,7 +74,8 @@ export function statusFromHealth(h: Pick<IngesterHealth, "consecutiveErrors">): 
 export function buildHealthResponse(
   lastLedger: number,
   h: IngesterHealth,
-  now: Date = new Date()
+  now: Date = new Date(),
+  lagSloLedgers: number = DEFAULT_LAG_SLO_LEDGERS
 ): IndexerHealthResponse {
   const status = statusFromHealth(h);
   return {
@@ -80,6 +88,7 @@ export function buildHealthResponse(
     lastLedger,
     headLedger: h.headLedger,
     lag: h.lag,
+    lagSlo: evaluateLagSlo(h.lag, lagSloLedgers),
     lastSuccessLedger: h.lastSuccessLedger,
     lastError: h.lastError,
     lastErrorTime: h.lastErrorTime,

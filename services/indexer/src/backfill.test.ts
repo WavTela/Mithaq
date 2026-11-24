@@ -67,6 +67,7 @@ const makeHorizon = (head: number, events: Ev[], failOnCall?: number) => {
 const opts = (dir: string, over: Partial<BackfillOptions> = {}): BackfillOptions => ({
   from: 100,
   to: 200,
+  network: config.stellarNetwork,
   batchSize: 2,
   resume: false,
   checkpointPath: path.join(dir, "cp.json"),
@@ -75,18 +76,55 @@ const opts = (dir: string, over: Partial<BackfillOptions> = {}): BackfillOptions
 
 describe("parseBackfillArgs", () => {
   it("parses an explicit bounded range", () => {
-    const o = parseBackfillArgs(["--from", "1000", "--to", "2000", "--batch-size", "50"]);
+    const o = parseBackfillArgs([
+      "--network",
+      "testnet",
+      "--from",
+      "1000",
+      "--to",
+      "2000",
+      "--batch-size",
+      "50",
+    ]);
     expect(o).toMatchObject({ from: 1000, to: 2000, batchSize: 50, resume: false });
   });
 
-  it("defaults to genesis..head", () => {
-    expect(parseBackfillArgs([])).toMatchObject({ from: "genesis", to: "head" });
+  it("requires an explicit network", () => {
+    expect(() => parseBackfillArgs([])).toThrow(/--network is required/);
+  });
+
+  it("requires explicit bounds instead of replaying an unbounded range", () => {
+    expect(() => parseBackfillArgs(["--network", "testnet"])).toThrow(
+      /--from is required/
+    );
+    expect(() =>
+      parseBackfillArgs(["--network", "testnet", "--from", "genesis"])
+    ).toThrow(/--to is required/);
+  });
+
+  it("accepts the genesis and head bounds explicitly", () => {
+    expect(
+      parseBackfillArgs(["--network", "testnet", "--from", "genesis", "--to", "head"])
+    ).toMatchObject({ network: "testnet", from: "genesis", to: "head" });
+  });
+
+  it("allows a resume without bounds because the checkpoint supplies them", () => {
+    expect(parseBackfillArgs(["--network", "testnet", "--resume"])).toMatchObject({
+      network: "testnet",
+      resume: true,
+    });
   });
 
   it("rejects an inverted range and bad batch sizes", () => {
-    expect(() => parseBackfillArgs(["--from", "20", "--to", "10"])).toThrow(/must be <=/);
-    expect(() => parseBackfillArgs(["--batch-size", "500"])).toThrow(/between 1 and 200/);
-    expect(() => parseBackfillArgs(["--bogus"])).toThrow(/Unknown argument/);
+    expect(() =>
+      parseBackfillArgs(["--network", "testnet", "--from", "20", "--to", "10"])
+    ).toThrow(/must be <=/);
+    expect(() =>
+      parseBackfillArgs(["--network", "testnet", "--batch-size", "500"])
+    ).toThrow(/between 1 and 200/);
+    expect(() => parseBackfillArgs(["--network", "testnet", "--bogus"])).toThrow(
+      /Unknown argument/
+    );
   });
 });
 

@@ -1,5 +1,10 @@
 import { SorobanRpc } from "@stellar/stellar-sdk";
 import type { Config } from "./config";
+import {
+  recordRpcFailure,
+  recordRpcSuccess,
+  setActiveRpcEndpoint,
+} from "./rpc-diagnostics";
 
 export type RpcFailureKind = "transient" | "permanent" | "not-found";
 
@@ -129,6 +134,7 @@ export function createResilientRpcClient(
     })),
   };
   latestRpcDiagnostics = diagnostics;
+  setActiveRpcEndpoint(diagnostics.activeUrl, diagnostics.failoverCount);
 
   const backoff = (attempt: number): number => {
     const exponential = Math.min(baseDelayMs * 2 ** (attempt - 1), maxDelayMs);
@@ -148,6 +154,7 @@ export function createResilientRpcClient(
           const result = await operation(servers[index]);
           diagnostics.activeIndex = index;
           diagnostics.activeUrl = endpoint.url;
+          recordRpcSuccess(now(), endpoint.url);
           return result;
         } catch (err) {
           const kind = classifyRpcError(err);
@@ -156,6 +163,12 @@ export function createResilientRpcClient(
           endpoint.lastError = reason;
           endpoint.lastErrorAt = now();
           diagnostics.lastFailoverReason = reason;
+          recordRpcFailure({
+            time: endpoint.lastErrorAt,
+            kind,
+            endpoint: endpoint.url,
+            message: reason,
+          });
 
           if (kind !== "transient") throw err;
           if (attempt >= maxAttempts) break;
@@ -168,6 +181,7 @@ export function createResilientRpcClient(
       diagnostics.activeIndex = next.index;
       diagnostics.activeUrl = next.url;
       diagnostics.failoverCount += 1;
+      setActiveRpcEndpoint(diagnostics.activeUrl, diagnostics.failoverCount);
     }
 
     const endpoint = diagnostics.endpoints[diagnostics.activeIndex];

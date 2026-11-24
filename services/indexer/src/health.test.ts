@@ -43,6 +43,33 @@ describe("buildHealthResponse", () => {
     expect(typeof body.version).toBe("string");
   });
 
+  it("exposes the lag SLO snapshot with the configured budget", () => {
+    const body = buildHealthResponse(10, base, new Date(), 20);
+    expect(body.lagSlo).toEqual({
+      targetLedgers: 20,
+      lagLedgers: 2,
+      status: "ok",
+      breached: false,
+      headLedgerKnown: true,
+    });
+  });
+
+  it("reports an unknown lag SLO when head-ledger data is missing", () => {
+    const body = buildHealthResponse(10, { ...base, headLedger: 0, lag: -1 }, new Date(), 20);
+    expect(body.lagSlo.status).toBe("unknown");
+    expect(body.lagSlo.breached).toBe(false);
+    expect(body.lagSlo.headLedgerKnown).toBe(false);
+  });
+
+  it("breaches the lag SLO while remaining ready when the indexer is behind", () => {
+    const body = buildHealthResponse(10, { ...base, lag: 50 }, new Date(), 20);
+    expect(body.lagSlo.status).toBe("breached");
+    expect(body.lagSlo.breached).toBe(true);
+    // A lag breach is an alerting signal, not a liveness/readiness failure.
+    expect(body.status).toBe("ok");
+    expect(body.ready).toBe(true);
+  });
+
   it("is not ready when the ingester is in the error state", () => {
     const body = buildHealthResponse(10, { ...base, consecutiveErrors: 3, lastError: "boom" });
     expect(body.status).toBe("error");

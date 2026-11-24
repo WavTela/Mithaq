@@ -88,6 +88,12 @@ export interface Db {
   /** Run schema migrations (idempotent). */
   migrate(): void | Promise<void>;
 
+  /**
+   * Execute a lightweight query ("SELECT 1") to prove the backend can serve
+   * traffic. Used by the readiness probe (API-14), never by liveness checks.
+   */
+  ping(): void | Promise<void>;
+
   /** Return the last fully ingested ledger sequence (0 if none). */
   getLastLedger(): number | Promise<number>;
 
