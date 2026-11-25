@@ -416,7 +416,10 @@ export function buildApp(
   // touching the environment.
   const envApiKey = process.env["API_KEY"]?.trim();
   const apiKey = config?.apiKey ?? (envApiKey || undefined);
-  const guard = requireAuth(apiKey);
+  // NEXT_API_KEY is accepted alongside API_KEY for zero-downtime rotation (API-25).
+  const envNextApiKey = process.env["NEXT_API_KEY"]?.trim();
+  const nextApiKey = config?.nextApiKey ?? (envNextApiKey || undefined);
+  const guard = requireAuth(apiKey, nextApiKey);
   const webhookSecret =
     config?.webhookSigningSecret ?? process.env["WEBHOOK_SIGNING_SECRET"];
   const webhookGuard: RequestHandler = (req, res, next) => {
@@ -583,7 +586,7 @@ export function buildApp(
         `# HELP indexer_checkpoint_ledger Durable ingestion checkpoint ledger.`,
       );
       lines.push(`# TYPE indexer_checkpoint_ledger gauge`);
-      lines.push(`indexer_checkpoint_ledger ${health.checkpointLedger ?? 0}`);
+      lines.push(`indexer_checkpoint_ledger ${health.unresolvedLedgerRange?.checkpointLedger ?? 0}`);
 
       // ── Webhook delivery metrics (issue #17) ──────────────────────────────
       lines.push(
@@ -776,6 +779,69 @@ export function buildApp(
         complete: report.complete,
         durationSeconds: report.durationSeconds,
         mismatches: report.mismatches,
+      });
+    })
+  );
+
+  // ── GET /integrity/mismatches/:wallet/:credentialType ─────────────────────
+  // Mismatch investigation workflow (API-35): look up the most recent mismatch
+  // details for a specific (wallet, credential_type) pair from the last
+  // completed integrity report. Operators can use this to investigate a single
+  // claim after the /integrity/status summary shows drift, without having to
+  // scan the full mismatches list. Also returns the indexed claim for context.
+  // Public like /integrity/status — it surfaces indexer health metadata, not
+  // private wallet data.
+  app.get(
+    "/integrity/mismatches/:wallet/:credentialType",
+    asyncHandler(async (req, res) => {
+      if (!integrity) {
+        sendApiError(res, 404, "integrity checks are not configured");
+        return;
+      }
+      const wallet = req.params["wallet"];
+      const credentialType = req.params["credentialType"];
+      if (!wallet || !credentialType) {
+        sendApiError(res, 400, "wallet and credentialType path parameters are required");
+        return;
+      }
+
+      const report = integrity.getLastReport();
+      if (!report) {
+        res.json({
+          wallet,
+          credentialType,
+          mismatch: null,
+          indexed: null,
+          message: "no integrity check has run yet",
+        });
+        return;
+      }
+
+      const mismatch = report.mismatches.find(
+        (m) => m.wallet === wallet && m.credential_type === credentialType
+      ) ?? null;
+
+      // Also surface the current indexed claim so the operator sees both sides.
+      const indexed = await db.claimByWalletAndType(wallet, credentialType) ?? null;
+
+      res.json({
+        wallet,
+        credentialType,
+        lastCheckTimestamp: report.finishedAt,
+        mismatch,
+        indexed: indexed
+          ? {
+              revoked: indexed.revoked,
+              expiry: indexed.expiry,
+              verified_at: indexed.verified_at,
+              threshold: indexed.threshold,
+              issuer: indexed.issuer,
+              ledger_sequence: indexed.ledger_sequence,
+            }
+          : null,
+        message: mismatch
+          ? `mismatch found in last check: ${mismatch.kinds.join(", ")}`
+          : "no mismatch found in last check for this claim",
       });
     })
   );
@@ -995,6 +1061,53 @@ export function buildApp(
       }
       const analytics = await db.issuerAnalytics(issuer.trim());
       res.json(analytics);
+    })
+  );
+
+  // ── GET /issuers/:issuer/activity?from=N&until=N ──────────────────────────
+  // Returns claims issued by an issuer within a unix-second time window (API-36).
+  // Both `from` and `until` are optional inclusive bounds on `verified_at`.
+  // Useful for auditing issuer behaviour in a specific period without loading
+  // the full /issuers/:issuer/credentials list.
+  app.get(
+    "/issuers/:issuer/activity",
+    asyncHandler(async (req, res) => {
+      const issuer = req.params["issuer"];
+      if (typeof issuer !== "string" || issuer.trim() === "") {
+        sendApiError(res, 400, "issuer path parameter is required");
+        return;
+      }
+
+      let from: number | undefined;
+      let until: number | undefined;
+
+      if (req.query["from"] !== undefined) {
+        from = Number(req.query["from"]);
+        if (!Number.isInteger(from) || from < 0) {
+          sendApiError(res, 400, "from must be a non-negative integer (unix seconds)");
+          return;
+        }
+      }
+      if (req.query["until"] !== undefined) {
+        until = Number(req.query["until"]);
+        if (!Number.isInteger(until) || until < 0) {
+          sendApiError(res, 400, "until must be a non-negative integer (unix seconds)");
+          return;
+        }
+      }
+      if (from !== undefined && until !== undefined && from > until) {
+        sendApiError(res, 400, "from must be before until");
+        return;
+      }
+
+      const activity = await db.issuerActivityByTimeWindow(issuer.trim(), from, until);
+      res.json({
+        issuer: issuer.trim(),
+        from: from ?? null,
+        until: until ?? null,
+        count: activity.length,
+        activity,
+      });
     })
   );
 

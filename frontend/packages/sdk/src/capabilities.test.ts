@@ -11,7 +11,8 @@ import {
 } from "./capabilities";
 import { configure, getConfig, resetConfig } from "./claims";
 
-const PROOF_REGISTRY_ID = "CPROOFDESCRIPTOR000000000000000000000000000000000000000001";
+const PROOF_REGISTRY_ID =
+  "CPROOFDESCRIPTOR000000000000000000000000000000000000000001";
 
 const VALID_DESCRIPTOR: CapabilitiesDescriptor = {
   descriptor_version: 1,
@@ -23,7 +24,10 @@ const VALID_DESCRIPTOR: CapabilitiesDescriptor = {
   },
   contracts: {
     proof_registry: { id: PROOF_REGISTRY_ID, version: "1.1.0" },
-    issuer_registry: { id: "CISSUERDESCRIPTOR00000000000000000000000000000000000000001", version: "1.1.0" },
+    issuer_registry: {
+      id: "CISSUERDESCRIPTOR00000000000000000000000000000000000000001",
+      version: "1.1.0",
+    },
   },
   credential_types: ["kyc", "age"],
   issuers: { count: 2, credential_types: ["kyc"] },
@@ -51,12 +55,18 @@ afterEach(() => {
 
 describe("validateCapabilitiesDescriptor", () => {
   it("accepts a well-formed descriptor", () => {
-    expect(validateCapabilitiesDescriptor(VALID_DESCRIPTOR)).toEqual(VALID_DESCRIPTOR);
+    expect(validateCapabilitiesDescriptor(VALID_DESCRIPTOR)).toEqual(
+      VALID_DESCRIPTOR,
+    );
   });
 
   it("rejects null, strings, and arrays", () => {
-    expect(() => validateCapabilitiesDescriptor(null)).toThrow(/expected a JSON object/);
-    expect(() => validateCapabilitiesDescriptor("nope")).toThrow(/expected a JSON object/);
+    expect(() => validateCapabilitiesDescriptor(null)).toThrow(
+      /expected a JSON object/,
+    );
+    expect(() => validateCapabilitiesDescriptor("nope")).toThrow(
+      /expected a JSON object/,
+    );
     expect(() => validateCapabilitiesDescriptor([VALID_DESCRIPTOR])).toThrow(
       /expected a JSON object/,
     );
@@ -67,14 +77,19 @@ describe("validateCapabilitiesDescriptor", () => {
       ...VALID_DESCRIPTOR,
       descriptor_version: undefined,
     } as unknown as CapabilitiesDescriptor;
-    expect(() => validateCapabilitiesDescriptor(withoutVersion)).toThrow(/descriptor_version/);
+    expect(() => validateCapabilitiesDescriptor(withoutVersion)).toThrow(
+      /descriptor_version/,
+    );
     expect(() =>
-      validateCapabilitiesDescriptor({ ...VALID_DESCRIPTOR, descriptor_version: "1" }),
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        descriptor_version: "1",
+      }),
     ).toThrow(/descriptor_version/);
   });
 
   it("rejects a missing network object", () => {
-    const { network, ...rest } = VALID_DESCRIPTOR;
+    const { network: _network, ...rest } = VALID_DESCRIPTOR;
     expect(() => validateCapabilitiesDescriptor(rest)).toThrow(/network/);
   });
 
@@ -92,11 +107,125 @@ describe("validateCapabilitiesDescriptor", () => {
       validateCapabilitiesDescriptor({ ...VALID_DESCRIPTOR, contracts: [] }),
     ).toThrow(/contracts/);
   });
+
+  // ── Additional schema validation (API-37) ─────────────────────────────────
+
+  it("rejects an invalid network.rpc_url", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        network: { ...VALID_DESCRIPTOR.network, rpc_url: "not-a-url" },
+      }),
+    ).toThrow(/network\.rpc_url/);
+  });
+
+  it("accepts a valid network.rpc_url", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        network: {
+          ...VALID_DESCRIPTOR.network,
+          rpc_url: "https://soroban.example.com",
+        },
+      }),
+    ).not.toThrow();
+  });
+
+  it("rejects a non-string network.id", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        network: { ...VALID_DESCRIPTOR.network, id: 42 as unknown as string },
+      }),
+    ).toThrow(/network\.id/);
+  });
+
+  it("rejects a contract entry with a missing id", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        contracts: { proof_registry: { id: "" } },
+      }),
+    ).toThrow(/contracts\.proof_registry\.id/);
+  });
+
+  it("rejects a non-array credential_types", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        credential_types: "kyc" as unknown as string[],
+      }),
+    ).toThrow(/credential_types/);
+  });
+
+  it("rejects credential_types containing an empty string", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        credential_types: ["kyc", ""],
+      }),
+    ).toThrow(/credential_types/);
+  });
+
+  it("rejects issuers.count that is not a non-negative integer", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        issuers: { count: -1 },
+      }),
+    ).toThrow(/issuers\.count/);
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        issuers: { count: 1.5 },
+      }),
+    ).toThrow(/issuers\.count/);
+  });
+
+  it("rejects sponsored_submission.available that is not a boolean", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        sponsored_submission: { available: "yes" as unknown as boolean },
+      }),
+    ).toThrow(/sponsored_submission\.available/);
+  });
+
+  it("rejects sdk.package that is not a string", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        sdk: { package: 42 as unknown as string, version_range: ">=0.1" },
+      }),
+    ).toThrow(/sdk\.package/);
+  });
+
+  it("rejects app_version that is not a string", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        app_version: 2 as unknown as string,
+      }),
+    ).toThrow(/app_version/);
+  });
+
+  it("accepts null for optional top-level fields", () => {
+    expect(() =>
+      validateCapabilitiesDescriptor({
+        ...VALID_DESCRIPTOR,
+        issuers: null,
+        indexer: null,
+        sponsored_submission: undefined,
+      }),
+    ).not.toThrow();
+  });
 });
 
 describe("capabilitiesUrl", () => {
   it("joins the configured base URL with the well-known path", () => {
-    expect(capabilitiesUrl()).toBe("https://deployment.example/api/capabilities");
+    expect(capabilitiesUrl()).toBe(
+      "https://deployment.example/api/capabilities",
+    );
   });
 
   it("strips trailing slashes from the base URL", () => {
@@ -109,7 +238,9 @@ describe("capabilitiesUrl", () => {
 describe("fetchCapabilities", () => {
   it("fetches {baseUrl}/api/capabilities by default and validates the payload", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(VALID_DESCRIPTOR));
-    const descriptor = await fetchCapabilities({ fetchImpl: fetchMock as unknown as typeof fetch });
+    const descriptor = await fetchCapabilities({
+      fetchImpl: fetchMock as unknown as typeof fetch,
+    });
 
     expect(descriptor).toEqual(VALID_DESCRIPTOR);
     expect(fetchMock).toHaveBeenCalledWith(
@@ -132,7 +263,9 @@ describe("fetchCapabilities", () => {
   });
 
   it("throws ConfigError on HTTP failure", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response("nope", { status: 404 }));
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response("nope", { status: 404 }));
     await expect(
       fetchCapabilities({ fetchImpl: fetchMock as unknown as typeof fetch }),
     ).rejects.toThrow(/HTTP 404/);
@@ -148,14 +281,18 @@ describe("fetchCapabilities", () => {
   it("throws ConfigError on invalid JSON", async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValue(new Response("<html>not json</html>", { status: 200 }));
+      .mockResolvedValue(
+        new Response("<html>not json</html>", { status: 200 }),
+      );
     await expect(
       fetchCapabilities({ fetchImpl: fetchMock as unknown as typeof fetch }),
     ).rejects.toThrow(/not valid JSON/);
   });
 
   it("throws ConfigError on a malformed payload", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ hello: "world" }));
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ hello: "world" }));
     await expect(
       fetchCapabilities({ fetchImpl: fetchMock as unknown as typeof fetch }),
     ).rejects.toThrow(/Invalid capability descriptor/);
@@ -176,7 +313,9 @@ describe("fetchCapabilities", () => {
 describe("bootstrap", () => {
   it("configures registryId, rpcUrl, and networkPassphrase from the descriptor", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(VALID_DESCRIPTOR));
-    const descriptor = await bootstrap({ fetchImpl: fetchMock as unknown as typeof fetch });
+    const descriptor = await bootstrap({
+      fetchImpl: fetchMock as unknown as typeof fetch,
+    });
 
     expect(descriptor).toEqual(VALID_DESCRIPTOR);
     const cfg = getConfig();

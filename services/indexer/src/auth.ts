@@ -27,6 +27,20 @@
  * don't need a conditional — just pass `config.apiKey` and the middleware
  * self-configures.
  *
+ * Zero-downtime key rotation (API-25)
+ * ────────────────────────────────────
+ * To rotate the API key without dropping in-flight requests, set the
+ * `NEXT_API_KEY` environment variable alongside `API_KEY`. Both keys are
+ * accepted during the overlap window. Once all callers have switched to the
+ * new key, remove `API_KEY` and rename `NEXT_API_KEY` to `API_KEY`.
+ *
+ * The middleware accepts the token if it matches either key, so there is no
+ * gap between deploying the new key and removing the old one:
+ *
+ *   Step 1: deploy with API_KEY=old NEXT_API_KEY=new  → both accepted
+ *   Step 2: update callers to use the new key
+ *   Step 3: deploy with API_KEY=new (NEXT_API_KEY removed) → old rejected
+ *
  * Token comparison
  * ────────────────
  * Keys are compared with `timingSafeEqual` to prevent timing-oracle attacks.
@@ -89,8 +103,12 @@ function safeEqual(a: string, b: string): boolean {
  * `apiKey` is a non-empty string, or a pass-through no-op when `apiKey` is
  * undefined/empty.
  *
+ * Pass `nextApiKey` to enable zero-downtime rotation (API-25): the middleware
+ * accepts a token that matches either key, so callers can be migrated to the
+ * new key while the old one is still valid.
+ *
  * Usage:
- *   app.get("/claims", requireAuth(config.apiKey), handler);
+ *   app.get("/claims", requireAuth(config.apiKey, config.nextApiKey), handler);
  *
  * When enforcing:
  *   - Valid token  → calls next() and the route handler runs normally.
@@ -98,13 +116,19 @@ function safeEqual(a: string, b: string): boolean {
  *   - Wrong token   → 401 { error: "invalid API key" }
  *     (same status code for both to avoid confirming whether a key exists)
  */
-export function requireAuth(apiKey: string | undefined): RequestHandler {
+export function requireAuth(
+  apiKey: string | undefined,
+  nextApiKey?: string | undefined,
+): RequestHandler {
   // Public mode: no-op middleware
   if (!apiKey) {
     return (_req: Request, _res: Response, next: NextFunction) => next();
   }
 
-  // Authenticated mode
+  // Authenticated mode — accept current key, and next key if one is configured.
+  const validKeys = [apiKey];
+  if (nextApiKey) validKeys.push(nextApiKey);
+
   return (req: Request, res: Response, next: NextFunction): void => {
     const token = extractToken(req);
 
@@ -113,7 +137,8 @@ export function requireAuth(apiKey: string | undefined): RequestHandler {
       return;
     }
 
-    if (!safeEqual(token, apiKey)) {
+    const accepted = validKeys.some((key) => safeEqual(token, key));
+    if (!accepted) {
       sendApiError(res, 401, "invalid API key");
       return;
     }

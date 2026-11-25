@@ -50,6 +50,12 @@ export interface Config {
    * exposes it in tests without requiring every caller to supply it.
    */
   apiKey?: string;
+  /**
+   * Optional second API key accepted alongside `apiKey` for zero-downtime
+   * key rotation (API-25). Set NEXT_API_KEY while migrating callers, then
+   * promote it to API_KEY and remove NEXT_API_KEY when done.
+   */
+  nextApiKey?: string;
   /** HMAC key used to sign outbound claim lifecycle webhooks. */
   webhookSigningSecret?: string;
   /**
@@ -176,6 +182,12 @@ export function loadConfig(): Config {
     throw new Error("WEBHOOK_SIGNING_SECRET must contain at least 32 characters");
   }
 
+  // ── API key rotation (API-25) ─────────────────────────────────────────────
+  // Set NEXT_API_KEY alongside API_KEY to accept both keys during rotation.
+  // Once all callers have migrated, remove API_KEY and rename NEXT_API_KEY.
+  const apiKey = process.env["API_KEY"]?.trim() || undefined;
+  const nextApiKey = process.env["NEXT_API_KEY"]?.trim() || undefined;
+
   // ── On-chain data-integrity checks (#612) ──────────────────────────────────
   // A periodic sampler keeps the derived claims table honest against the
   // contract it was derived from. Values are clamped rather than rejected so a
@@ -210,6 +222,8 @@ export function loadConfig(): Config {
     rateLimitWindowMs: (Number.isFinite(windowSec) && windowSec > 0 ? windowSec : 60) * 1000,
     rateLimitMax: Number.isFinite(maxReq) && maxReq > 0 ? maxReq : 120,
     rateLimitEnabled,
+    apiKey,
+    nextApiKey,
     webhookSigningSecret,
     integrityCheckEnabled,
     integrityCheckIntervalMs:

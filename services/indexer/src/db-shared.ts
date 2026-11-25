@@ -39,6 +39,7 @@ import {
   type VerificationTimeBucket,
   type WebhookDelivery,
   type WebhookSubscriptionInput,
+  type IssuerActivityRow,
 } from "./db-types";
 
 /** A `claims` row as it comes back from the driver, before normalisation. */
@@ -367,6 +368,49 @@ export function createSharedDb(dialect: SqlDialect): Db {
 
     async claimsByIssuer(issuer) {
       return claimsByIssuerRows(issuer);
+    },
+
+    async issuerActivityByTimeWindow(issuer, from, until): Promise<IssuerActivityRow[]> {
+      const conditions = ["issuer = ?"];
+      const params: (string | number)[] = [issuer];
+
+      if (from !== undefined) {
+        conditions.push("verified_at >= ?");
+        params.push(from);
+      }
+      if (until !== undefined) {
+        conditions.push("verified_at <= ?");
+        params.push(until);
+      }
+
+      const where = conditions.join(" AND ");
+      const rows = await claims(
+        `SELECT * FROM claims WHERE ${where} ORDER BY verified_at ASC, id ASC`,
+        params,
+      );
+
+      const now = Math.floor(Date.now() / 1000);
+      return rows.map((row) => {
+        let state: "active" | "expired" | "revoked";
+        if (Number(row.revoked) === 1) {
+          state = "revoked";
+        } else if (Number(row.expiry) > 0 && Number(row.expiry) <= now) {
+          state = "expired";
+        } else {
+          state = "active";
+        }
+        return {
+          wallet: row.wallet,
+          credential_type: row.credential_type,
+          verified_at: Number(row.verified_at),
+          expiry: Number(row.expiry),
+          ledger_sequence: Number(row.ledger_sequence),
+          threshold: row.threshold === null ? null : Number(row.threshold),
+          revoked: Number(row.revoked),
+          reason_code: row.reason_code,
+          state,
+        };
+      });
     },
 
     async credentialEvents(

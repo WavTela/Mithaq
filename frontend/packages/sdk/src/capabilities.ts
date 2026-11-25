@@ -18,10 +18,7 @@ export interface CapabilitiesContractEntry {
 }
 
 export type CapabilitiesContractKey =
-  | "issuer_registry"
-  | "credential_verifier"
-  | "proof_registry"
-  | "gated_pool";
+  "issuer_registry" | "credential_verifier" | "proof_registry" | "gated_pool";
 
 /** Shape of GET {base}/api/capabilities. Only fields the SDK uses are required. */
 export interface CapabilitiesDescriptor {
@@ -32,7 +29,9 @@ export interface CapabilitiesDescriptor {
     passphrase?: string;
     rpc_url?: string;
   };
-  contracts?: Partial<Record<CapabilitiesContractKey, CapabilitiesContractEntry | null>>;
+  contracts?: Partial<
+    Record<CapabilitiesContractKey, CapabilitiesContractEntry | null>
+  >;
   credential_types?: string[];
   issuers?: { count: number; credential_types?: string[] } | null;
   indexer?: { url: string } | null;
@@ -48,7 +47,9 @@ export interface BootstrapOptions {
   fetchImpl?: typeof fetch;
 }
 
-export function validateCapabilitiesDescriptor(raw: unknown): CapabilitiesDescriptor {
+export function validateCapabilitiesDescriptor(
+  raw: unknown,
+): CapabilitiesDescriptor {
   const fail = (detail: string): never => {
     throw new ConfigError(`Invalid capability descriptor: ${detail}`);
   };
@@ -63,13 +64,120 @@ export function validateCapabilitiesDescriptor(raw: unknown): CapabilitiesDescri
     fail("network object is missing");
   }
   const network = d.network as Record<string, unknown>;
-  if (typeof network.passphrase !== "string" || network.passphrase.length === 0) {
+  if (
+    typeof network.passphrase !== "string" ||
+    network.passphrase.length === 0
+  ) {
     fail("network.passphrase must be a non-empty string");
   }
+  if (network.rpc_url !== undefined && network.rpc_url !== null) {
+    if (typeof network.rpc_url !== "string" || network.rpc_url.length === 0) {
+      fail("network.rpc_url must be a non-empty string when present");
+    }
+    try {
+      new URL(network.rpc_url as string);
+    } catch {
+      fail("network.rpc_url must be a valid URL");
+    }
+  }
+  if (
+    network.id !== undefined &&
+    network.id !== null &&
+    typeof network.id !== "string"
+  ) {
+    fail("network.id must be a string when present");
+  }
   if (d.contracts !== undefined) {
-    if (!d.contracts || typeof d.contracts !== "object" || Array.isArray(d.contracts)) {
+    if (
+      !d.contracts ||
+      typeof d.contracts !== "object" ||
+      Array.isArray(d.contracts)
+    ) {
       fail("contracts must be an object");
     }
+    const contracts = d.contracts as Record<string, unknown>;
+    for (const [key, entry] of Object.entries(contracts)) {
+      if (entry === null) continue;
+      if (typeof entry !== "object" || Array.isArray(entry)) {
+        fail(`contracts.${key} must be an object or null`);
+      }
+      const e = entry as Record<string, unknown>;
+      if (typeof e.id !== "string" || e.id.length === 0) {
+        fail(`contracts.${key}.id must be a non-empty string`);
+      }
+      if (
+        e.version !== undefined &&
+        e.version !== null &&
+        typeof e.version !== "string"
+      ) {
+        fail(`contracts.${key}.version must be a string when present`);
+      }
+    }
+  }
+  if (d.credential_types !== undefined) {
+    if (!Array.isArray(d.credential_types)) {
+      fail("credential_types must be an array when present");
+    }
+    for (const ct of d.credential_types as unknown[]) {
+      if (typeof ct !== "string" || ct.length === 0) {
+        fail("each entry in credential_types must be a non-empty string");
+      }
+    }
+  }
+  if (d.issuers !== undefined && d.issuers !== null) {
+    if (typeof d.issuers !== "object" || Array.isArray(d.issuers)) {
+      fail("issuers must be an object or null when present");
+    }
+    const issuers = d.issuers as Record<string, unknown>;
+    if (
+      typeof issuers.count !== "number" ||
+      !Number.isInteger(issuers.count) ||
+      issuers.count < 0
+    ) {
+      fail("issuers.count must be a non-negative integer");
+    }
+    if (issuers.credential_types !== undefined) {
+      if (!Array.isArray(issuers.credential_types)) {
+        fail("issuers.credential_types must be an array when present");
+      }
+      for (const ct of issuers.credential_types as unknown[]) {
+        if (typeof ct !== "string" || ct.length === 0) {
+          fail(
+            "each entry in issuers.credential_types must be a non-empty string",
+          );
+        }
+      }
+    }
+  }
+  if (d.sponsored_submission !== undefined && d.sponsored_submission !== null) {
+    if (
+      typeof d.sponsored_submission !== "object" ||
+      Array.isArray(d.sponsored_submission)
+    ) {
+      fail("sponsored_submission must be an object or null when present");
+    }
+    const ss = d.sponsored_submission as Record<string, unknown>;
+    if (typeof ss.available !== "boolean") {
+      fail("sponsored_submission.available must be a boolean");
+    }
+  }
+  if (d.sdk !== undefined && d.sdk !== null) {
+    if (typeof d.sdk !== "object" || Array.isArray(d.sdk)) {
+      fail("sdk must be an object or null when present");
+    }
+    const sdk = d.sdk as Record<string, unknown>;
+    if (sdk.package !== undefined && typeof sdk.package !== "string") {
+      fail("sdk.package must be a string when present");
+    }
+    if (
+      sdk.version_range !== undefined &&
+      typeof sdk.version_range !== "string"
+    ) {
+      fail("sdk.version_range must be a string when present");
+    }
+  }
+  if (d.app_version !== undefined && typeof d.app_version !== "string") {
+    fail("app_version must be a string when present");
   }
   return raw as CapabilitiesDescriptor;
 }
@@ -104,7 +212,9 @@ export async function fetchCapabilities(
     );
   }
   if (!res.ok) {
-    throw new ConfigError(`Capability descriptor at ${url} returned HTTP ${res.status}`);
+    throw new ConfigError(
+      `Capability descriptor at ${url} returned HTTP ${res.status}`,
+    );
   }
   let raw: unknown;
   try {
@@ -126,11 +236,17 @@ export async function fetchCapabilities(
  * await Mithaq.bootstrap({ descriptorUrl: "https://app.example.com/api/capabilities" });
  * await Mithaq.hasClaim(wallet, "kyc");
  */
-export async function bootstrap(opts: BootstrapOptions = {}): Promise<CapabilitiesDescriptor> {
+export async function bootstrap(
+  opts: BootstrapOptions = {},
+): Promise<CapabilitiesDescriptor> {
   const descriptor = await fetchCapabilities(opts);
 
   const proofRegistry = descriptor.contracts?.proof_registry;
-  if (!proofRegistry || typeof proofRegistry.id !== "string" || proofRegistry.id === "") {
+  if (
+    !proofRegistry ||
+    typeof proofRegistry.id !== "string" ||
+    proofRegistry.id === ""
+  ) {
     throw new ConfigError(
       "Capability descriptor has no proof_registry contract ID — cannot bootstrap",
     );
@@ -138,8 +254,12 @@ export async function bootstrap(opts: BootstrapOptions = {}): Promise<Capabiliti
 
   configure({
     registryId: proofRegistry.id,
-    ...(descriptor.network.rpc_url ? { rpcUrl: descriptor.network.rpc_url } : {}),
-    ...(descriptor.network.passphrase ? { networkPassphrase: descriptor.network.passphrase } : {}),
+    ...(descriptor.network.rpc_url
+      ? { rpcUrl: descriptor.network.rpc_url }
+      : {}),
+    ...(descriptor.network.passphrase
+      ? { networkPassphrase: descriptor.network.passphrase }
+      : {}),
   });
   return descriptor;
 }

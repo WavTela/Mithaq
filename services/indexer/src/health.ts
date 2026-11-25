@@ -97,8 +97,8 @@ export function buildHealthResponse(
     fetchFailures: h.fetchFailures,
     rpc: getRpcDiagnostics(),
     unresolvedLedgerRange: h.unresolvedLedgerRange,
-    checkpointLedger: h.checkpointLedger,
-    checkpointPagingToken: h.checkpointPagingToken,
-    checkpointUpdatedAt: h.checkpointUpdatedAt,
+    checkpointLedger: h.unresolvedLedgerRange?.checkpointLedger,
+    checkpointPagingToken: h.unresolvedLedgerRange?.checkpointPagingToken,
+    checkpointUpdatedAt: h.unresolvedLedgerRange?.checkpointUpdatedAt,
   };
 }

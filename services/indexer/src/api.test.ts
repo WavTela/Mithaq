@@ -1447,3 +1447,306 @@ describe("GraphQL endpoint", () => {
     expect(claims[0].revoked).toBe(false);
   });
 });
+
+// ── API-25: API-key rotation without downtime ─────────────────────────────
+
+describe("API-key rotation without downtime (API-25)", () => {
+  const NOW = Math.floor(Date.now() / 1000);
+  const wallet = Keypair.random().publicKey();
+
+  async function seedClaim() {
+    await (db as ReturnType<typeof createSqliteDb>).upsertClaim({
+      wallet,
+      credential_type: "kyc",
+      issuer: "GISSUER",
+      verified_at: NOW - 1000,
+      expiry: NOW + 1000,
+      ledger_sequence: 100,
+      threshold: null,
+      revoked: 0,
+      reason_code: "other",
+    });
+  }
+
+  it("accepts requests with the current key (API_KEY only)", async () => {
+    await seedClaim();
+    const guardedApp = buildApp(db, makeIngester(), {
+      ...makeConfig(tmpFile),
+      apiKey: "current-key",
+      rateLimitEnabled: false,
+    });
+    const res = await request(guardedApp)
+      .get(`/claims?wallet=${wallet}`)
+      .set("Authorization", "Bearer current-key");
+    expect(res.status).toBe(200);
+  });
+
+  it("rejects requests with a wrong key when only API_KEY is set", async () => {
+    await seedClaim();
+    const guardedApp = buildApp(db, makeIngester(), {
+      ...makeConfig(tmpFile),
+      apiKey: "current-key",
+      rateLimitEnabled: false,
+    });
+    await request(guardedApp)
+      .get(`/claims?wallet=${wallet}`)
+      .set("Authorization", "Bearer wrong-key")
+      .expect(401);
+  });
+
+  it("accepts requests with the current key while NEXT_API_KEY is also set", async () => {
+    await seedClaim();
+    const guardedApp = buildApp(db, makeIngester(), {
+      ...makeConfig(tmpFile),
+      apiKey: "current-key",
+      nextApiKey: "next-key",
+      rateLimitEnabled: false,
+    });
+    const res = await request(guardedApp)
+      .get(`/claims?wallet=${wallet}`)
+      .set("Authorization", "Bearer current-key");
+    expect(res.status).toBe(200);
+  });
+
+  it("accepts requests with NEXT_API_KEY during the rotation window", async () => {
+    await seedClaim();
+    const guardedApp = buildApp(db, makeIngester(), {
+      ...makeConfig(tmpFile),
+      apiKey: "current-key",
+      nextApiKey: "next-key",
+      rateLimitEnabled: false,
+    });
+    const res = await request(guardedApp)
+      .get(`/claims?wallet=${wallet}`)
+      .set("Authorization", "Bearer next-key");
+    expect(res.status).toBe(200);
+  });
+
+  it("rejects a key that matches neither API_KEY nor NEXT_API_KEY", async () => {
+    await seedClaim();
+    const guardedApp = buildApp(db, makeIngester(), {
+      ...makeConfig(tmpFile),
+      apiKey: "current-key",
+      nextApiKey: "next-key",
+      rateLimitEnabled: false,
+    });
+    await request(guardedApp)
+      .get(`/claims?wallet=${wallet}`)
+      .set("X-API-Key", "stale-key")
+      .expect(401);
+  });
+
+  it("accepts via X-API-Key header as well as Authorization: Bearer", async () => {
+    await seedClaim();
+    const guardedApp = buildApp(db, makeIngester(), {
+      ...makeConfig(tmpFile),
+      apiKey: "current-key",
+      nextApiKey: "next-key",
+      rateLimitEnabled: false,
+    });
+    const res = await request(guardedApp)
+      .get(`/claims?wallet=${wallet}`)
+      .set("X-API-Key", "next-key");
+    expect(res.status).toBe(200);
+  });
+});
+
+// ── API-36: Issuer activity by time window ────────────────────────────────
+
+describe("GET /issuers/:issuer/activity (API-36)", () => {
+  const NOW = Math.floor(Date.now() / 1000);
+  const issuer = Keypair.random().publicKey();
+  const wallet1 = Keypair.random().publicKey();
+  const wallet2 = Keypair.random().publicKey();
+
+  beforeEach(async () => {
+    await (db as ReturnType<typeof createSqliteDb>).upsertClaim({
+      wallet: wallet1,
+      credential_type: "kyc",
+      issuer,
+      verified_at: NOW - 2000,
+      expiry: NOW + 1000,
+      ledger_sequence: 100,
+      threshold: null,
+      revoked: 0,
+      reason_code: "other",
+    });
+    await (db as ReturnType<typeof createSqliteDb>).upsertClaim({
+      wallet: wallet2,
+      credential_type: "age",
+      issuer,
+      verified_at: NOW - 500,
+      expiry: NOW + 5000,
+      ledger_sequence: 200,
+      threshold: null,
+      revoked: 0,
+      reason_code: "other",
+    });
+  });
+
+  it("returns all claims for an issuer when no time bounds are given", async () => {
+    const res = await request(app).get(`/issuers/${issuer}/activity`);
+    expect(res.status).toBe(200);
+    expect(res.body.issuer).toBe(issuer);
+    expect(res.body.count).toBe(2);
+    expect(res.body.from).toBeNull();
+    expect(res.body.until).toBeNull();
+    expect(res.body.activity).toHaveLength(2);
+  });
+
+  it("filters claims by from bound", async () => {
+    const res = await request(app).get(
+      `/issuers/${issuer}/activity?from=${NOW - 1000}`
+    );
+    expect(res.status).toBe(200);
+    expect(res.body.count).toBe(1);
+    expect(res.body.activity[0].credential_type).toBe("age");
+    expect(res.body.from).toBe(NOW - 1000);
+  });
+
+  it("filters claims by until bound", async () => {
+    const res = await request(app).get(
+      `/issuers/${issuer}/activity?until=${NOW - 1500}`
+    );
+    expect(res.status).toBe(200);
+    expect(res.body.count).toBe(1);
+    expect(res.body.activity[0].credential_type).toBe("kyc");
+  });
+
+  it("filters by both from and until", async () => {
+    const res = await request(app).get(
+      `/issuers/${issuer}/activity?from=${NOW - 3000}&until=${NOW - 1000}`
+    );
+    expect(res.status).toBe(200);
+    expect(res.body.count).toBe(1);
+    expect(res.body.activity[0].credential_type).toBe("kyc");
+  });
+
+  it("returns an empty activity list for an unknown issuer", async () => {
+    const unknown = Keypair.random().publicKey();
+    const res = await request(app).get(`/issuers/${unknown}/activity`);
+    expect(res.status).toBe(200);
+    expect(res.body.count).toBe(0);
+    expect(res.body.activity).toHaveLength(0);
+  });
+
+  it("returns 400 when from is not a valid integer", async () => {
+    const res = await request(app).get(`/issuers/${issuer}/activity?from=abc`);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 when from is after until", async () => {
+    const res = await request(app).get(
+      `/issuers/${issuer}/activity?from=2000&until=1000`
+    );
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/from must be before until/);
+  });
+
+  it("includes state field in each activity row", async () => {
+    const res = await request(app).get(`/issuers/${issuer}/activity`);
+    expect(res.status).toBe(200);
+    for (const row of res.body.activity) {
+      expect(["active", "expired", "revoked"]).toContain(row.state);
+    }
+  });
+});
+
+// ── API-35: Mismatch investigation workflow ───────────────────────────────
+
+describe("GET /integrity/mismatches/:wallet/:credentialType (API-35)", () => {
+  const NOW = Math.floor(Date.now() / 1000);
+  const wallet = Keypair.random().publicKey();
+
+  async function seedClaim() {
+    await (db as ReturnType<typeof createSqliteDb>).upsertClaim({
+      wallet,
+      credential_type: "kyc",
+      issuer: "GISSUER",
+      verified_at: NOW - 1000,
+      expiry: NOW + 1000,
+      ledger_sequence: 100,
+      threshold: null,
+      revoked: 0,
+      reason_code: "other",
+    });
+  }
+
+  function buildIntegrityApp(
+    chain: Record<string, ChainClaimState | null>,
+    opts: { apiKey?: string } = {}
+  ) {
+    const reader: ContractReader = {
+      async readProofRecord({ wallet: w, credentialType: ct }) {
+        return chain[`${w}/${ct}`] ?? null;
+      },
+    };
+    const checker = createIntegrityChecker(
+      makeConfig(tmpFile),
+      db,
+      { reader, clock: { now: async () => NOW } }
+    );
+    const a = buildApp(db, makeIngester(), { apiKey: opts.apiKey }, checker);
+    return { app: a, checker };
+  }
+
+  it("returns 404 when no integrity checker is configured", async () => {
+    await request(app)
+      .get(`/integrity/mismatches/${wallet}/kyc`)
+      .expect(404);
+  });
+
+  it("reports no mismatch found before any check has run", async () => {
+    await seedClaim();
+    const { app: intApp } = buildIntegrityApp({});
+    const res = await request(intApp).get(
+      `/integrity/mismatches/${wallet}/kyc`
+    );
+    expect(res.status).toBe(200);
+    expect(res.body.mismatch).toBeNull();
+    expect(res.body.message).toMatch(/no integrity check has run yet/);
+  });
+
+  it("reports no mismatch when the last check found no drift for this claim", async () => {
+    await seedClaim();
+    const { app: intApp, checker } = buildIntegrityApp({
+      [`${wallet}/kyc`]: {
+        revoked: false,
+        expiry: NOW + 1000,
+        verifiedAt: NOW - 1000,
+        threshold: null,
+        issuer: "GISSUER",
+      },
+    });
+    await checker.run();
+    const res = await request(intApp).get(
+      `/integrity/mismatches/${wallet}/kyc`
+    );
+    expect(res.status).toBe(200);
+    expect(res.body.mismatch).toBeNull();
+    expect(res.body.message).toMatch(/no mismatch found/);
+  });
+
+  it("surfaces mismatch details and the indexed claim when drift is detected", async () => {
+    await seedClaim();
+    const { app: intApp, checker } = buildIntegrityApp({
+      [`${wallet}/kyc`]: {
+        revoked: true,  // chain says revoked, indexer says active
+        expiry: NOW + 1000,
+        verifiedAt: NOW - 1000,
+        threshold: null,
+        issuer: "GISSUER",
+      },
+    });
+    await checker.run();
+    const res = await request(intApp).get(
+      `/integrity/mismatches/${wallet}/kyc`
+    );
+    expect(res.status).toBe(200);
+    expect(res.body.mismatch).not.toBeNull();
+    expect(res.body.mismatch.kinds).toContain("revoked_on_chain");
+    expect(res.body.indexed).not.toBeNull();
+    expect(res.body.indexed.revoked).toBe(0);
+    expect(res.body.lastCheckTimestamp).toBeGreaterThan(0);
+  });
+});

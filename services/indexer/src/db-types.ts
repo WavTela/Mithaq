@@ -184,6 +184,18 @@ export interface Db {
   /** Return all claims issued by a specific issuer. */
   claimsByIssuer(issuer: string): ClaimRow[] | Promise<ClaimRow[]>;
 
+  /**
+   * Return claim activity for an issuer within a unix-second time window
+   * (API-36). Both `from` and `until` are inclusive and optional.
+   * Returns every claim whose `verified_at` falls within the window, plus
+   * revoked claims that were revoked (`revoked=1`) within the same window.
+   */
+  issuerActivityByTimeWindow(
+    issuer: string,
+    from?: number,
+    until?: number,
+  ): IssuerActivityRow[] | Promise<IssuerActivityRow[]>;
+
   /** Return lifecycle event history and verifications for a credential commitment. */
   credentialEvents(
     commitment: string,
@@ -353,6 +365,20 @@ export interface IssuerStatsRow {
   credential_types: string[];
   /** Unix seconds of this issuer's earliest indexed claim; null if none. */
   first_seen: number | null;
+}
+
+/** One claim event in a time-windowed issuer activity query (API-36). */
+export interface IssuerActivityRow {
+  wallet: string;
+  credential_type: string;
+  verified_at: number;
+  expiry: number;
+  ledger_sequence: number;
+  threshold: number | null;
+  revoked: number;
+  reason_code: string;
+  /** State derived from `revoked` and `expiry` relative to query time. */
+  state: "active" | "expired" | "revoked";
 }
 
 // ── Credential lifecycle event & analytics types ───────────────────────────
