@@ -28,8 +28,6 @@ import {
   type CredentialEvent,
   type CredentialHistory,
   type Db,
-  type DeliveryPage,
-  type DeliveryPageCursor,
   type IngestionCheckpoint,
   type IssuerAnalytics,
   type RecentCursor,
@@ -115,6 +113,10 @@ export function createSharedDb(dialect: SqlDialect): Db {
       await dialect.exec(schema.tables);
       await dialect.migrateClaimsId();
       await dialect.exec(schema.indexes);
+    },
+
+    async ping() {
+      await dialect.get<{ ok?: unknown }>("SELECT 1 AS ok");
     },
 
     async getLastLedger() {

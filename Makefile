@@ -306,22 +306,23 @@ run-indexer:
 # Indexer Backfill (bounded, resumable, separate from the live poll loop)
 # ------------------------------------------------------------------------------
 # Usage:
-#   make backfill FROM=1000000 TO=1200000        # explicit range
-#   make backfill FROM=genesis                   # contract deployment to head
-#   make backfill-resume                         # continue from checkpoint
+#   make backfill NETWORK=testnet FROM=1000000 TO=1200000  # explicit range
+#   make backfill NETWORK=testnet FROM=genesis TO=head     # deployment to head
+#   make backfill-resume NETWORK=testnet                   # continue from checkpoint
 # Progress is printed per batch; a checkpoint is persisted after each batch so
 # an interrupted run resumes without re-fetching completed ledgers.
 # Throughput is bound by Horizon rate limits (one request per page of up to
 # 200 events), so run time tracks event density rather than ledger count.
 
+NETWORK ?= testnet
 FROM  ?= genesis
 TO    ?= head
 BATCH ?= 200
 
 ## backfill: Index a bounded ledger range in batched, resumable mode
 backfill:
-	cd services/indexer && npm run backfill -- --from $(FROM) --to $(TO) --batch-size $(BATCH)
+	cd services/indexer && npm run backfill -- --network $(NETWORK) --from $(FROM) --to $(TO) --batch-size $(BATCH)
 
 ## backfill-resume: Resume an interrupted backfill from its persisted checkpoint
 backfill-resume:
-	cd services/indexer && npm run backfill -- --resume --batch-size $(BATCH)
+	cd services/indexer && npm run backfill -- --network $(NETWORK) --resume --batch-size $(BATCH)

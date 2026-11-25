@@ -67,6 +67,16 @@ export interface Config {
    * means the client's documented defaults.
    */
   httpClient?: HttpClientConfig;
+  /**
+   * Ledger-lag budget reported by /health (API-13). Optional so existing full
+   * Config literals keep compiling; absent means DEFAULT_LAG_SLO_LEDGERS.
+   */
+  lagSloLedgers?: number;
+  /**
+   * Timeout for the /ready database probe (API-14), in milliseconds. Absent
+   * means DEFAULT_READINESS_TIMEOUT_MS.
+   */
+  dbReadinessTimeoutMs?: number;
 }
 
 function required(name: string): string {
@@ -210,6 +220,8 @@ export function loadConfig(): Config {
       Number.isFinite(integritySampleSize) && integritySampleSize > 0
         ? Math.floor(integritySampleSize)
         : 25,
+    lagSloLedgers: clampedInt("INDEXER_LAG_SLO_LEDGERS", 30, 1, 1_000_000),
+    dbReadinessTimeoutMs: clampedInt("DB_READINESS_TIMEOUT_MS", 2_000, 100, 30_000),
     httpClient: {
       retry: {
         maxAttempts: clampedInt("HTTP_MAX_ATTEMPTS", 3, 1, 10),

@@ -114,7 +114,11 @@ import { isIP } from "net";
 import { StrKey } from "@stellar/stellar-sdk";
 import { MAX_WEBHOOK_DELIVERY_ATTEMPTS } from "./webhooks";
 import { createGraphQLHandler } from "./graphql";
-import { buildHealthResponse } from "./health";
+import { buildHealthResponse, SERVICE_NAME } from "./health";
+import { evaluateLagSlo } from "./lag-slo";
+import { checkReadiness, DEFAULT_READINESS_TIMEOUT_MS } from "./readiness";
+import { getRpcFailureDiagnostics } from "./rpc-diagnostics";
+import { ApiMetrics, apiMetricsMiddleware } from "./api-metrics";
 import { randomUUID } from "crypto";
 import { CursorError, sendApiError, sendCursorError } from "./api-errors";
 
@@ -256,14 +260,6 @@ function decodeScopedCursor(scope: CursorScope, raw: string): RecentCursor {
   return { ledgerSequence, id };
 }
 
-function encodeCursor(cursor: RecentCursor): string {
-  return encodeScopedCursor("recent", cursor);
-}
-
-function decodeCursor(raw: string): RecentCursor {
-  return decodeScopedCursor("recent", raw);
-}
-
 // â"€â"€ Delivery cursor encoding â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // Delivery cursors encode (occurred_at, id) for stable keyset pagination.
 
@@ -306,6 +302,13 @@ export function buildApp(
   integrity?: IntegrityChecker
 ): express.Application {
   const app = express();
+
+  // ── Bounded-label API metrics (API-16) ─────────────────────────────────────
+  // Installed first so every response, including 404s and 429s, is counted.
+  // Labels come only from fixed sets; see api-metrics.ts.
+  const apiMetrics = new ApiMetrics();
+  app.locals["apiMetrics"] = apiMetrics;
+  app.use(apiMetricsMiddleware(apiMetrics));
 
   const parseCursorParam = async (
     res: Response,
@@ -377,7 +380,13 @@ export function buildApp(
 
   const rateLimiter = new RateLimiter({ windowMs, max, enabled });
   app.locals["rateLimiter"] = rateLimiter;
-  app.use(rateLimiter.middleware());
+  app.use(
+    rateLimiter.middleware((result, limiterEnabled) => {
+      apiMetrics.observeRateLimit(
+        !limiterEnabled ? "disabled" : result.allowed ? "allowed" : "limited"
+      );
+    })
+  );
 
   // â”€â”€ Auth guard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // requireAuth(undefined) â†’ no-op; public mode, all endpoints open (default).
@@ -419,8 +428,68 @@ export function buildApp(
     "/health",
     asyncHandler(async (_req, res) => {
       // Shape and status semantics live in health.ts (docs/HEALTHCHECKS.md).
-      const lastLedger = await db.getLastLedger();
-      res.json(buildHealthResponse(lastLedger, ingester.getHealth()));
+      // Liveness must not depend on the database (API-14): a temporary outage
+      // should not make an orchestrator restart a healthy worker. Fall back to
+      // the ingester's last durable checkpoint if the cursor read fails.
+      const health = ingester.getHealth();
+      let lastLedger = health.checkpointLedger ?? health.lastSuccessLedger;
+      try {
+        lastLedger = await db.getLastLedger();
+      } catch {
+        // Keep serving liveness; /ready reports dependency failure.
+      }
+      res.json(
+        buildHealthResponse(
+          lastLedger,
+          health,
+          new Date(),
+          config?.lagSloLedgers
+        )
+      );
+    })
+  );
+
+  // ── GET /ready ────────────────────────────────────────────────────────────
+  // Dependency readiness (API-14): prove the selected database can execute a
+  // lightweight query before accepting traffic. Returns 503 when it cannot, so
+  // a load balancer stops routing to this instance without restarting it —
+  // liveness (/health) stays independent of the database.
+  app.get(
+    "/ready",
+    asyncHandler(async (_req, res) => {
+      const readiness = await checkReadiness(db, {
+        timeoutMs: config?.dbReadinessTimeoutMs ?? DEFAULT_READINESS_TIMEOUT_MS,
+      });
+      res.status(readiness.ready ? 200 : 503).json(readiness);
+    })
+  );
+
+  // ── GET /diagnostics/rpc ──────────────────────────────────────────────────
+  // Sanitized operational details about recent RPC failures (API-15), intended
+  // for authorized operators only. Requires an API_KEY to be configured: with
+  // none set the endpoint is not exposed at all rather than becoming public.
+  const diagnosticsGuard: RequestHandler = (req, res, next) => {
+    if (!apiKey) {
+      sendApiError(
+        res,
+        503,
+        "diagnostics require API_KEY to be configured"
+      );
+      return;
+    }
+    guard(req, res, next);
+  };
+
+  app.get(
+    "/diagnostics/rpc",
+    diagnosticsGuard,
+    asyncHandler(async (_req, res) => {
+      const diagnostics = getRpcFailureDiagnostics();
+      res.json({
+        service: SERVICE_NAME,
+        timestamp: new Date().toISOString(),
+        ...diagnostics,
+      });
     })
   );
 
@@ -577,6 +646,30 @@ export function buildApp(
           `indexer_state_last_check_duration_seconds ${im.lastDurationSeconds}`,
         );
       }
+
+      // ── Lag SLO (API-13) ─────────────────────────────────────────────────
+      // `indexer_lag_slo_breached` is the alertable series: 1 when the known
+      // lag exceeds the configured budget, 0 when it is within budget or the
+      // head ledger is not known yet (never alert on missing data).
+      const lagSlo = evaluateLagSlo(health.lag, config?.lagSloLedgers);
+      lines.push(
+        `# HELP indexer_lag_slo_target_ledgers Configured ledger-lag budget.`,
+      );
+      lines.push(`# TYPE indexer_lag_slo_target_ledgers gauge`);
+      lines.push(`indexer_lag_slo_target_ledgers ${lagSlo.targetLedgers}`);
+      lines.push(
+        `# HELP indexer_lag_slo_lag_ledgers Current ledger lag, or -1 when the head ledger is unknown.`,
+      );
+      lines.push(`# TYPE indexer_lag_slo_lag_ledgers gauge`);
+      lines.push(`indexer_lag_slo_lag_ledgers ${lagSlo.lagLedgers}`);
+      lines.push(
+        `# HELP indexer_lag_slo_breached 1 when the known ledger lag exceeds the configured budget.`,
+      );
+      lines.push(`# TYPE indexer_lag_slo_breached gauge`);
+      lines.push(`indexer_lag_slo_breached ${lagSlo.breached ? 1 : 0}`);
+
+      // ── API traffic metrics (API-16) ─────────────────────────────────────
+      lines.push(...apiMetrics.render());
 
       res.type("text/plain").send(lines.join("\n") + "\n");
     })

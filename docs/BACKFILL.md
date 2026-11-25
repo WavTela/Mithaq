@@ -20,25 +20,30 @@ already covered is safe.
 
 ```bash
 # Explicit range (inclusive)
-make backfill FROM=1000000 TO=1200000
+make backfill NETWORK=testnet FROM=1000000 TO=1200000
 
 # From START_LEDGER (or the earliest ledger Horizon retains) to head
-make backfill FROM=genesis
+make backfill NETWORK=testnet FROM=genesis TO=head
 
 # Continue an interrupted run
-make backfill-resume
+make backfill-resume NETWORK=testnet
 
 # Direct invocation, with a custom batch size and checkpoint file
 cd services/indexer
-npm run backfill -- --from 1000000 --to head --batch-size 100 --checkpoint /var/lib/indexer/backfill.json
+npm run backfill -- --network testnet --from 1000000 --to head --batch-size 100 --checkpoint /var/lib/indexer/backfill.json
 ```
+
+`--network` must match `STELLAR_NETWORK`, and `--from`/`--to` are required so a
+mistyped command cannot replay an unbounded range. The checkpoint records the
+network and refuses to resume under a different one.
 
 | Flag | Default | Meaning |
 | --- | --- | --- |
-| `--from` | `genesis` | First ledger to index. `genesis` uses `START_LEDGER`, or the earliest Horizon retains when it is 0. |
-| `--to` | `head` | Last ledger to index. Always capped at `head - FINALITY_LAG`. |
+| `--network` | required | `testnet`, `mainnet`, or `futurenet`; must match `STELLAR_NETWORK`. |
+| `--from` | required | First ledger to index. `genesis` uses `START_LEDGER`, or the earliest Horizon retains when it is 0. |
+| `--to` | required | Last ledger to index. Always capped at `head - FINALITY_LAG`. |
 | `--batch-size` | `200` | Events per Horizon page (1 to 200). |
-| `--resume` | off | Continue from the checkpoint instead of starting a new range. |
+| `--resume` | off | Continue from the checkpoint instead of starting a new range. Requires `--network`, not `--from`/`--to`. |
 | `--checkpoint` | `.backfill-checkpoint.json` | Checkpoint path. Also settable with `BACKFILL_CHECKPOINT`. |
 
 ## Progress and resume

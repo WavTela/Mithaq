@@ -154,15 +154,19 @@ export const parseBackfillArgs = (argv: string[]): BackfillOptions => {
   }
 
   if (!network) throw new Error("--network is required (testnet | mainnet | futurenet)");
-  if (from === undefined) throw new Error("--from is required");
-  if (to === undefined) throw new Error("--to is required");
-  if (from === "head") throw new Error(`--from cannot be "head"`);
-  if (to === "genesis") throw new Error(`--to cannot be "genesis"`);
-  if (typeof from === "number" && typeof to === "number" && from > to) {
-    throw new Error(`--from (${from}) must be <= --to (${to})`);
+  // A resume takes its range from the checkpoint, so bounds are only required
+  // for a fresh run.
+  if (!opts.resume) {
+    if (from === undefined) throw new Error("--from is required");
+    if (to === undefined) throw new Error("--to is required");
+    if (from === "head") throw new Error(`--from cannot be "head"`);
+    if (to === "genesis") throw new Error(`--to cannot be "genesis"`);
+    if (typeof from === "number" && typeof to === "number" && from > to) {
+      throw new Error(`--from (${from}) must be <= --to (${to})`);
+    }
   }
-  opts.from = from;
-  opts.to = to;
+  if (from !== undefined) opts.from = from;
+  if (to !== undefined) opts.to = to;
   opts.network = network;
   return opts;
 };

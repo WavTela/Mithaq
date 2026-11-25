@@ -9,8 +9,12 @@ responding before routing traffic or marking a rollout healthy.
 | Frontend (Next.js) | `GET /api/health` | Liveness: process is up and serving requests |
 | Frontend (Next.js) | `GET /api/ready` | Readiness: signer, contracts, RPC and Persona config are usable |
 | Indexer worker | `GET /health` | Liveness + ingestion health (ledger lag, fetch errors) |
+| Indexer worker | `GET /ready` | Readiness: the selected database answers a lightweight query |
+| Indexer worker | `GET /diagnostics/rpc` | Operator-only sanitized RPC failure details |
 
-All endpoints are unauthenticated, return JSON, and are safe to poll.
+Health and readiness endpoints are unauthenticated, return JSON, and are safe to
+poll. `/diagnostics/rpc` is available only when `API_KEY` is configured and
+requires that key, so it is never public.
 
 ## Common fields
 
@@ -65,6 +69,13 @@ with per-dependency details when it is not ready.
   "lastLedger": 123456,
   "headLedger": 123460,
   "lag": 4,
+  "lagSlo": {
+    "targetLedgers": 30,
+    "lagLedgers": 4,
+    "status": "ok",
+    "breached": false,
+    "headLedgerKnown": true
+  },
   "lastSuccessLedger": 123456,
   "lastError": null,
   "lastErrorTime": null,
@@ -81,9 +92,32 @@ with per-dependency details when it is not ready.
 | `error` | 3+ consecutive fetch failures (ingester likely stalled, data may be stale) | `false` |
 
 `lag` is `headLedger - lastSuccessLedger`, or `-1` when the head ledger is not
-yet known. The endpoint returns HTTP `200` whenever the process and database
-respond (a database failure returns `500`); check the `ready` / `status` fields
-to detect a stalled ingester.
+yet known. `lagSlo` turns that lag into an alertable signal: `targetLedgers`
+comes from `INDEXER_LAG_SLO_LEDGERS` (default `30`), `status` is `"breached"`
+only when a known lag exceeds the budget, and `headLedgerKnown` is `false` when
+there is no head data yet (never alert on missing data).
+
+`/health` is liveness only: it returns HTTP `200` as long as the process can
+respond, even during a database outage, so an orchestrator does not restart a
+healthy worker. Use `GET /ready` for dependency readiness.
+
+## Indexer `GET /ready`
+
+```json
+{
+  "status": "ready",
+  "ready": true,
+  "service": "mithaq-indexer",
+  "version": "1.0.0",
+  "timestamp": "2026-10-26T12:00:00.000Z",
+  "timeoutMs": 2000,
+  "checks": [{ "name": "database", "status": "ok", "latencyMs": 3 }]
+}
+```
+
+Returns HTTP `200` when the database probe succeeds and HTTP `503` when it fails
+or exceeds `DB_READINESS_TIMEOUT_MS` (default `2000` ms). A failed check carries
+a sanitized `error` string; connection strings and credentials are redacted.
 
 ## Deployment integration
 
@@ -104,9 +138,9 @@ Also confirm the reported `version` matches the build you just deployed.
 - **Liveness probes** (restart on failure): frontend `/api/health`, indexer
   `/health` (HTTP 200).
 - **Readiness probes / load balancer** (stop routing on failure): frontend
-  `/api/ready` (HTTP 200 vs 503).
+  `/api/ready` and indexer `/ready` (HTTP 200 vs 503).
 - **Alerting**: alert when indexer `ready` is `false` or `status` is
-  `degraded` for several minutes, or when `lag` exceeds your tolerance.
+  `degraded` for several minutes, or when `lagSlo.breached` is `true`.
 
 Kubernetes example:
 
@@ -117,6 +151,7 @@ livenessProbe:
 readinessProbe:
   httpGet: { path: /api/ready, port: 3000 }
   periodSeconds: 15
+# Indexer: liveness /health, readiness /ready (port 3001)
 ```
 
 Docker Compose already uses the indexer `/health` endpoint as a
