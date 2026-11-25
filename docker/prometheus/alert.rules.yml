@@ -40,3 +40,39 @@ groups:
         annotations:
           summary: "SECURITY VIOLATION: Demo issuer key active in production"
           description: "Production environment is currently configured with the hardcoded demo issuer key."
+
+      # 5. Persistent Webhook Delivery Failures (issue API-17)
+      - alert: WebhookDeliveryExhausted
+        expr: indexer_webhook_subscriptions_exhausted > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Webhook subscriptions with exhausted retries"
+          description: >
+            {{ $value }} webhook subscription(s) have exhausted all delivery
+            attempts without a successful response. This can indicate a
+            persistent destination outage. Check the subscription's last_error
+            field via GET /webhooks/subscriptions/:id/deliveries to distinguish
+            a network/HTTP failure (destination outage) from a signature
+            rejection (misconfigured WEBHOOK_SIGNING_SECRET). No secret material
+            is logged — the last_error field contains only the HTTP status code
+            or connection error message.
+
+      # 6. Webhook Delivery Failure Rate (issue API-17)
+      - alert: WebhookDeliveryFailureRateHigh
+        expr: >
+          rate(indexer_webhook_deliveries_failure_total[10m])
+          /
+          (rate(indexer_webhook_deliveries_success_total[10m]) + rate(indexer_webhook_deliveries_failure_total[10m]))
+          > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High webhook delivery failure rate"
+          description: >
+            More than 50% of webhook delivery attempts have failed over the
+            last 10 minutes. Inspect delivery errors via
+            GET /webhooks/subscriptions/:id/deliveries?outcome=failed.
+            No signing secrets are exposed in error responses.

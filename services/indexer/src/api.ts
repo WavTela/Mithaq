@@ -295,6 +295,27 @@ function asyncHandler(
   };
 }
 
+/**
+ * Stamp a response with RFC 9745 `Deprecation` and RFC 8594 `Sunset` headers.
+ *
+ * Call this inside any route handler for a deprecated endpoint or field. Both
+ * dates must be ISO-8601 UTC strings, e.g. "2025-06-01T00:00:00Z". The
+ * function is a no-op when `deprecatedAt` is falsy, so it is safe to gate on
+ * a feature-flag without changing call sites.
+ *
+ * See docs/API_DEPRECATION.md for the full deprecation process.
+ */
+export function setDeprecationHeaders(
+  res: Response,
+  options: { deprecatedAt?: string; sunsetAt?: string },
+): void {
+  if (!options.deprecatedAt) return;
+  res.setHeader("Deprecation", options.deprecatedAt);
+  if (options.sunsetAt) {
+    res.setHeader("Sunset", options.sunsetAt);
+  }
+}
+
 export function buildApp(
   db: Db,
   ingester: Ingester,
@@ -510,6 +531,7 @@ export function buildApp(
     asyncHandler(async (_req, res) => {
       const metrics = ingester.getMetrics();
       const health = ingester.getHealth();
+      const exhaustedCount = await ingester.countExhaustedWebhookSubscriptions();
       const lines: string[] = [];
 
       // Events processed total
@@ -562,6 +584,25 @@ export function buildApp(
       );
       lines.push(`# TYPE indexer_checkpoint_ledger gauge`);
       lines.push(`indexer_checkpoint_ledger ${health.checkpointLedger ?? 0}`);
+
+      // ── Webhook delivery metrics (issue #17) ──────────────────────────────
+      lines.push(
+        `# HELP indexer_webhook_deliveries_success_total Webhook deliveries that received a 2xx response since start.`,
+      );
+      lines.push(`# TYPE indexer_webhook_deliveries_success_total counter`);
+      lines.push(`indexer_webhook_deliveries_success_total ${metrics.webhookDeliverySuccessTotal}`);
+
+      lines.push(
+        `# HELP indexer_webhook_deliveries_failure_total Webhook delivery attempts that resulted in an error since start.`,
+      );
+      lines.push(`# TYPE indexer_webhook_deliveries_failure_total counter`);
+      lines.push(`indexer_webhook_deliveries_failure_total ${metrics.webhookDeliveryFailureTotal}`);
+
+      lines.push(
+        `# HELP indexer_webhook_subscriptions_exhausted Subscriptions with all retry attempts consumed and no successful delivery.`,
+      );
+      lines.push(`# TYPE indexer_webhook_subscriptions_exhausted gauge`);
+      lines.push(`indexer_webhook_subscriptions_exhausted ${exhaustedCount}`);
 
       // â”€â”€ On-chain data integrity (#612) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // `indexer_state_mismatches` is the alerting series: it holds the number

@@ -14,6 +14,18 @@ Prometheus rule definitions are located in `docker/prometheus/alert.rules.yml`.
 | **HighIssuanceFailureRate** | `(sum(rate(mithaq_issuance_failures_total[5m])) / sum(rate(mithaq_issuance_attempts_total[5m]))) > 0.05` | > 5% over 5m | `critical` | Issuance failures spike due to key misconfiguration or third-party outages. |
 | **APIReadyFailing** | `mithaq_api_ready_status == 0` | Failing > 1m | `critical` | `/api/ready` health probe returns non-200. |
 | **DemoIssuerKeyActiveInProduction** | `mithaq_demo_issuer_mode{env="production"} == 1` | Immediate (0m) | `critical` | Hardcoded demo issuer key detected in production. |
+| **WebhookDeliveryExhausted** | `indexer_webhook_subscriptions_exhausted > 0` | Immediate (0m) | `warning` | One or more webhook subscriptions have exhausted all retry attempts with no successful delivery. |
+| **WebhookDeliveryFailureRateHigh** | `rate(indexer_webhook_deliveries_failure_total[10m]) / (rate(...success...) + rate(...failure...)) > 0.5` | > 50% over 5m | `warning` | More than half of recent webhook delivery attempts failed. |
+
+---
+
+## Diagnosing Webhook Delivery Failures
+
+When `WebhookDeliveryExhausted` or `WebhookDeliveryFailureRateHigh` fires:
+
+1. **Destination outage vs. signature misconfiguration**: The `last_error` field in `GET /webhooks/subscriptions/:id/deliveries?outcome=failed` contains the HTTP status code or connection error — a `401`/`403` suggests a signing secret mismatch; a `5xx` or timeout suggests the destination is down. No secret material is ever logged or returned.
+2. **Check the subscription target URL**: Confirm the destination is reachable and the `WEBHOOK_SIGNING_SECRET` environment variable matches what the destination expects.
+3. **Re-queue or delete**: Once the issue is resolved, delete and recreate the subscription to clear the exhausted state. Future deliveries for new events will begin immediately.
 
 ---
 

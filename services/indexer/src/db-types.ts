@@ -265,6 +265,9 @@ export interface Db {
     },
   ): DeliveryPage | Promise<DeliveryPage>;
 
+  /** Count distinct subscriptions with no successful delivery and all attempts exhausted. */
+  countExhaustedWebhookDeliveries(maxAttempts: number): number | Promise<number>;
+
   /** Close the underlying connection / pool. */
   close(): void | Promise<void>;
 }

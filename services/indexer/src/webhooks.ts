@@ -161,7 +161,7 @@ export function createWebhookDispatcher(
     return expired.length;
   }
 
-  async function dispatchPending(): Promise<number> {
+  async function dispatchPending(): Promise<{ attempted: number; succeeded: number; failed: number }> {
     if (signingSecret.length < 32) {
       throw new Error("WEBHOOK_SIGNING_SECRET must contain at least 32 characters");
     }
@@ -172,6 +172,8 @@ export function createWebhookDispatcher(
       DELIVERY_BATCH_SIZE,
       MAX_WEBHOOK_DELIVERY_ATTEMPTS,
     );
+    let succeeded = 0;
+    let failed = 0;
     for (let start = 0; start < deliveries.length; start += DELIVERY_CONCURRENCY) {
       const batch = deliveries.slice(start, start + DELIVERY_CONCURRENCY);
       await Promise.all(batch.map(async (delivery) => {
@@ -191,6 +193,7 @@ export function createWebhookDispatcher(
             deliveredAt: timestamp,
             lastError: null,
           });
+          succeeded++;
         } catch (error) {
           const delaySeconds = Math.min(3600, 5 * 2 ** (attempts - 1));
           await db.updateWebhookDelivery(delivery.id, {
@@ -199,10 +202,11 @@ export function createWebhookDispatcher(
             deliveredAt: null,
             lastError: (error instanceof Error ? error.message : String(error)).slice(0, 500),
           });
+          failed++;
         }
       }));
     }
-    return deliveries.length;
+    return { attempted: deliveries.length, succeeded, failed };
   }
 
   return { enqueueExpiredClaims, dispatchPending };

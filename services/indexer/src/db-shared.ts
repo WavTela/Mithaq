@@ -759,6 +759,16 @@ export function createSharedDb(dialect: SqlDialect): Db {
     async close() {
       await dialect.close();
     },
+
+    async countExhaustedWebhookDeliveries(maxAttempts) {
+      const rows = await dialect.all<Record<string, unknown>>(
+        `SELECT COUNT(DISTINCT subscription_id) AS cnt
+         FROM webhook_deliveries
+         WHERE delivered_at IS NULL AND attempts >= ?`,
+        [maxAttempts],
+      );
+      return toCount(rows[0]?.["cnt"]);
+    },
   };
 }
 

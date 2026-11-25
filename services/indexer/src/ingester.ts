@@ -53,7 +53,7 @@
 import { Horizon } from "@stellar/stellar-sdk";
 import type { Config } from "./config";
 import type { Db } from "./db";
-import { createWebhookDispatcher } from "./webhooks";
+import { createWebhookDispatcher, MAX_WEBHOOK_DELIVERY_ATTEMPTS } from "./webhooks";
 
 // ── Retry configuration ───────────────────────────────────────────────────
 
@@ -120,6 +120,16 @@ export interface IngesterMetrics {
   dbWriteLatencySeconds: number;
   /** Ledgers behind head (head - last processed). */
   lag: number;
+  /** Webhook deliveries that succeeded (HTTP 2xx) since start. */
+  webhookDeliverySuccessTotal: number;
+  /** Webhook deliveries that failed (non-2xx or network error) since start. */
+  webhookDeliveryFailureTotal: number;
+  /**
+   * Subscriptions that have exhausted all retry attempts (attempts >=
+   * MAX_WEBHOOK_DELIVERY_ATTEMPTS) and still have no delivered_at.
+   * This is a gauge: it reflects the current DB state, not a running counter.
+   */
+  webhookSubscriptionsExhausted: number;
 }
 
 function freshHealth(): IngesterHealth {
@@ -529,6 +539,12 @@ export interface Ingester {
   getHealth(): IngesterHealth;
   /** Get Prometheus metrics for the ingester. */
   getMetrics(): IngesterMetrics;
+  /**
+   * Count webhook subscriptions whose delivery queue is exhausted
+   * (all retry attempts consumed with no successful delivery).
+   * Returned as a Promise because the Postgres adapter is async.
+   */
+  countExhaustedWebhookSubscriptions(): Promise<number>;
 }
 
 export function createIngester(config: Config, db: Db): Ingester {
@@ -554,7 +570,9 @@ export function createIngester(config: Config, db: Db): Ingester {
     if (!webhookDispatcher) return;
     try {
       await webhookDispatcher.enqueueExpiredClaims();
-      await webhookDispatcher.dispatchPending();
+      const result = await webhookDispatcher.dispatchPending();
+      webhookDeliverySuccessTotal += result.succeeded;
+      webhookDeliveryFailureTotal += result.failed;
     } catch (error) {
       console.error("[indexer] webhook delivery cycle failed:", error);
     }
@@ -564,6 +582,8 @@ export function createIngester(config: Config, db: Db): Ingester {
   const startTime = Date.now();
   let eventsProcessedTotal = 0;
   let fetchErrorsTotal = 0;
+  let webhookDeliverySuccessTotal = 0;
+  let webhookDeliveryFailureTotal = 0;
 
   // ── Fetch current Horizon head ledger (cached per tick) ────────────────
   // We fetch this once at the start of each tick so lag is observable
@@ -949,7 +969,17 @@ export function createIngester(config: Config, db: Db): Ingester {
         uptimeSeconds: uptimeSec,
         dbWriteLatencySeconds: lastTickDurationSec,
         lag,
+        webhookDeliverySuccessTotal,
+        webhookDeliveryFailureTotal,
+        // Exhausted subscriptions are a live gauge — query DB synchronously.
+        // db methods may be async on Postgres; return 0 for the sync path and
+        // let the /metrics endpoint await it via a dedicated helper instead.
+        webhookSubscriptionsExhausted: 0,
       };
+    },
+
+    async countExhaustedWebhookSubscriptions(): Promise<number> {
+      return db.countExhaustedWebhookDeliveries(MAX_WEBHOOK_DELIVERY_ATTEMPTS);
     },
   };
 }

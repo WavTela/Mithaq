@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconArrowRight, IconLoader2 } from "@tabler/icons-react";
 import { WalletButton } from "@/components/WalletButton";
@@ -8,6 +8,8 @@ import { truncateMiddle } from "@/lib/format";
 import { useWallet } from "@/lib/wallet-context";
 import { useToast } from "@/components/Toast";
 import VerifyLinkError from "./VerifyLinkError";
+import VerifyRequestReview from "./VerifyRequestReview";
+import type { VerifyRequestSummary } from "./VerifyRequestReview";
 import { ConfigBanner } from "@/components/ConfigBanner";
 import { issuanceConfigured } from "@/lib/config";
 import { useVerifyParams } from "@/lib/hooks/useVerifyParams";
@@ -86,6 +88,31 @@ function VerifyInner() {
     onBusyChange: setBusy,
   });
 
+  // ── WEB-32: Review gate ───────────────────────────────────────────────
+  // When the page is opened from a protocol verify-link (requestingDomain is
+  // set and there are no structural errors), show a confirmation panel before
+  // surfacing the credential form.  The user must explicitly confirm or
+  // decline.  Once confirmed, reviewAccepted flips to true and stays true for
+  // the rest of the session (router navigations are shallow within the SPA).
+  const [reviewAccepted, setReviewAccepted] = useState(false);
+
+  const showReviewGate =
+    !!requestingDomain && !urlError && !linkError && !reviewAccepted;
+
+  const reviewSummary: VerifyRequestSummary | null = showReviewGate
+    ? {
+        requestingDomain,
+        claimType: requiredClaim,
+        thresholdLabel:
+          claimParamsFromUrl.threshold_years
+            ? `≥ ${claimParamsFromUrl.threshold_years} years`
+            : claimParamsFromUrl.threshold
+            ? `≥ ${claimParamsFromUrl.threshold}`
+            : null,
+        restrictedCodes: claimParamsFromUrl.restricted,
+      }
+    : null;
+
   return (
     <>
       <VerifyHeader />
@@ -96,6 +123,12 @@ function VerifyInner() {
 
       {linkError ? (
         <VerifyLinkError error={linkError} onBack={() => router.push("/")} />
+      ) : showReviewGate && reviewSummary ? (
+        <VerifyRequestReview
+          summary={reviewSummary}
+          onConfirm={() => setReviewAccepted(true)}
+          onDecline={() => router.push("/")}
+        />
       ) : (
         <div style={{ maxWidth: 520, margin: "0 auto" }}>
           <VerifyQrScannerModal locked={locked} />
