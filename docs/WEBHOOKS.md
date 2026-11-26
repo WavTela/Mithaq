@@ -45,6 +45,7 @@ openssl rand -hex 32
 | `Content-Type` | `application/json` |
 | `X-Issuance-Signature` | Hex HMAC-SHA256 signature, or `sha256=<hex>`, or timestamped `t=<ts>,v1=<hex>`. |
 | `X-Request-Id` | *(Optional)* Unique request ID for distributed tracing. |
+| `X-Webhook-Version` | *(Optional)* Payload version requested/sent (e.g., `2024-01-01`). Defaults to current stable version. |
 
 ### Payload Formats
 
@@ -67,15 +68,75 @@ openssl rand -hex 32
 }
 ```
 
+#### Claim Submission, Revocation, and Expiry Notifications
+
+Mithaq also dispatches and receives lifecycle webhooks for claims:
+
+- **Claim Submission (`claim.submitted`)**:
+  ```json
+  {
+    "eventId": "evt_sub_111222",
+    "provider": "mithaq_core",
+    "eventType": "claim.submitted",
+    "status": "pending",
+    "credentialType": "kyc",
+    "timestamp": 1700000000000,
+    "claimId": "claim_xyz987",
+    "walletAddress": "GBZXN7PIRZGNMHGA728JDOQTT2TWSTTRNMG2YJYBC6QUFFJWDT5V37O7"
+  }
+  ```
+
+- **Claim Revocation (`claim.revoked`)**:
+  ```json
+  {
+    "eventId": "evt_rev_333444",
+    "provider": "mithaq_core",
+    "eventType": "claim.revoked",
+    "status": "revoked",
+    "credentialType": "kyc",
+    "timestamp": 1700000000000,
+    "claimId": "claim_xyz987",
+    "reason": "Policy violation or user request"
+  }
+  ```
+
+- **Claim Expiry (`claim.expired`)**:
+  ```json
+  {
+    "eventId": "evt_exp_555666",
+    "provider": "mithaq_core",
+    "eventType": "claim.expired",
+    "status": "expired",
+    "credentialType": "kyc",
+    "timestamp": 1700000000000,
+    "claimId": "claim_xyz987"
+  }
+  ```
+
 #### Status Values
 
 - `completed` (or `approved`, `success`): The credential issuance succeeded.
 - `failed` (or `rejected`, `declined`): The credential check was denied.
-- `pending`: Asynchronous verification is underway.
+- `pending`: Asynchronous verification or claim submission is underway.
+- `revoked`: The claim has been explicitly revoked.
+- `expired`: The claim validity period has elapsed.
 
 ---
 
-## 4. Provider Configuration
+## 4. Version Lifecycle & Compatibility Policy
+
+Mithaq follows a strict versioning and compatibility policy for all webhook payloads to ensure zero-downtime upgrades for consumers.
+
+1. **Additive Changes**: New fields (such as additional metadata or extended telemetry) may be added to existing event types at any time. Additive changes are considered non-breaking.
+2. **Backward Compatibility**: Existing fields will not be removed or renamed without at least 6 months of deprecation notice and a major version increment.
+3. **Payload Versioning Header**: Consumers can specify or inspect webhook payload versions via the `X-Webhook-Version` header or the `version` field inside the payload (e.g. `"version": "v1"`).
+4. **Consumer Guidance for Unrecognized Fields**:
+   - **Forward Compatibility**: Consumers **must** write parsers that gracefully ignore unknown or unrecognized fields and event properties. Do not fail requests or reject payloads containing unfamiliar attributes.
+   - **Unknown Event Types**: If your consumer receives an unrecognized `eventType` (e.g. future iterations), log the event at `INFO` or `DEBUG` level and return a `200 OK` response to prevent unnecessary retries by the webhook dispatcher.
+
+---
+
+## 5. Provider Configuration
 
 ### Configuring Persona
 
@@ -106,7 +167,8 @@ function createSignature(bodyString, secret) {
 const payload = JSON.stringify({
   eventId: "evt_12345",
   provider: "my_kyc",
-  status: "completed",
+  eventType: "claim.submitted",
+  status: "pending",
   credentialType: "kyc",
   timestamp: Date.now()
 });
@@ -117,7 +179,8 @@ fetch("https://your-domain.com/api/webhooks/issuance", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
-    "X-Issuance-Signature": signature
+    "X-Issuance-Signature": signature,
+    "X-Webhook-Version": "v1"
   },
   body: payload
 });
@@ -125,7 +188,7 @@ fetch("https://your-domain.com/api/webhooks/issuance", {
 
 ---
 
-## 5. Security and Privacy Guarantees
+## 6. Security and Privacy Guarantees
 
 1. **Constant-Time Verification**: Signatures are compared using constant-time algorithms (`crypto.timingSafeEqual`) to prevent timing side-channel attacks.
 2. **Replay Protection**: Timestamped signatures (`t=...,v1=...`) must be within 5 minutes of server time.
